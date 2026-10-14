@@ -1207,6 +1207,8 @@
 
   // ---------- Envio do relatório em PDF ----------
   const EMAIL_RELATORIO = 'ti.coordenador@ramosgrupo.com.br';
+  // Fluxo n8n "rotas-frotas-smtp": monta e-mail HTML no padrão CearaGPS e envia via SMTP com o PDF anexo.
+  const WEBHOOK_RELATORIO = 'https://webhook.gpsceara.shop/webhook/rotas-frotas-smtp';
   const corRGB = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
 
   function abrirEnvio(tela, resumo, tempo) {
@@ -1221,7 +1223,7 @@
           <div class="in"><i class="ms">mail</i><input id="env-email" type="email" value="${EMAIL_RELATORIO}"></div></div>
         <div class="env-prev"><i class="ms">picture_as_pdf</i><div><b id="env-nome"></b><small>A4 · 1 página</small></div></div>
         <div class="btn-row" style="margin-top:16px">
-          <button class="btn" id="env-cancel">Cancelar</button>
+          <button class="btn" id="env-baixar"><i class="ms">download</i>Baixar</button>
           <button class="btn primary" id="env-go"><i class="ms">send</i>Enviar</button>
         </div>
       </div>`;
@@ -1237,43 +1239,66 @@
       gsap.fromTo(modal.querySelector('.modal-card'), { yPercent: 100 }, { yPercent: 0, duration: 0.5, ease: 'expo.out' });
     }
     modal.onclick = (e) => { if (e.target === modal) fechar(); };
-    modal.querySelector('#env-cancel').onclick = fechar;
+
+    const periodo = resumo.mes ? 'Últimas 4 semanas' : 'Últimos 7 dias';
+    const gerarPDF = () => RelatorioPDF.gerar({
+      logoSvg: Marca.logo, empresa: D.EMPRESA, mes: resumo.mes, periodo,
+      geradoEm: agora.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }),
+      km: resumo.km, litros: resumo.litros, gasto: resumo.gasto, custoOcioso: resumo.custoOcioso, preco: estado.preco,
+      graficos: { km: tela.querySelector('#ch-km'), litros: tela.querySelector('#ch-l'), tempo: tela.querySelector('#ch-t') },
+      tempo,
+      ranking: resumo.ranking.map((v) => ({ motorista: v.motorista, placa: placaFmt(v.placa), velMax: v.velMax })),
+      veiculos: D.VEICULOS.map((v) => ({ ...v, placa: placaFmt(v.placa) })),
+    });
+
+    // Plano B sem servidor: baixa o PDF e abre o e-mail endereçado com o resumo.
+    function enviarPorMailto(doc, email) {
+      doc.save(nome);
+      const corpo = [
+        `Relatório da frota ${D.EMPRESA} (${periodo.toLowerCase()}):`, '',
+        `• Km rodados: ${C.fmtNum(resumo.km)} km`,
+        `• Combustível: ${C.fmtNum(resumo.litros)} L (${C.fmtBRL(resumo.gasto)})`,
+        `• Custo da ociosidade: ${C.fmtBRL(resumo.custoOcioso)}`, '',
+        `PDF completo em anexo: ${nome}`,
+      ].join('\n');
+      window.location.href = `mailto:${email}?subject=${encodeURIComponent(`Relatório da frota · ${D.EMPRESA} · ${periodo}`)}&body=${encodeURIComponent(corpo)}`;
+    }
+
+    modal.querySelector('#env-baixar').onclick = async () => { (await gerarPDF()).save(nome); fechar(); Motion.toast('PDF baixado'); };
 
     modal.querySelector('#env-go').onclick = async (e) => {
       const email = modal.querySelector('#env-email').value.trim();
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return Motion.toast('Informe um e-mail válido');
       const btn = e.currentTarget;
       btn.disabled = true;
-      btn.innerHTML = '<i class="ms">progress_activity</i>Gerando PDF…';
-      const periodo = resumo.mes ? 'Últimas 4 semanas' : 'Últimos 7 dias';
-      const doc = await RelatorioPDF.gerar({
-        logoSvg: Marca.logo, empresa: D.EMPRESA, mes: resumo.mes, periodo,
-        geradoEm: agora.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }),
-        km: resumo.km, litros: resumo.litros, gasto: resumo.gasto, custoOcioso: resumo.custoOcioso, preco: estado.preco,
-        graficos: { km: tela.querySelector('#ch-km'), litros: tela.querySelector('#ch-l'), tempo: tela.querySelector('#ch-t') },
-        tempo,
-        ranking: resumo.ranking.map((v) => ({ motorista: v.motorista, placa: placaFmt(v.placa), velMax: v.velMax })),
-        veiculos: D.VEICULOS.map((v) => ({ ...v, placa: placaFmt(v.placa) })),
-      });
-      doc.save(nome);
-
-      // Site estático: abre o e-mail já endereçado com o resumo; o PDF baixado vai em anexo.
-      const corpo = [
-        `Relatório da frota ${D.EMPRESA} (${periodo.toLowerCase()}):`,
-        '',
-        `• Km rodados: ${C.fmtNum(resumo.km)} km`,
-        `• Combustível: ${C.fmtNum(resumo.litros)} L (${C.fmtBRL(resumo.gasto)})`,
-        `• Custo da ociosidade: ${C.fmtBRL(resumo.custoOcioso)}`,
-        `• Excesso de velocidade: ${resumo.ranking.map((v) => `${v.motorista} ${v.velMax} km/h`).join(', ') || 'nenhum'}`,
-        '',
-        `PDF completo em anexo: ${nome}`,
-        '',
-        'CearaGPS Frotas',
-      ].join('\n');
-      const assunto = `Relatório da frota · ${D.EMPRESA} · ${periodo}`;
-      window.location.href = `mailto:${email}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
-      fechar();
-      Motion.toast(`PDF baixado · anexe no e-mail para ${email}`);
+      btn.innerHTML = '<i class="ms">progress_activity</i>Enviando…';
+      const giro = gsap.to(btn.querySelector('.ms'), { rotation: 360, repeat: -1, duration: 0.8, ease: 'none' });
+      const doc = await gerarPDF();
+      try {
+        const r = await fetch(WEBHOOK_RELATORIO, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email, empresa: D.EMPRESA, periodo,
+            resumo: {
+              km: resumo.km, litros: resumo.litros, gasto: resumo.gasto, custoOcioso: resumo.custoOcioso,
+              ranking: resumo.ranking.map((v) => ({ motorista: v.motorista, placa: placaFmt(v.placa), velMax: v.velMax })),
+              veiculos: D.VEICULOS.map((v) => ({ placa: placaFmt(v.placa), motorista: v.motorista, km: v.km, velMax: v.velMax, limite: v.limite, minOcioso: v.minOcioso })),
+            },
+            pdf: { nome, base64: doc.output('datauristring').split(',')[1] },
+          }),
+        });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok || !j.ok) throw new Error(j.erro || `HTTP ${r.status}`);
+        giro.kill();
+        fechar();
+        Motion.toast(`Relatório enviado para ${email}`);
+      } catch (err) {
+        giro.kill();
+        fechar();
+        enviarPorMailto(doc, email);
+        Motion.toast(`Envio automático falhou (${err.message}) · PDF baixado`);
+      }
     };
   }
 
