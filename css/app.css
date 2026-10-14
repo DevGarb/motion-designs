@@ -549,3 +549,16 @@ select.vsel {
   background: #25d366; color: #05300f; font-weight: 800;
 }
 .balao .btn.whats:hover { filter: brightness(1.08); }
+
+/* Modal (bottom sheet) de envio do relatório */
+.modal { position: absolute; inset: 0; z-index: 880; background: rgba(2, 15, 21, .6); backdrop-filter: blur(3px); display: flex; align-items: flex-end; }
+.modal-card {
+  width: 100%; background: var(--surface); border-top: 2px solid var(--marca-laranja);
+  border-radius: 22px 22px 0 0; padding: 10px 20px calc(var(--tab-h) + 16px);
+}
+.modal-card .grab { width: 40px; height: 4px; border-radius: 2px; background: var(--line-strong); margin: 0 auto 14px; }
+.modal-card h3 { font: 400 16px var(--font-title); text-transform: uppercase; margin-bottom: 6px; }
+.env-prev { display: flex; gap: 12px; align-items: center; padding: 12px; border-radius: var(--radius); background: var(--surface-2); border: 1px dashed var(--line-strong); }
+.env-prev .ms { font-size: 30px; color: var(--marca-laranja); }
+.env-prev b { display: block; font-size: 13px; word-break: break-all; }
+.env-prev small { color: var(--text-3); font-size: 12px; }

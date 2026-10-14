@@ -1103,9 +1103,10 @@
       const custoOcioso = C.litrosOciosos(ocioso) * estado.preco;
       const ranking = D.VEICULOS.filter((v) => v.excessos.length).sort((a, b) => b.velMax - a.velMax);
       this.dados = dados;
+      this.resumo = { mes, km, litros, gasto: litros * estado.preco, custoOcioso, ranking };
       return `
         <header class="topbar"><div class="grow"><h2>Relatórios</h2><div class="sub">${D.EMPRESA} · ${D.VEICULOS.length} veículos</div></div>
-          <button class="icon-btn" id="pdf" aria-label="Exportar PDF"><i class="ms">picture_as_pdf</i></button></header>
+          <button class="icon-btn" id="pdf" aria-label="Enviar relatório em PDF por e-mail"><i class="ms">picture_as_pdf</i></button></header>
         <div class="seg" id="per" data-anim>
           <button data-p="semana" class="${!mes ? 'on' : ''}">Semana</button><button data-p="mes" class="${mes ? 'on' : ''}">Mês</button>
         </div>
@@ -1141,7 +1142,10 @@
               <div style="flex:1"><b>${v.motorista}</b><p class="muted" style="font-size:12px">${placaFmt(v.placa)} · ${v.excessos.length * (mes ? 9 : 3)} ocorrências</p></div>
               <span class="num c-red" style="font-size:20px">${v.velMax}<small>km/h</small></span>
             </a>`).join('') || '<p class="muted">Nenhuma ocorrência</p>'}
-        </div></div>`;
+        </div></div>
+        <div class="pad" data-anim>
+          <button class="btn primary block" id="pdf2"><i class="ms">forward_to_inbox</i>Enviar relatório em PDF</button>
+        </div>`;
     },
     montar(el) {
       const dados = this.dados;
@@ -1195,9 +1199,83 @@
         TELAS.relatorios.montar(nova);
         Motion.entrar(nova);
       };
-      el.querySelector('#pdf').onclick = () => Motion.toast('Relatório PDF enviado para seu e-mail');
+      const abrir = () => abrirEnvio(el, this.resumo, fatias.map((f) => [f[0], Math.round((f[1] / tot) * 100), corRGB(f[2])]));
+      el.querySelector('#pdf').onclick = abrir;
+      el.querySelector('#pdf2').onclick = abrir;
     },
   };
+
+  // ---------- Envio do relatório em PDF ----------
+  const EMAIL_RELATORIO = 'ti.coordenador@ramosgrupo.com.br';
+  const corRGB = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+
+  function abrirEnvio(tela, resumo, tempo) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+      <div class="modal-card" role="dialog" aria-labelledby="env-tit">
+        <div class="grab"></div>
+        <h3 id="env-tit">Enviar relatório</h3>
+        <p class="muted" style="font-size:13px;margin-bottom:14px">PDF ${resumo.mes ? 'do mês' : 'da semana'} com gráficos, desempenho por veículo e ranking de velocidade.</p>
+        <div class="field"><label for="env-email">Enviar para</label>
+          <div class="in"><i class="ms">mail</i><input id="env-email" type="email" value="${EMAIL_RELATORIO}"></div></div>
+        <div class="env-prev"><i class="ms">picture_as_pdf</i><div><b id="env-nome"></b><small>A4 · 1 página</small></div></div>
+        <div class="btn-row" style="margin-top:16px">
+          <button class="btn" id="env-cancel">Cancelar</button>
+          <button class="btn primary" id="env-go"><i class="ms">send</i>Enviar</button>
+        </div>
+      </div>`;
+    app.appendChild(modal);
+    const fechar = () => gsap.to(modal, { opacity: 0, duration: 0.2, onComplete: () => modal.remove() });
+    aoSair(() => modal.remove());
+    const agora = new Date();
+    const dataArq = agora.toISOString().slice(0, 10);
+    const nome = `relatorio-frota-${resumo.mes ? 'mes' : 'semana'}-${dataArq}.pdf`;
+    modal.querySelector('#env-nome').textContent = nome;
+    if (!Motion.reduz) {
+      gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.25 });
+      gsap.fromTo(modal.querySelector('.modal-card'), { yPercent: 100 }, { yPercent: 0, duration: 0.5, ease: 'expo.out' });
+    }
+    modal.onclick = (e) => { if (e.target === modal) fechar(); };
+    modal.querySelector('#env-cancel').onclick = fechar;
+
+    modal.querySelector('#env-go').onclick = async (e) => {
+      const email = modal.querySelector('#env-email').value.trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return Motion.toast('Informe um e-mail válido');
+      const btn = e.currentTarget;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ms">progress_activity</i>Gerando PDF…';
+      const periodo = resumo.mes ? 'Últimas 4 semanas' : 'Últimos 7 dias';
+      const doc = await RelatorioPDF.gerar({
+        logoSvg: Marca.logo, empresa: D.EMPRESA, mes: resumo.mes, periodo,
+        geradoEm: agora.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }),
+        km: resumo.km, litros: resumo.litros, gasto: resumo.gasto, custoOcioso: resumo.custoOcioso, preco: estado.preco,
+        graficos: { km: tela.querySelector('#ch-km'), litros: tela.querySelector('#ch-l'), tempo: tela.querySelector('#ch-t') },
+        tempo,
+        ranking: resumo.ranking.map((v) => ({ motorista: v.motorista, placa: placaFmt(v.placa), velMax: v.velMax })),
+        veiculos: D.VEICULOS.map((v) => ({ ...v, placa: placaFmt(v.placa) })),
+      });
+      doc.save(nome);
+
+      // Site estático: abre o e-mail já endereçado com o resumo; o PDF baixado vai em anexo.
+      const corpo = [
+        `Relatório da frota ${D.EMPRESA} (${periodo.toLowerCase()}):`,
+        '',
+        `• Km rodados: ${C.fmtNum(resumo.km)} km`,
+        `• Combustível: ${C.fmtNum(resumo.litros)} L (${C.fmtBRL(resumo.gasto)})`,
+        `• Custo da ociosidade: ${C.fmtBRL(resumo.custoOcioso)}`,
+        `• Excesso de velocidade: ${resumo.ranking.map((v) => `${v.motorista} ${v.velMax} km/h`).join(', ') || 'nenhum'}`,
+        '',
+        `PDF completo em anexo: ${nome}`,
+        '',
+        'CearaGPS Frotas',
+      ].join('\n');
+      const assunto = `Relatório da frota · ${D.EMPRESA} · ${periodo}`;
+      window.location.href = `mailto:${email}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
+      fechar();
+      Motion.toast(`PDF baixado · anexe no e-mail para ${email}`);
+    };
+  }
 
   // Relógio da barra de status avança a partir das 11:30 simuladas.
   const t0 = Date.now();
