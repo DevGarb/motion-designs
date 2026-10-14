@@ -4,6 +4,7 @@ name: Publicar no GitHub Pages
 #   /                       -> índice (main)
 #   /grti-motion/           -> branch grti-motion
 #   /treinamento-sistemas/  -> branch treinamento-sistemas
+#   /roteirizador-frotas/   -> branch roteirizador-frotas
 on:
   push:
     branches: [main]
@@ -31,12 +32,15 @@ jobs:
         with: { ref: grti-motion, path: grti-motion }
       - uses: actions/checkout@v4
         with: { ref: treinamento-sistemas, path: treinamento-sistemas }
+      - uses: actions/checkout@v4
+        with: { ref: roteirizador-frotas, path: roteirizador-frotas }
       - name: Montar site
         run: |
           mkdir -p _site
           cp hub/index.html _site/
           rsync -a --exclude .git --exclude .github grti-motion/ _site/grti-motion/
           rsync -a --exclude .git --exclude .github treinamento-sistemas/ _site/treinamento-sistemas/
+          rsync -a --exclude .git --exclude .github --exclude design roteirizador-frotas/ _site/roteirizador-frotas/
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
