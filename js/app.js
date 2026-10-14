@@ -1,4 +1,4 @@
-// CearáGPS Frotas — protótipo clicável (SPA com rotas por hash).
+// CearaGPS Frotas — protótipo clicável (SPA com rotas por hash).
 (function () {
   const D = window.Dados;
   const C = window.Calc;
@@ -165,7 +165,11 @@
     const el = document.createElement('section');
     el.className = 'screen' + (tela.semAbas ? ' no-tab' : '');
     el.innerHTML = tela.html(rota.param);
-    const antiga = app.querySelector('.screen');
+    // Navegação no meio de uma transição: descarta telas que ainda estavam saindo.
+    const telas = app.querySelectorAll('.screen');
+    telas.forEach((t, i) => { if (i < telas.length - 1) { gsap.killTweensOf(t); t.remove(); } });
+    const antiga = telas[telas.length - 1] || null;
+    if (antiga) gsap.killTweensOf(antiga);
     app.appendChild(el);
 
     tabbar.classList.toggle('hide', !!tela.semAbas);
@@ -190,11 +194,11 @@
           <path d="M-20 120 C 80 60, 160 220, 260 150 S 380 60, 420 140"/>
           <path d="M-10 640 C 90 560, 170 720, 280 630 S 360 560, 410 600"/>
           <path d="M40 820 C 60 700, 10 600, 120 520 S 300 520, 330 420"/>
-          <circle cx="260" cy="150" r="4"/><circle cx="120" cy="520" r="4"/><circle cx="280" cy="630" r="4"/>
+          <circle cx="370" cy="105" r="4"/><circle cx="120" cy="520" r="4"/><circle cx="280" cy="630" r="4"/>
         </svg>
         <div class="logo" data-anim>
-          <span class="logo-dot"></span>
-          <div><h1>CearáGPS</h1><small>Roteirizador de Frotas</small></div>
+          <div class="logo-svg" id="lg-logo">${Marca.logo}</div>
+          <p>Acompanhe sua frota e planeje rotas em tempo real</p>
         </div>
         <div class="field" data-anim>
           <label for="lg-user">E-mail ou CNPJ</label>
@@ -216,6 +220,14 @@
         const tw = gsap.to(svg.querySelectorAll('path'), { strokeDashoffset: -140, duration: 6, ease: 'none', repeat: -1 });
         const tw2 = gsap.to(svg.querySelectorAll('circle'), { scale: 2.2, opacity: 0.2, transformOrigin: 'center', duration: 1.4, repeat: -1, yoyo: true, stagger: 0.4 });
         aoSair(() => { tw.kill(); tw2.kill(); });
+      }
+      // Logo monta letra a letra; a seta laranja "dispara" por último.
+      if (!Motion.reduz) {
+        const partes = el.querySelectorAll('#lg-logo path');
+        gsap.timeline({ delay: 0.15 })
+          .from(partes, { opacity: 0, x: -24, skewX: -12, duration: 0.55, ease: 'expo.out', stagger: 0.04 })
+          .fromTo(el.querySelectorAll('#lg-logo path.o'), { filter: 'brightness(1)' },
+            { filter: 'brightness(1.6)', duration: 0.25, yoyo: true, repeat: 1 }, '-=0.1');
       }
       el.querySelector('#lg-eye').onclick = () => {
         const i = el.querySelector('#lg-pass');
@@ -246,8 +258,7 @@
       const va = D.veiculo(ativa.placa);
       return `
         <header class="topbar">
-          <div class="brand-mark"><i class="ms">local_shipping</i></div>
-          <div class="grow"><h2>CearáGPS Frotas</h2><div class="sub"><span class="live-dot"></span>Fortaleza, CE · ao vivo</div></div>
+          <div class="grow"><div class="logo-svg" style="width:150px">${Marca.logo}</div><div class="sub" style="margin-top:4px"><span class="live-dot"></span>Fortaleza, CE · ao vivo</div></div>
           <button class="icon-btn" id="bell" aria-label="Alertas"><i class="ms">notifications</i><span class="badge-dot">${al.length}</span></button>
         </header>
         <div class="alerts-pop" id="alerts" hidden>
@@ -267,7 +278,7 @@
           ${[['todos', 'Todos', vs.length], ['movendo', 'Movendo', cont('movendo')], ['parado', 'Parados', cont('parado')], ['ocioso', 'Ociosos', cont('ocioso')], ['offline', 'Offline', cont('offline')]]
             .map(([k, t, n]) => `<button class="chip ${estado.filtro === k ? 'on' : ''}" data-f="${k}">${k !== 'todos' ? `<span class="dot ${k}"></span>` : ''}${t} <b>${n}</b></button>`).join('')}
         </div>
-        <div class="section-title">Métricas do dia <b>Hoje, ${hhmm(D.AGORA_MIN)}</b></div>
+        <div class="section-title"><span>Métricas do dia</span> <b>Hoje, ${hhmm(D.AGORA_MIN)}</b></div>
         <div class="grid2">
           <a class="card kpi" href="#/relatorios" data-anim>
             <div class="kpi-head">Km rodados<span class="kpi-ico"><i class="ms">speed</i></span></div>
@@ -290,7 +301,7 @@
             <div class="kpi-foot">${al.filter((a) => a.tipo === 'vel').length} velocidade · ${al.filter((a) => a.tipo === 'manut').length} manutenção</div>
           </button>
         </div>
-        <div class="section-title">Rota ativa</div>
+        <div class="section-title"><span>Rota ativa</span></div>
         <div class="pad" style="padding-top:0" data-anim>
           <div class="card" style="border-left:3px solid var(--green)">
             <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
@@ -474,7 +485,7 @@
         </div>
         <div class="grid2" id="metricas" style="margin-top:12px">${metricasVeiculo(v)}</div>
         ${prox ? `
-        <div class="section-title">Próxima manutenção</div>
+        <div class="section-title"><span>Próxima manutenção</span></div>
         <div class="pad" style="padding-top:0" data-anim>
           <a class="card" href="#/manutencao" style="display:block">
             <div style="display:flex;justify-content:space-between;margin-bottom:8px">
@@ -484,7 +495,7 @@
             <div class="progress ${prox.km < 0 ? 'red' : prox.km < 1500 ? 'orange' : 'blue'}"><i data-bar="${C.progressoManutencao(prox.m, v.odometroAtual)}"></i></div>
           </a>
         </div>` : ''}
-        <div class="section-title">Linha do tempo · hoje</div>
+        <div class="section-title"><span>Linha do tempo · hoje</span></div>
         <div class="pad" style="padding-top:0" data-anim>
           <div class="card"><div class="timeline">
             ${eventosDoDia(v).map((e) => `<div class="tl-item ${e.cls}"><time>${hhmm(e.t)}</time><b>${e.b}</b><span>${esc(e.s)}</span></div>`).join('')}
@@ -507,7 +518,7 @@
         mapa.invalidateSize();
         const geo = await rotear(roteiro);
         if (!el.isConnected) return;
-        const linha = L.polyline(geo.coords, { color: '#0b5fff', weight: 4, opacity: 0.95, className: 'route-line' }).addTo(mapa);
+        const linha = L.polyline(geo.coords, { color: '#ff4302', weight: 4, opacity: 0.95, className: 'route-line' }).addTo(mapa);
         v.excessos.forEach((p) => L.circleMarker(colar(geo.coords, [p.lat, p.lng]), { radius: 6, color: '#ef4444', fillColor: '#ef4444', fillOpacity: 0.9 }).addTo(mapa));
         L.marker(colar(geo.coords, v.pos), { icon: iconeVeiculo(v) }).addTo(mapa);
         mapa.fitBounds(linha.getBounds(), { padding: [24, 24] });
@@ -538,13 +549,13 @@
     html: () => `
       <header class="topbar"><div class="grow"><h2>Rotas</h2><div class="sub">${D.ROTAS.filter((r) => r.status === 'ativa').length} em andamento</div></div></header>
       <div class="pad" data-anim>
-        <a class="card" href="#/rota/nova" style="display:flex;gap:14px;align-items:center;background:linear-gradient(135deg,#0b5fff,#0a3fb0);border:0">
+        <a class="card" href="#/rota/nova" style="display:flex;gap:14px;align-items:center;background:var(--pontos),linear-gradient(135deg,#ff4302,#c43200);border:0">
           <span class="kpi-ico" style="background:rgba(255,255,255,.18);color:#fff;width:44px;height:44px"><i class="ms">add_road</i></span>
           <div class="grow"><b style="font:600 17px var(--font-head)">Montar nova rota</b><p style="font-size:13px;opacity:.85">Paradas, otimização, distância e custo de combustível</p></div>
           <i class="ms">chevron_right</i>
         </a>
       </div>
-      <div class="section-title">Hoje</div>
+      <div class="section-title"><span>Hoje</span></div>
       <div class="list">
         ${D.ROTAS.map((r) => {
           const v = D.veiculo(r.placa);
@@ -667,7 +678,7 @@
         geoAtual = geo;
         el.querySelector('#fonte').innerHTML = `<span class="live-dot"></span>${geo.fonte === 'osrm' ? 'Rota por ruas · OSRM' : 'Rota estimada (offline)'}`;
         camada.clearLayers();
-        const linha = L.polyline(geo.coords, { color: '#0b5fff', weight: 5, opacity: 0.95, className: 'route-line' }).addTo(camada);
+        const linha = L.polyline(geo.coords, { color: '#ff4302', weight: 5, opacity: 0.95, className: 'route-line' }).addTo(camada);
         L.marker(pl.origem.pos, { icon: iconePin('A', 'origem') }).addTo(camada);
         pl.paradas.forEach((p, i) => L.marker(p.pos, { icon: iconePin(i + 1) }).addTo(camada));
         if (C.haversineKm(pl.origem.pos, pl.destino.pos) > 0.05) L.marker(pl.destino.pos, { icon: iconePin('B', 'destino') }).addTo(camada);
@@ -831,8 +842,8 @@
         let acc = 0;
         geo.pernas.forEach((p) => { acc += p.km; fr.push(acc / geo.km); });
 
-        L.polyline(geo.coords, { color: '#0b5fff', weight: 5, opacity: 0.35, dashArray: '2 10', lineCap: 'round' }).addTo(mapa);
-        const feita = L.polyline([], { color: '#0b5fff', weight: 6, className: 'route-line' }).addTo(mapa);
+        L.polyline(geo.coords, { color: '#ff4302', weight: 5, opacity: 0.35, dashArray: '2 10', lineCap: 'round' }).addTo(mapa);
+        const feita = L.polyline([], { color: '#ff4302', weight: 6, className: 'route-line' }).addTo(mapa);
         const pins = pontos.map((p, i) => L.marker(p.pos, {
           icon: iconePin(i === 0 ? 'A' : i === pontos.length - 1 ? 'B' : i, i === 0 ? 'origem' : i === pontos.length - 1 ? 'destino' : ''),
         }).addTo(mapa));
@@ -1032,17 +1043,17 @@
           <div class="metric-box" data-anim><label>Litros</label><div class="num" data-count="${Math.round(litros)}">0</div></div>
           <div class="metric-box" data-anim><label>Gasto</label><div class="num" style="font-size:15px" data-count="${(litros * estado.preco).toFixed(0)}" data-fmt="brl">0</div></div>
         </div>
-        <div class="section-title">Km rodados por ${mes ? 'semana' : 'dia'}</div>
+        <div class="section-title"><span>Km rodados por ${mes ? 'semana' : 'dia'}</span></div>
         <div class="pad" style="padding-top:0" data-anim><div class="card"><div class="chart-box"><canvas id="ch-km"></canvas></div></div></div>
-        <div class="section-title">Consumo de combustível (L)</div>
+        <div class="section-title"><span>Consumo de combustível (L)</span></div>
         <div class="pad" style="padding-top:0" data-anim><div class="card"><div class="chart-box"><canvas id="ch-l"></canvas></div></div></div>
-        <div class="section-title">Uso do tempo da frota · hoje</div>
+        <div class="section-title"><span>Uso do tempo da frota · hoje</span></div>
         <div class="pad" style="padding-top:0" data-anim><div class="card" style="display:flex;align-items:center;gap:16px">
           <div style="width:140px;height:140px;position:relative"><canvas id="ch-t"></canvas></div>
           <div id="leg-t" style="display:grid;gap:8px;font-size:13px"></div>
         </div></div>
         <div class="pad" data-anim>
-          <div class="card" style="border-color:rgba(255,138,0,.45);background:linear-gradient(135deg,rgba(255,138,0,.14),var(--surface-2))">
+          <div class="card" style="border-color:rgba(255,176,32,.45);background:linear-gradient(135deg,rgba(255,176,32,.14),var(--surface-2))">
             <div style="display:flex;gap:12px;align-items:center">
               <span class="kpi-ico orange" style="width:42px;height:42px"><i class="ms">savings</i></span>
               <div><small class="muted">Ociosidade custou ${mes ? 'neste mês' : 'nesta semana'}</small>
@@ -1051,7 +1062,7 @@
             </div>
           </div>
         </div>
-        <div class="section-title">Excesso de velocidade</div>
+        <div class="section-title"><span>Excesso de velocidade</span></div>
         <div class="pad" style="padding-top:0" data-anim><div class="card">
           ${ranking.map((v) => `
             <a class="rank" href="#/veiculo/${v.placa}">
@@ -1063,24 +1074,24 @@
     },
     montar(el) {
       const dados = this.dados;
-      Chart.defaults.color = '#8d90a2';
-      Chart.defaults.font.family = 'Inter';
-      Chart.defaults.borderColor = 'rgba(66,70,86,.35)';
+      Chart.defaults.color = '#7f9ea9';
+      Chart.defaults.font.family = 'Mulish';
+      Chart.defaults.borderColor = 'rgba(31,90,114,.45)';
       const base = {
         responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#252a38', borderColor: '#424656', borderWidth: 1 } },
+        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0e3a4e', borderColor: '#1f5a72', borderWidth: 1 } },
         scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { maxTicksLimit: 4 } } },
         animation: { duration: Motion.reduz ? 0 : 1100, easing: 'easeOutQuart' },
       };
       const graficos = [
         new Chart(el.querySelector('#ch-km'), {
           type: 'bar',
-          data: { labels: dados.map((d) => d.dia), datasets: [{ data: dados.map((d) => +d.km.toFixed(1)), backgroundColor: dados.map((_, i) => (i === dados.length - 1 ? '#0b5fff' : 'rgba(11,95,255,.45)')), borderRadius: 6 }] },
+          data: { labels: dados.map((d) => d.dia), datasets: [{ data: dados.map((d) => +d.km.toFixed(1)), backgroundColor: dados.map((_, i) => (i === dados.length - 1 ? '#ff4302' : 'rgba(255,67,2,.35)')), borderRadius: 6 }] },
           options: base,
         }),
         new Chart(el.querySelector('#ch-l'), {
           type: 'line',
-          data: { labels: dados.map((d) => d.dia), datasets: [{ data: dados.map((d) => +d.litros.toFixed(1)), borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,.12)', fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#22c55e' }] },
+          data: { labels: dados.map((d) => d.dia), datasets: [{ data: dados.map((d) => +d.litros.toFixed(1)), borderColor: '#eeeeee', backgroundColor: 'rgba(95,179,204,.18)', fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#ff4302' }] },
           options: base,
         }),
       ];
@@ -1088,7 +1099,7 @@
       const par = D.VEICULOS.reduce((s, v) => s + v.minParado, 0);
       const oci = D.VEICULOS.reduce((s, v) => s + v.minOcioso, 0);
       const tot = mov + par + oci;
-      const fatias = [['Em movimento', mov, '#22c55e'], ['Parado', par, '#424656'], ['Ocioso', oci, '#ff8a00']];
+      const fatias = [['Em movimento', mov, '#22c55e'], ['Parado', par, '#1f5a72'], ['Ocioso', oci, '#ffb020']];
       graficos.push(new Chart(el.querySelector('#ch-t'), {
         type: 'doughnut',
         data: { labels: fatias.map((f) => f[0]), datasets: [{ data: fatias.map((f) => f[1]), backgroundColor: fatias.map((f) => f[2]), borderWidth: 0 }] },
@@ -1122,6 +1133,8 @@
   setInterval(() => {
     document.getElementById('clock').textContent = hhmm(D.AGORA_MIN + (Date.now() - t0) / 60000);
   }, 10000);
+
+  document.querySelectorAll('[data-marca]').forEach((el) => (el.innerHTML = Marca[el.dataset.marca]));
 
   window.addEventListener('hashchange', navegar);
   if (!location.hash) history.replaceState(null, '', '#/login');

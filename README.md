@@ -1,4 +1,4 @@
-# CearáGPS · Roteirizador de Frotas (protótipo clicável)
+# CearaGPS · Roteirizador de Frotas (protótipo clicável)
 
 Protótipo navegável do app onde o cliente de frota acompanha veículos e monta rotas.
 Dados simulados de 8 veículos em Fortaleza-CE; rotas reais por ruas via OSRM.
@@ -18,12 +18,19 @@ Publicado em: https://devgarb.github.io/motion-designs/roteirizador-frotas/
 | `#/manutencao` | Manutenção preventiva por km (marcar feito, agendar) |
 | `#/relatorios` | Km/dia, consumo, uso do tempo, custo da ociosidade, ranking de velocidade |
 
+## Identidade visual
+Segue o manual CearaGPS 2024: azul petróleo `#00465D`, laranja `#FF4302`, cinza `#EEEEEE`,
+corpo em Mulish, títulos em Michroma (substituto web da GOLD, fonte comercial do manual),
+logotipo CEARAGPS FROTAS e símbolo vetorizados do PDF (`assets/`), padrão de grade de pontos.
+Para usar a GOLD oficial, adicione o `@font-face` com o arquivo licenciado: `--font-title` já a prioriza.
+
 ## Estrutura
+- `js/marca.js` — logotipo e símbolo inline (cores via `--logo-texto` / `--logo-destaque`)
 - `js/calc.js` — cálculos puros (haversine, litros, custo, tempos parado/ocioso, manutenção, otimização vizinho mais próximo)
 - `js/data.js` — frota simulada e trilhas GPS determinísticas
 - `js/motion.js` — transições e animações GSAP (estilo HyperFrames)
 - `js/app.js` — router por hash e telas
-- `css/app.css` — tokens do design system Stitch "CearáGPS Frotas Dark"
+- `css/app.css` — tokens do design system Stitch "CearaGPS Frotas Dark"
 - `design/stitch/` — telas de referência geradas no Google Stitch
 
 ## Rodar local

@@ -10,7 +10,7 @@
       return Promise.resolve();
     }
     return new Promise((resolve) => {
-      const tl = gsap.timeline({ onComplete: () => { antiga.remove(); resolve(); } });
+      const tl = gsap.timeline({ onComplete: () => { antiga.remove(); resolve(); }, onInterrupt: resolve });
       if (direcao === 'aba') {
         tl.to(antiga, { opacity: 0, scale: 0.98, duration: 0.22, ease: 'power2.in' })
           .fromTo(nova, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: EASE }, 0.08);
