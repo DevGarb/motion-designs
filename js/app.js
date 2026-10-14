@@ -84,7 +84,78 @@
     }).addTo(m);
     m.attributionControl.setPrefix(false);
     aoSair(() => m.remove());
+    adicionarUnidades(m);
     return m;
+  }
+
+  // Pin da marca (símbolo "C") nas unidades CearaGPS, com balão de contato.
+  const iconeUnidade = L.divIcon({
+    className: '', iconSize: [46, 58], iconAnchor: [23, 56], popupAnchor: [0, -54],
+    html: `<div class="pin-marca"><span class="pin-pulso"></span><div class="pin-gota"><div class="pin-simbolo">${Marca.simbolo}</div></div></div>`,
+  });
+
+  function balaoUnidade(u) {
+    const mapa = `https://www.google.com/maps/search/?api=1&query=${u.pos[0]},${u.pos[1]}`;
+    return `
+      <div class="balao-head">
+        <div class="pin-simbolo">${Marca.simbolo}</div>
+        <div><b>CearaGPS</b><small>${u.nome}</small></div>
+        <button class="balao-x" aria-label="Fechar"><i class="ms">close</i></button>
+      </div>
+      <div class="balao-sec"><i class="ms">location_on</i><div>${u.enderecos.map((e) => `<b>${e}</b>`).join('')}
+        <a href="${mapa}" target="_blank" rel="noopener">Abrir no mapa ↗</a></div></div>
+      <div class="balao-sec"><i class="ms">schedule</i><div>${u.horarios.map(([d, h]) => `<span><em>${d}</em>${h}</span>`).join('')}</div></div>
+      <div class="balao-sec"><i class="ms">support_agent</i><div><small>Central 24h</small>
+        <span class="tels">${D.CONTATO.telefones.map((t) => `<a href="tel:${t.tel}">${t.rotulo}</a>`).join('')}</span></div></div>
+      <a class="btn whats" href="${D.CONTATO.whatsapp}" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12.04 2a9.9 9.9 0 0 0-8.5 15l-1.4 5 5.1-1.3A9.9 9.9 0 1 0 12.04 2Zm0 18.1a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-3-.2-.3a8.2 8.2 0 1 1 6.9 3.9Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4a.5.5 0 0 0 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.9 11.9 0 0 0 4.5 4c1.7.7 2.4.8 3.2.6a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg>
+        Falar no WhatsApp</a>`;
+  }
+
+  // Balão flutua sobre a tela (fora do recorte do mapa), apontando para o pin.
+  function abrirBalao(mapa, u) {
+    const tela = mapa.getContainer().closest('.screen');
+    tela.querySelectorAll('.balao').forEach((b) => b.remove());
+    const card = document.createElement('div');
+    card.className = 'balao';
+    card.innerHTML = balaoUnidade(u);
+    tela.appendChild(card);
+
+    const mapaEl = mapa.getContainer();
+    const caixaTela = tela.getBoundingClientRect();
+    const caixaMapa = mapaEl.getBoundingClientRect();
+    const pt = mapa.latLngToContainerPoint(u.pos);
+    const pinX = caixaMapa.left - caixaTela.left + pt.x;
+    const pinY = caixaMapa.top - caixaTela.top + tela.scrollTop + pt.y;
+    const w = card.offsetWidth;
+    const h = card.offsetHeight;
+    const left = Math.max(10, Math.min(tela.clientWidth - w - 10, pinX - w / 2));
+    const acima = pinY - 60 - h - 12 > tela.scrollTop + 60;
+    const top = acima ? pinY - 60 - h - 12 : pinY + 12;
+    card.style.left = `${left}px`;
+    card.style.top = `${top}px`;
+    card.classList.add(acima ? 'acima' : 'abaixo');
+    card.style.setProperty('--seta', `${pinX - left}px`);
+
+    const fechar = () => {
+      gsap.to(card, { opacity: 0, scale: 0.92, duration: 0.18, onComplete: () => card.remove() });
+      mapa.off('movestart click', fechar);
+    };
+    card.querySelector('.balao-x').onclick = fechar;
+    mapa.on('movestart click', fechar);
+    if (!Motion.reduz) {
+      gsap.fromTo(card, { opacity: 0, scale: 0.85, transformOrigin: `${pinX - left}px ${acima ? '100%' : '0%'}` },
+        { opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.7)' });
+      gsap.from(card.children, { opacity: 0, y: 8, duration: 0.4, ease: 'expo.out', stagger: 0.05, delay: 0.1 });
+    }
+  }
+
+  function adicionarUnidades(mapa) {
+    D.UNIDADES.forEach((u) => {
+      L.marker(u.pos, { icon: iconeUnidade, zIndexOffset: 900, title: `CearaGPS · ${u.nome}` })
+        .on('click', () => abrirBalao(mapa, u))
+        .addTo(mapa);
+    });
   }
 
   function iconeVeiculo(v) {
@@ -329,7 +400,7 @@
         marcadores[v.placa] = L.marker(v.pos, { icon: iconeVeiculo(v) }).addTo(mapa)
           .on('click', () => (location.hash = `#/veiculo/${v.placa}`));
       });
-      mapa.fitBounds(L.latLngBounds(D.VEICULOS.map((v) => v.pos)), { padding: [30, 50] });
+      mapa.fitBounds(L.latLngBounds([...D.VEICULOS.map((v) => v.pos), ...D.UNIDADES.map((u) => u.pos)]), { padding: [30, 50] });
       el.addEventListener('visivel', () => { mapa.invalidateSize(); Motion.popMarcadores(el.querySelector('#map-painel')); }, { once: true });
 
       function aplicarFiltro() {

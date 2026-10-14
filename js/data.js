@@ -192,8 +192,29 @@
     destino: { ...LOCAIS.galpao },
   };
 
+  // Unidades CearaGPS (pins da marca no mapa).
+  const CONTATO = {
+    telefones: [
+      { rotulo: '0800 606 8153', tel: '08006068153' },
+      { rotulo: '(85) 3484-6006', tel: '+558534846006' },
+    ],
+    whatsapp: 'https://api.whatsapp.com/send/?phone=5585984141042&text=Ol%C3%A1%2C+tudo+bem%3F+Vim+pelo+Google+e+gostaria+de+proteger+o+meu+ve%C3%ADculo+com+a+Cearagps.&type=phone_number&app_absent=0',
+  };
+  const UNIDADES = [
+    {
+      id: 'sede', nome: 'Sede', pos: [-3.8194554, -38.5566734],
+      enderecos: ['Rua Itaperi, 981 – Parque Dois Irmãos', 'R. A, Nº 981 – Lot. Parque Montenegro 1'],
+      horarios: [['Seg a sex', '8:00 às 19:00'], ['Sábado', '8:00 às 17:00']],
+    },
+    {
+      id: 'filial', nome: 'Filial Messejana', pos: [-3.8350537, -38.4869229],
+      enderecos: ['Av. Gurgel do Amaral, Nº 1037 – Messejana'],
+      horarios: [['Seg a sex', '8:00 às 17:00'], ['Sábado', '8:00 às 12:00']],
+    },
+  ];
+
   window.Dados = {
-    AGORA_MIN, LOCAIS, VEICULOS, SEMANA, ROTAS, ROTA_PADRAO,
+    AGORA_MIN, LOCAIS, VEICULOS, SEMANA, ROTAS, ROTA_PADRAO, UNIDADES, CONTATO,
     EMPRESA: 'Transportes Litoral',
     PRECO_GASOLINA: 6.09,
     veiculo: (placa) => VEICULOS.find((v) => v.placa === placa),
