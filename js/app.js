@@ -1209,6 +1209,7 @@
   const EMAIL_RELATORIO = 'ti.coordenador@ramosgrupo.com.br';
   // Fluxo n8n "rotas-frotas-smtp": monta e-mail HTML no padrão CearaGPS e envia via SMTP com o PDF anexo.
   const WEBHOOK_RELATORIO = 'https://webhook.gpsceara.shop/webhook/rotas-frotas-smtp';
+  const TOKEN_RELATORIO = 'cgf_1238fed31070e35e278a3ec19310';
   const corRGB = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
 
   function abrirEnvio(tela, resumo, tempo) {
@@ -1277,7 +1278,7 @@
       try {
         const r = await fetch(WEBHOOK_RELATORIO, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-Token': TOKEN_RELATORIO },
           body: JSON.stringify({
             email, empresa: D.EMPRESA, periodo,
             resumo: {

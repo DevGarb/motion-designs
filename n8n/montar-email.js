@@ -1,6 +1,9 @@
 // Code node "Validar e montar e-mail" (n8n). Entrada: POST do protótipo CearaGPS Frotas.
 const DOMINIOS = ['ramosgrupo.com.br', 'cearagps.com.br'];
 const MAX_PDF_BYTES = 4 * 1024 * 1024;
+// Token enviado pelo app no header X-Token (visível no JS público: barra robôs genéricos, não ataque dirigido).
+const TOKEN = 'cgf_1238fed31070e35e278a3ec19310';
+const LIMITE_POR_HORA = 20;
 const LOGO = 'https://devgarb.github.io/motion-designs/roteirizador-frotas/assets/logo-email.png';
 const APP = 'https://devgarb.github.io/motion-designs/roteirizador-frotas/#/relatorios';
 
@@ -14,12 +17,21 @@ const email = String(b.email || '').trim().toLowerCase();
 const dominio = email.split('@')[1] || '';
 const pdf = String(b.pdf?.base64 || '').replace(/^data:[^,]+,/, '');
 const bytes = Math.floor(pdf.length * 3 / 4);
+const token = ($json.headers || {})['x-token'];
 let erro = null;
-if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) erro = 'E-mail inválido';
+if (token !== TOKEN) erro = 'Não autorizado';
+else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) erro = 'E-mail inválido';
 else if (!DOMINIOS.includes(dominio)) erro = `Destinatário não permitido (apenas ${DOMINIOS.join(', ')})`;
 else if (!pdf || !/^[A-Za-z0-9+/=]+$/.test(pdf)) erro = 'PDF ausente ou inválido';
 else if (bytes > MAX_PDF_BYTES) erro = 'PDF maior que 4 MB';
 if (erro) return [{ json: { valido: false, erro } }];
+
+// Limite global de envios por hora (contador persiste no static data do fluxo).
+const st = $getWorkflowStaticData('global');
+const horaAtual = new Date().toISOString().slice(0, 13);
+if (st.hora !== horaAtual) { st.hora = horaAtual; st.envios = 0; }
+if (st.envios >= LIMITE_POR_HORA) return [{ json: { valido: false, erro: `Limite de ${LIMITE_POR_HORA} envios por hora atingido` } }];
+st.envios += 1;
 
 const r = b.resumo || {};
 const empresa = esc(b.empresa || 'Cliente');
