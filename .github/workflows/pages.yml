@@ -5,6 +5,7 @@ name: Publicar no GitHub Pages
 #   /grti-motion/           -> branch grti-motion
 #   /treinamento-sistemas/  -> branch treinamento-sistemas
 #   /roteirizador-frotas/   -> branch roteirizador-frotas
+#   /konfia-encontro-01/    -> branch konfia-encontro-01
 on:
   push:
     branches: [main]
@@ -34,6 +35,8 @@ jobs:
         with: { ref: treinamento-sistemas, path: treinamento-sistemas }
       - uses: actions/checkout@v4
         with: { ref: roteirizador-frotas, path: roteirizador-frotas }
+      - uses: actions/checkout@v4
+        with: { ref: konfia-encontro-01, path: konfia-encontro-01 }
       - name: Montar site
         run: |
           mkdir -p _site
@@ -41,6 +44,7 @@ jobs:
           rsync -a --exclude .git --exclude .github grti-motion/ _site/grti-motion/
           rsync -a --exclude .git --exclude .github treinamento-sistemas/ _site/treinamento-sistemas/
           rsync -a --exclude .git --exclude .github --exclude design roteirizador-frotas/ _site/roteirizador-frotas/
+          rsync -a --exclude .git --exclude .github konfia-encontro-01/ _site/konfia-encontro-01/
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
