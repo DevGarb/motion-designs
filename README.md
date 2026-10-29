@@ -10,6 +10,7 @@ Motions e apresentações em HTML do Setor de T.I do Grupo Ramos.
 | `roteirizador-frotas` | Protótipo clicável CearáGPS Roteirizador de Frotas | `/roteirizador-frotas/` |
 | `konfia-encontro-01` | KONF I.A · Encontro 01: Claude instalado (motion) | `/konfia-encontro-01/` |
 | `konfia-encontro-02` | KONF I.A · Encontro 02: Skills e agentes (motion) | `/konfia-encontro-02/` |
+| `oyp-apresentacao` | OYP · Optimize your process: apresentação em slides | `/oyp-apresentacao/` |
 
 Site: https://devgarb.github.io/motion-designs/
 
