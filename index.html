@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Da planilha ao sistema — motion da aula</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vidro: #e6ece8; --folha: #fbfcfa; --tinta: #12281e; --tinta2: #1c3a2c; --muda: #53665b; --muda-esc: #9db4a8;
+    --regua: #ccd6cf; --entrada: #1b7f57; --saida: #c23b2b; --ambar: #d99a1e; --ambar-t: #835500;
+    --tit: "Barlow Condensed", "Arial Narrow", sans-serif;
+    --corpo: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --ease: cubic-bezier(.2, .75, .2, 1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #0a1711; overflow: hidden; }
+  body { font-family: var(--corpo); -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+  p, h1, h2, h3, ul, ol { margin: 0; padding: 0; }
+  ul, ol { list-style: none; }
+
+  #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; overflow: hidden; background: var(--tinta); }
+  .scene { position: absolute; inset: 0; display: none; padding: 110px 120px 96px; overflow: hidden; }
+  .scene.active { display: block; }
+  /* réguas de livro-caixa no fundo */
+  .dark { color: #eaf2ed; background: var(--tinta) repeating-linear-gradient(to bottom, transparent 0 71px, rgba(255,255,255,.04) 71px 72px); }
+  .light { color: var(--tinta); background: var(--folha) repeating-linear-gradient(to bottom, transparent 0 71px, rgba(18,40,30,.045) 71px 72px); }
+
+  /* ---------- revelações ---------- */
+  .rv { opacity: 0; transition: opacity .6s ease, transform .75s var(--ease), clip-path .9s var(--ease); }
+  .rv.in { opacity: 1; transform: none; }
+  .up { transform: translateY(30px); }
+  .lf { transform: translateX(-44px); }
+  .rt { transform: translateX(44px); }
+  .sc { transform: scale(.94); }
+  .wp { clip-path: inset(0 100% 0 0); }
+  .wp.in { clip-path: inset(0 0 0 0); }
+  .ln { display: block; overflow: hidden; padding-bottom: .05em; }
+  .mk { display: block; transform: translateY(108%); transition: transform .85s var(--ease); }
+  .mk.in { transform: none; }
+
+  /* ---------- tipografia ---------- */
+  .hd { font: 600 170px/.94 var(--tit); letter-spacing: -.005em; }
+  .hd.m { font-size: 112px; line-height: .98; }
+  .hd.g { font-size: 200px; }
+  .lede { font: 400 34px/1.45 var(--corpo); max-width: 760px; margin-top: 34px; }
+  .dark .lede { color: #c9dbd1; }
+  .light .lede { color: var(--muda); }
+  .rodape-cena { position: absolute; left: 120px; top: 56px; font-size: 24px; color: var(--muda-esc); }
+
+  /* ---------- abertura: células viram barras ---------- */
+  .abre { display: grid; grid-template-columns: 1fr 760px; gap: 80px; align-items: end; height: 100%; }
+  .cols { position: relative; height: 640px; display: flex; align-items: flex-end; gap: 14px; border-bottom: 3px solid #eaf2ed; }
+  .col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; gap: 0; }
+  .col .cel { height: calc(100% / 9); border: 1.5px solid rgba(234,242,237,.22); border-bottom: 0; display: grid; place-items: center; font: 500 19px var(--corpo); color: rgba(234,242,237,.55); transition: all 1s var(--ease); transition-delay: calc(var(--i) * 70ms); }
+  .col .cel:last-child { border-bottom: 1.5px solid rgba(234,242,237,.22); }
+  .cols.in .col .cel { border-color: transparent; color: transparent; background: var(--c); }
+  .cols.in .col .cel.vz { background: transparent; height: 0; }
+  .cols .leg { position: absolute; left: 0; bottom: -54px; font-size: 22px; color: var(--muda-esc); opacity: 0; transition: opacity .6s 1.2s; }
+  .cols.in .leg { opacity: 1; }
+
+  /* ---------- planilha (mock) ---------- */
+  .duas-col { display: grid; grid-template-columns: 720px 1fr; gap: 90px; height: 100%; }
+  .dores { margin-top: 48px; display: grid; gap: 0; max-width: 700px; }
+  .dores li { font-size: 30px; line-height: 1.35; padding: 20px 0; border-top: 1px solid var(--regua); }
+  .dores li:last-child { border-bottom: 1px solid var(--regua); }
+  .xls { background: #fff; border: 2px solid var(--tinta); border-radius: 8px; overflow: hidden; align-self: center; font-size: 21px; }
+  .xls-bar { background: #eef2ef; border-bottom: 1px solid var(--regua); padding: 12px 18px; display: flex; gap: 14px; align-items: center; color: var(--muda); font-size: 18px; }
+  .xls-bar b { color: var(--tinta); font-weight: 600; }
+  .fx { display: flex; gap: 14px; align-items: center; padding: 10px 18px; border-bottom: 1px solid var(--regua); font-size: 20px; color: var(--tinta); }
+  .fx i { font-style: italic; color: var(--muda); font-weight: 600; }
+  .xls table { width: 100%; border-collapse: collapse; }
+  .xls th { background: #f4f7f5; color: var(--muda); font-weight: 500; text-align: left; padding: 9px 14px; border-right: 1px solid var(--regua); border-bottom: 1px solid var(--regua); font-size: 18px; }
+  .xls td { padding: 11px 14px; border-right: 1px solid #e4eae6; border-bottom: 1px solid #e4eae6; white-space: nowrap; }
+  .xls td.n { text-align: right; }
+  .xls td.err { transition: background .3s, color .3s; }
+  .xls td.err.in { background: #f8e3df; color: var(--saida); font-weight: 600; outline: 3px solid var(--saida); outline-offset: -3px; }
+  .tabs { display: flex; border-top: 1px solid var(--regua); background: #eef2ef; }
+  .tabs span { padding: 10px 20px; font-size: 18px; color: var(--muda); border-right: 1px solid var(--regua); }
+  .tabs span.on { background: #fff; color: var(--tinta); font-weight: 600; box-shadow: inset 0 3px 0 var(--entrada); }
+
+  /* ---------- ciclo ---------- */
+  .track { position: relative; margin-top: 110px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; }
+  .track::before { content: ""; position: absolute; left: 6%; right: 6%; top: 60px; height: 3px; background: rgba(234,242,237,.22); }
+  .node { position: relative; text-align: left; }
+  .node .ic { width: 120px; height: 120px; border-radius: 50%; background: var(--tinta2); border: 3px solid rgba(234,242,237,.3); display: grid; place-items: center; transition: background .4s, border-color .4s, transform .4s var(--ease); }
+  .node .ic svg { width: 54px; height: 54px; fill: none; stroke: #eaf2ed; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: stroke .4s; }
+  .node.hot .ic { background: var(--ambar); border-color: var(--ambar); transform: scale(1.08); }
+  .node.hot .ic svg { stroke: var(--tinta); }
+  .node h3 { font: 600 54px/1 var(--tit); margin-top: 30px; transition: color .4s; }
+  .node.hot h3 { color: var(--ambar); }
+  .node p { font-size: 27px; line-height: 1.4; color: #c9dbd1; margin-top: 12px; max-width: 340px; }
+  .volta { margin-top: 70px; font-size: 28px; color: var(--muda-esc); display: flex; align-items: center; gap: 16px; }
+  .volta svg { width: 40px; height: 40px; fill: none; stroke: var(--ambar); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- passos ---------- */
+  .passos { position: absolute; top: 52px; left: 120px; display: flex; align-items: center; gap: 12px; font-size: 24px; color: var(--muda); }
+  .passos i { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--regua); display: block; }
+  .passos i.feito { background: var(--tinta); border-color: var(--tinta); }
+  .passos i.agora { background: var(--ambar); border-color: var(--ambar); transform: scale(1.25); }
+  .passos span { margin-left: 10px; }
+  .passo { display: grid; grid-template-columns: 640px 1fr; gap: 90px; height: 100%; }
+  .passo-esq { display: flex; flex-direction: column; }
+  .passo-esq .lede { font-size: 32px; margin-top: 30px; }
+  .dica { margin-top: auto; border-left: 6px solid var(--ambar); padding: 6px 0 6px 26px; font-size: 28px; line-height: 1.4; max-width: 600px; }
+  .dica b { display: block; font: 600 30px var(--tit); color: var(--ambar-t); margin-bottom: 2px; }
+  .passo-dir { display: flex; flex-direction: column; gap: 28px; }
+
+  .pedido { background: var(--tinta); color: #eaf2ed; border-radius: 14px; padding: 30px 38px 34px; }
+  .pedido-l { font: 600 26px var(--tit); color: var(--ambar); margin-bottom: 10px; }
+  .pt { position: relative; font-size: 29px; line-height: 1.5; }
+  .pt .ghost { visibility: hidden; }
+  .pt .live { position: absolute; inset: 0; }
+  .live.typing::after { content: ""; display: inline-block; width: 3px; height: 1.05em; background: var(--ambar); margin-left: 3px; vertical-align: -.15em; animation: pisca .8s steps(1) infinite; }
+  @keyframes pisca { 50% { opacity: 0; } }
+
+  .entrega { background: #fff; border: 1px solid var(--regua); border-top: 3px solid var(--tinta); border-radius: 6px; padding: 26px 36px 30px; }
+  .entrega-l { font: 600 26px var(--tit); color: var(--muda); margin-bottom: 18px; }
+
+  .chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .chip { border: 1.5px solid var(--regua); border-radius: 6px; padding: 14px 16px; }
+  .chip b { display: block; font-size: 25px; font-weight: 600; }
+  .chip small { font-size: 19px; color: var(--muda); }
+  .cats { margin-top: 22px; font-size: 23px; line-height: 1.5; color: var(--muda); }
+  .cats b { color: var(--tinta); font-weight: 600; }
+
+  .contador { display: flex; align-items: baseline; gap: 22px; }
+  .contador .num { font: 600 190px/1 var(--tit); color: var(--tinta); }
+  .contador .rot { font-size: 34px; color: var(--muda); }
+  .mini3 { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 2px solid var(--tinta); margin-top: 26px; }
+  .mini3 > div { padding: 16px 22px 0; border-left: 1px solid var(--regua); }
+  .mini3 > div:first-child { border-left: 0; padding-left: 0; }
+  .mini3 small { font-size: 22px; color: var(--muda); }
+  .mini3 b { display: block; font: 600 54px/1.1 var(--tit); }
+  .c-ent { color: var(--entrada); } .c-sai { color: var(--saida); } .c-amb { color: var(--ambar-t); }
+
+  .perg { display: grid; grid-template-columns: 1fr 380px; font-size: 26px; }
+  .perg > div { padding: 13px 0; border-bottom: 1px solid var(--regua); }
+  .perg .cab { font-size: 21px; color: var(--muda); border-bottom: 2px solid var(--tinta); padding-top: 0; }
+  .perg .vira { color: var(--entrada); font-weight: 500; padding-left: 20px; }
+
+  .crud { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .crud > div { border: 1.5px solid var(--regua); border-radius: 8px; padding: 18px 22px; display: grid; grid-template-columns: 76px 1fr; align-items: center; column-gap: 14px; transition: border-color .4s, background .4s; }
+  .crud > div.in { border-color: var(--tinta); background: #f3f7f4; }
+  .crud .L { font: 700 84px/1 var(--tit); color: var(--ambar); grid-row: span 2; }
+  .crud b { font-size: 28px; font-weight: 600; }
+  .crud small { font-size: 21px; color: var(--muda); }
+  .nota-crud { margin-top: 20px; font-size: 24px; color: var(--muda); }
+
+  .checks li { display: flex; align-items: center; gap: 20px; font-size: 29px; padding: 13px 0; border-bottom: 1px solid var(--regua); }
+  .checks svg { width: 38px; height: 38px; flex: none; fill: none; stroke: var(--entrada); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .checks path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .5s .15s var(--ease); }
+  .checks li.in path { stroke-dashoffset: 0; }
+  .checks em { font-style: normal; margin-left: auto; font-size: 21px; font-weight: 600; color: var(--ambar-t); background: #fbefd2; padding: 4px 12px; border-radius: 4px; }
+  .checks .val { margin-left: auto; font-weight: 600; color: var(--entrada); }
+
+  /* ---------- virada ---------- */
+  .virada { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+
+  /* ---------- sem skill ---------- */
+  .comparar { display: grid; grid-template-columns: 600px 1fr; gap: 70px; height: 100%; align-items: center; }
+  .rotulo { display: inline-block; font: 600 30px var(--tit); padding: 6px 16px; border-radius: 4px; margin-bottom: 22px; }
+  .rotulo.sem { background: #e6ece8; color: var(--tinta); }
+  .rotulo.com { background: var(--ambar); color: var(--tinta); }
+  .pedido.curto { margin-top: 30px; padding: 24px 30px 26px; }
+  .pedido.curto .pt { font-size: 25px; }
+  .achados { margin-top: 30px; }
+  .achados li { font-size: 27px; padding: 12px 0 12px 46px; border-bottom: 1px solid var(--regua); position: relative; }
+  .achados li::before { content: attr(data-k); position: absolute; left: 0; top: 13px; width: 30px; height: 30px; border-radius: 50%; background: var(--ambar); color: var(--tinta); font: 700 19px/30px var(--tit); text-align: center; }
+  .shot { position: relative; border: 2px solid var(--tinta); border-radius: 8px; overflow: visible; }
+  .shot img { display: block; width: 100%; border-radius: 6px; }
+  .call { position: absolute; border: 4px solid var(--ambar); border-radius: 6px; background: rgba(217,154,30,.1); }
+  .call span { position: absolute; top: -17px; left: 10px; width: 34px; height: 34px; border-radius: 50%; background: var(--ambar); color: var(--tinta); font: 700 22px/34px var(--tit); text-align: center; }
+
+  /* ---------- com skill ---------- */
+  .etapas li { display: grid; grid-template-columns: 56px 1fr; gap: 20px; align-items: start; padding: 18px 0; border-bottom: 1px solid rgba(234,242,237,.16); }
+  .etapas .bola { width: 46px; height: 46px; border-radius: 50%; border: 2px solid rgba(234,242,237,.35); display: grid; place-items: center; font: 600 24px var(--tit); color: #c9dbd1; transition: all .4s; }
+  .etapas li.in .bola { background: var(--ambar); border-color: var(--ambar); color: var(--tinta); }
+  .etapas b { display: block; font: 600 38px/1.1 var(--tit); }
+  .etapas small { font-size: 23px; color: #c9dbd1; }
+  .plano { display: grid; gap: 26px; }
+  .pedido.claro { background: var(--tinta2); }
+  .swatches { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  .sw { border-radius: 6px; overflow: hidden; border: 1px solid rgba(234,242,237,.2); }
+  .sw i { display: block; height: 110px; }
+  .sw small { display: block; font-size: 18px; padding: 8px 10px; background: var(--tinta2); color: #c9dbd1; line-height: 1.3; }
+  .tipos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tipo { background: var(--tinta2); border-radius: 6px; padding: 18px 24px; }
+  .tipo .aa { font-size: 92px; line-height: 1; color: #fff; }
+  .tipo small { display: block; font-size: 20px; color: #c9dbd1; margin-top: 6px; }
+
+  /* ---------- antes × depois ---------- */
+  .ad { display: grid; grid-template-columns: 1100px 1fr; gap: 64px; align-items: center; height: 100%; }
+  .ad.estreito { grid-template-columns: 980px 1fr; }
+  .cmp { position: relative; aspect-ratio: 1.44; border: 2px solid var(--tinta); border-radius: 8px; overflow: hidden; background: #fff; }
+  .ad.estreito .cmp { aspect-ratio: 1.5; }
+  .cmp img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: left top; }
+  .cmp .top { clip-path: inset(0 0 0 100%); }
+  .cmp .bar { position: absolute; top: 0; bottom: 0; width: 4px; margin-left: -2px; background: var(--ambar); left: 100%; }
+  .cmp .bar::after { content: ""; position: absolute; top: 50%; left: 50%; width: 44px; height: 44px; margin: -22px; border-radius: 50%; background: var(--ambar); box-shadow: 0 0 0 5px rgba(18,40,30,.25); }
+  .tag { position: absolute; top: 18px; font: 600 28px var(--tit); padding: 5px 16px; border-radius: 4px; opacity: 0; transition: opacity .35s; }
+  .tag.on { opacity: 1; }
+  .tag-a { left: 18px; background: var(--tinta); color: #fff; }
+  .tag-b { right: 18px; background: var(--ambar); color: var(--tinta); }
+  .mudou h2 { font: 600 70px/1 var(--tit); margin-bottom: 26px; }
+  .mudou li { padding: 15px 0; border-top: 1px solid var(--regua); }
+  .mudou li:last-child { border-bottom: 1px solid var(--regua); }
+  .mudou b { display: block; font-size: 29px; font-weight: 600; }
+  .mudou small { font-size: 23px; color: var(--muda); line-height: 1.35; display: block; margin-top: 2px; }
+
+  /* ---------- planilha × sistema ---------- */
+  .tabela-vs { margin-top: 54px; display: grid; grid-template-columns: 300px 1fr 1fr; }
+  .tabela-vs > div { padding: 22px 30px 22px 0; border-bottom: 1px solid var(--regua); font-size: 28px; line-height: 1.38; }
+  .tabela-vs .cab { font: 600 40px var(--tit); border-bottom: 3px solid var(--tinta); padding-bottom: 14px; }
+  .tabela-vs .tema { font-weight: 600; }
+  .tabela-vs .antes { color: var(--muda); }
+  .tabela-vs .depois { color: var(--entrada); font-weight: 500; }
+  .falta { margin-top: 44px; display: flex; gap: 22px; align-items: center; font-size: 28px; background: #fbefd2; border-left: 6px solid var(--ambar); padding: 20px 28px; }
+  .falta b { font: 600 32px var(--tit); color: var(--ambar-t); white-space: nowrap; }
+
+  /* ---------- fechamento ---------- */
+  .fim { display: grid; grid-template-columns: 1fr 820px; gap: 90px; align-items: center; height: 100%; }
+  .habitos li { display: grid; grid-template-columns: 52px 1fr; gap: 22px; align-items: start; font-size: 34px; line-height: 1.35; padding: 26px 0; border-top: 1px solid rgba(234,242,237,.16); }
+  .habitos li:last-child { border-bottom: 1px solid rgba(234,242,237,.16); }
+  .habitos svg { width: 44px; height: 44px; margin-top: 2px; }
+
+  /* ---------- transição de cena: faixa âmbar ---------- */
+  #sweep { position: absolute; inset: 0; background: var(--ambar); transform: translateX(-101%); z-index: 20; display: grid; place-items: center; pointer-events: none; }
+  #sweep svg { width: 150px; height: 150px; }
+
+  /* ---------- controles (fora do palco) ---------- */
+  #ui { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; background: rgba(10,23,17,.86); color: #eaf2ed; padding: 10px 16px; border-radius: 12px; font: 500 14px var(--corpo); z-index: 30; transition: opacity .4s; backdrop-filter: blur(6px); max-width: calc(100vw - 24px); }
+  #ui.oculto { opacity: 0; }
+  #ui button { background: none; border: 0; color: inherit; cursor: pointer; padding: 6px; border-radius: 8px; line-height: 0; }
+  #ui button:hover { background: rgba(255,255,255,.1); }
+  #ui button:focus-visible { outline: 2px solid var(--ambar); }
+  #ui button:disabled { opacity: .3; cursor: default; }
+  #bNext.pronto { color: var(--ambar); animation: pulso 1.4s ease-in-out infinite; }
+  @keyframes pulso { 50% { transform: translateX(3px); } }
+  #stage { cursor: pointer; }
+  #ui svg { width: 20px; height: 20px; fill: currentColor; }
+  #segs { display: flex; gap: 4px; }
+  #segs button { padding: 7px 0; }
+  #segs i { display: block; width: 22px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.22); overflow: hidden; }
+  #segs i b { display: block; height: 100%; width: 0; background: var(--ambar); }
+  #nome { min-width: 230px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  @media (max-width: 760px) { #segs { display: none; } #nome { min-width: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+<div id="scenes">
+
+  <!-- 0 · ABERTURA -->
+  <section class="scene dark" id="abertura" data-dur="8" data-title="Da planilha ao sistema">
+    <div class="abre">
+      <div>
+        <h1 class="hd g"><span class="ln"><span class="mk" data-at=".3">Da planilha</span></span><span class="ln"><span class="mk" data-at=".5">ao sistema</span></span></h1>
+        <p class="lede rv up" data-at="1.2">Um passo a passo com o Claude para quem nunca programou. Do arquivo de Excel a um painel com cadastro de lançamentos.</p>
+      </div>
+      <div class="cols" id="cols" data-at="3.4"></div>
+    </div>
+    <p class="rodape-cena rv" data-at="1.8">Aula mão na massa. A empresa e os números são fictícios.</p>
+  </section>
+
+  <!-- 1 · O PONTO DE PARTIDA -->
+  <section class="scene light" id="planilha" data-dur="10" data-title="O ponto de partida">
+    <div class="duas-col">
+      <div>
+        <h2 class="hd m"><span class="ln"><span class="mk" data-at=".2">Você tem</span></span><span class="ln"><span class="mk" data-at=".35">uma planilha.</span></span></h2>
+        <p class="lede rv up" data-at=".9">Ela guarda tudo. Mas ler, conferir e mexer nela dá trabalho.</p>
+        <ul class="dores">
+          <li class="rv lf" data-at="2.4">Para entender o mês, você soma e filtra à mão.</li>
+          <li class="rv lf" data-at="4.6">Um clique errado apaga uma fórmula, e ninguém percebe.</li>
+          <li class="rv lf" data-at="6.6">Para achar o que atrasou, é linha por linha.</li>
+        </ul>
+      </div>
+      <div class="xls rv sc" data-at=".5">
+        <div class="xls-bar"><b>fluxo-de-caixa-aurora.xlsx</b> Lançamentos</div>
+        <div class="fx"><i>fx</i> =SOMASES(I:I; C:C; "Receita"; J:J; 3)</div>
+        <table>
+          <tr><th>Data</th><th>Descrição</th><th>Status</th><th>Valor (R$)</th></tr>
+          <tr><td>02/03/2026</td><td>Venda atacado, Bar do Zeca</td><td>Liquidado</td><td class="n">9.120,40</td></tr>
+          <tr><td>05/03/2026</td><td>Folha 03/2026</td><td>Liquidado</td><td class="n">42.310,77</td></tr>
+          <tr><td>06/03/2026</td><td>Compra de mercadoria</td><td>Liquidado</td><td class="n">11.804,15</td></tr>
+          <tr><td>10/03/2026</td><td>Aluguel do galpão</td><td>Liquidado</td><td class="n">9.800,00</td></tr>
+          <tr><td>12/03/2026</td><td>Vendas balcão</td><td>Liquidado</td><td class="n">3.402,90</td></tr>
+          <tr><td>16/03/2026</td><td>Energia elétrica + água</td><td>Pendente</td><td class="n">3.655,12</td></tr>
+          <tr><td>20/03/2026</td><td>Simples Nacional (DAS)</td><td>Atrasado</td><td class="n">16.240,00</td></tr>
+          <tr><td>23/03/2026</td><td>Frete programado</td><td>Liquidado</td><td class="n">1.180,00</td></tr>
+          <tr><td colspan="3" style="font-weight:600">Total de receitas do mês</td><td class="n err" data-at="5">#REF!</td></tr>
+        </table>
+        <div class="tabs"><span class="on">Lançamentos</span><span>Resumo Mensal</span><span>Por Categoria</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · COMO O CLAUDE TRABALHA -->
+  <section class="scene dark" id="ideia" data-dur="10" data-title="Como o Claude trabalha">
+    <h2 class="hd m"><span class="ln"><span class="mk" data-at=".2">Você descreve.</span></span><span class="ln"><span class="mk" data-at=".4">O Claude constrói.</span></span></h2>
+    <div class="track">
+      <div class="node rv up" data-at="1">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg></div>
+        <h3>Descrever</h3><p>Diga o objetivo em português, com o máximo de contexto.</p>
+      </div>
+      <div class="node rv up" data-at="1.2">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 4l-3 16"/></svg></div>
+        <h3>Gerar</h3><p>O Claude escreve os arquivos: planilha, código, textos.</p>
+      </div>
+      <div class="node rv up" data-at="1.4">
+        <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M7.5 12.5l3 3 6-6.5"/></svg></div>
+        <h3>Testar</h3><p>Ele abre no navegador, clica e confere os números.</p>
+      </div>
+      <div class="node rv up" data-at="1.6">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></div>
+        <h3>Ajustar</h3><p>Você pede mudanças pequenas, uma de cada vez.</p>
+      </div>
+    </div>
+    <p class="volta rv" data-at="2.4"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/></svg>E volta ao começo quantas vezes precisar. É assim nos seis passos a seguir.</p>
+  </section>
+
+  <!-- 3 · PASSO 1 -->
+  <section class="scene light" id="p1" data-dur="11" data-title="Passo 1: defina o problema" data-step="1">
+    <div class="passos" data-n="1"></div>
+    <div class="passo">
+      <div class="passo-esq">
+        <h2 class="hd m"><span class="ln"><span class="mk" data-at=".2">Defina</span></span><span class="ln"><span class="mk" data-at=".35">o problema</span></span></h2>
+        <p class="lede rv up" data-at=".8">Antes de gerar qualquer coisa, peça ao Claude para planejar com você.</p>
+        <p class="dica rv up" data-at="8.6"><b>Por que funciona</b>Planejar antes evita refazer depois.</p>
+      </div>
+      <div class="passo-dir">
+        <div class="pedido rv rt" data-at=".5"><p class="pedido-l">Você pede</p><p class="pt"><span class="ghost">Quero uma aula prática de finanças com dados fictícios. Cenário: uma distribuidora de bebidas. Quais colunas um fluxo de caixa precisa ter? Responda em tabela e não gere dados ainda.</span><span class="live" data-type data-at="1" data-cps="52"></span></p></div>
+        <div class="entrega rv up" data-at="5">
+          <p class="entrega-l">O Claude entrega</p>
+          <div class="chips">
+            <div class="chip rv sc" data-at="5.3"><b>Data</b><small>quando</small></div>
+            <div class="chip rv sc" data-at="5.45"><b>Tipo</b><small>receita ou despesa</small></div>
+            <div class="chip rv sc" data-at="5.6"><b>Categoria</b><small>vendas, folha…</small></div>
+            <div class="chip rv sc" data-at="5.75"><b>Descrição</b><small>o que foi</small></div>
+            <div class="chip rv sc" data-at="5.9"><b>Contraparte</b><small>cliente ou fornecedor</small></div>
+            <div class="chip rv sc" data-at="6.05"><b>Conta</b><small>banco, caixa, cartão</small></div>
+            <div class="chip rv sc" data-at="6.2"><b>Status</b><small>pago, pendente, atrasado</small></div>
+            <div class="chip rv sc" data-at="6.35"><b>Valor</b><small>em reais</small></div>
+          </div>
+          <p class="cats rv" data-at="7"><b>Receitas:</b> vendas no atacado, no varejo e entregas. <b>Despesas:</b> fornecedores, folha, aluguel, impostos, frota, marketing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · PASSO 2 -->
+  <section class="scene light" id="p2" data-dur="11" data-title="Passo 2: gere dados fictícios">
+    <div class="passos" data-n="2"></div>
+    <div class="passo">
+      <div class="passo-esq">
+        <h2 class="hd m"><span class="ln"><span class="mk" data-at=".2">Gere dados</span></span><span class="ln"><span class="mk" data-at=".35">fictícios</span></span></h2>
+        <p class="lede rv up" data-at=".8">Dados inventados, mas com regras de empresa de verdade: contas fixas, estação do ano, atrasos.</p>
+        <p class="dica rv up" data-at="8.6"><b>Por que funciona</b>Com a semente fixa, toda a turma vê os mesmos números.</p>
+      </div>
+      <div class="passo-dir">
+        <div class="pedido rv rt" data-at=".5"><p class="pedido-l">Você pede</p><p class="pt"><span class="ghost">Escreva um script Python que gere os lançamentos de 2026 da Aurora: despesas fixas todo mês, vendas que variam com a estação e status conforme a data. Use uma semente para repetir sempre os mesmos dados.</span><span class="live" data-type data-at="1" data-cps="54"></span></p></div>
+        <div class="entrega rv up" data-at="5.1">
+          <p class="entrega-l">O Claude entrega</p>
+          <div class="contador"><span class="num" data-count="604" data-fmt="n" data-at="5.4" data-for="1.6">0</span><span class="rot">lançamentos de 2026</span></div>
+          <div class="mini3">
+            <div><small>Receitas</small><b class="c-ent" data-count="2328658" data-fmt="mi" data-at="5.8" data-for="1.6">R$ 0</b></div>
+            <div><small>Despesas</small><b class="c-sai" data-count="2115465" data-fmt="mi" data-at="6" data-for="1.6">R$ 0</b></div>
+            <div><small>Saldo</small><b data-count="213193" data-fmt="mil" data-at="6.2" data-for="1.6">R$ 0</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · PASSO 3 -->
+  <section class="scene light" id="p3" data-dur="11" data-title="Passo 3: monte a planilha com fórmulas">
+    <div class="passos" data-n="3"></div>
+    <div class="passo">
+      <div class="passo-esq">
+        <h2 class="hd m"><span class="ln"><span class="mk" data-at=".2">Monte a planilha</span></span><span class="ln"><span class="mk" data-at=".35">com fórmulas</span></span></h2>
+        <p class="lede rv up" data-at=".8">A mesma base vira um arquivo de Excel organizado em abas, com resumo e gráficos.</p>
+        <p class="dica rv up" data-at="8.6"><b>Por que funciona</b>Peça fórmulas, não números colados. Assim a planilha continua viva.</p>
+      </div>
+      <div class="passo-dir">
+        <div class="pedido rv rt" data-at=".5"><p class="pedido-l">Você pede</p><p class="pt"><span class="ghost">Gere a planilha .xlsx com a base como Tabela, resumo mensal com SOMASES, saldo acumulado, resumo por categoria e dois gráficos. Use fórmulas, não números colados.</span><span class="live" data-type data-at="1" data-cps="50"></span></p></div>
+        <div class="xls rv up" data-at="4.8" style="align-self:stretch">
+          <div class="fx"><i>fx</i> =SOMASES(Lançamentos!I:I; Lançamentos!C:C; "Receita"; Lançamentos!J:J; A2)</div>
+          <table>
+            <tr><th>Mês</th><th>Receitas</th><th>Despesas</th><th>Saldo</th><th>Acumulado</th></tr>
+            <tr class="rv" data-at="5.3"><td>Jan</td><td class="n">223.717</td><td class="n">200.952</td><td class="n c-ent">22.765</td><td class="n">22.765</td></tr>
+            <tr class="rv" data-at="5.6"><td>Fev</td><td class="n">186.843</td><td class="n">185.045</td><td class="n c-ent">1.798</td><td class="n">24.563</td></tr>
+            <tr class="rv" data-at="5.9"><td>Mar</td><td class="n">198.549</td><td class="n">164.333</td><td class="n c-ent">34.216</td><td class="n">58.779</td></tr>
+            <tr class="rv" data-at="6.2"><td>Abr</td><td class="n">134.662</td><td class="n">171.598</td><td class="n c-sai">−36.936</td><td class="n">21.843</td></tr>
+          </table>
+          <div class="tabs"><span>Leia-me</span><span>Lançamentos</span><span class="on">Resumo Mensal</span><span>Por Categoria</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · PASSO 4 -->
+  <section class="scene light" id="p4" data-dur="11" data-title="Passo 4: liste as perguntas do painel">
+    <div class="passos" data-n="4"></div>
+    <div class="passo">
+      <div class="passo-esq">
+        <h2 class="hd m"><span class="ln"><span class="mk" data-at=".2">Liste as</span></span><span class="ln"><span class="mk" data-at=".35">perguntas</span></span></h2>
+        <p class="lede rv up" data-at=".8">Antes de desenhar, descubra o que o diretor quer saber em dez segundos.</p>
+        <p class="dica rv up" data-at="8.6"><b>Por que funciona</b>Painel bom nasce de perguntas, não de gráficos bonitos.</p>
+      </div>
+      <div class="passo-dir">
+        <div class="pedido rv rt" data-at=".5"><p class="pedido-l">Você pede</p><p class="pt"><span class="ghost">Olhe a planilha como diretor financeiro. Quais 5 perguntas o painel precisa responder em 10 segundos? Para cada uma, diga o gráfico mais adequado.</span><span class="live" data-type data-at="1" data-cps="50"></span></p></div>
+        <div class="entrega rv up" data-at="4.3">
+          <p class="entrega-l">O Claude entrega</p>
+          <div class="perg">
+            <div class="cab">Pergunta</div><div class="cab" style="padding-left:20px">Vira no painel</div>
+            <div class="rv" data-at="4.7">Estamos no azul ou no vermelho?</div><div class="vira rv" data-at="4.7">Manchete com o saldo</div>
+            <div class="rv" data-at="5.1">Qual mês foi o pior?</div><div class="vira rv" data-at="5.1">Gráfico por mês</div>
+            <div class="rv" data-at="5.5">Para onde vai o dinheiro?</div><div class="vira rv" data-at="5.5">Ranking de categorias</div>
+            <div class="rv" data-at="5.9">O que está atrasado?</div><div class="vira rv" data-at="5.9">Lista “A resolver”</div>
+            <div class="rv" data-at="6.3">O que vence nos próximos dias?</div><div class="vira rv" data-at="6.3">Lista “A resolver”</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · PASSO 5 -->
+  <section class="scene light" id="p5" data-dur="11" data-title="Passo 5: peça o sistema">
+    <div class="passos" data-n="5"></div>
+    <div class="passo">
+      <div class="passo-esq">
+        <h2 class="hd m"><span class="ln"><span class="mk" data-at=".2">Peça</span></span><span class="ln"><span class="mk" data-at=".35">o sistema</span></span></h2>
+        <p class="lede rv up" data-at=".8">Agora a planilha vira aplicação web: um painel para ler e uma tela para cadastrar.</p>
+        <p class="dica rv up" data-at="8.6"><b>Por que funciona</b>Pedidos específicos e fáceis de testar geram código que funciona de primeira.</p>
+      </div>
+      <div class="passo-dir">
+        <div class="pedido rv rt" data-at=".5"><p class="pedido-l">Você pede</p><p class="pt"><span class="ghost">Crie uma aplicação web com duas telas: Painel e Lançamentos. Em Lançamentos, quero criar, editar e excluir, com busca, filtros, validação no formulário e exportar CSV.</span><span class="live" data-type data-at="1" data-cps="52"></span></p></div>
+        <div class="entrega rv up" data-at="4.7">
+          <p class="entrega-l">O Claude entrega um CRUD</p>
+          <div class="crud">
+            <div data-at="5.1"><span class="L">C</span><b>Criar</b><small>botão Novo lançamento</small></div>
+            <div data-at="5.6"><span class="L">R</span><b>Ler</b><small>tabela com busca e filtros</small></div>
+            <div data-at="6.1"><span class="L">U</span><b>Atualizar</b><small>editar com validação</small></div>
+            <div data-at="6.6"><span class="L">D</span><b>Excluir</b><small>sempre pede confirmação</small></div>
+          </div>
+          <p class="nota-crud rv" data-at="7.2">CRUD é só o nome, em inglês, dessas quatro ações. Todo sistema de cadastro tem.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · PASSO 6 -->
+  <section class="scene light" id="p6" data-dur="11" data-title="Passo 6: teste no navegador">
+    <div class="passos" data-n="6"></div>
+    <div class="passo">
+      <div class="passo-esq">
+        <h2 class="hd m"><span class="ln"><span class="mk" data-at=".2">Teste</span></span><span class="ln"><span class="mk" data-at=".35">no navegador</span></span></h2>
+        <p class="lede rv up" data-at=".8">Não confie, confira. O Claude abre o sistema, usa como um usuário e mostra o resultado.</p>
+        <p class="dica rv up" data-at="8.6"><b>Por que funciona</b>Peça sempre uma prova: print, log ou número conferido.</p>
+      </div>
+      <div class="passo-dir">
+        <div class="pedido rv rt" data-at=".5"><p class="pedido-l">Você pede</p><p class="pt"><span class="ghost">Suba o app e teste criar, editar e excluir. Confira se os totais batem com a planilha, veja se há erros no console e me mostre prints.</span><span class="live" data-type data-at="1" data-cps="50"></span></p></div>
+        <div class="entrega rv up" data-at="4">
+          <p class="entrega-l">O Claude confere</p>
+          <ul class="checks">
+            <li data-at="4.4"><svg viewBox="0 0 24 24"><path pathLength="1" d="M5 12.5l4.5 4.5L19 7.5"/></svg>Criar um lançamento</li>
+            <li data-at="5"><svg viewBox="0 0 24 24"><path pathLength="1" d="M5 12.5l4.5 4.5L19 7.5"/></svg>Editar o valor</li>
+            <li data-at="5.6"><svg viewBox="0 0 24 24"><path pathLength="1" d="M5 12.5l4.5 4.5L19 7.5"/></svg>Excluir com confirmação<em>bug achado e corrigido</em></li>
+            <li data-at="6.2"><svg viewBox="0 0 24 24"><path pathLength="1" d="M5 12.5l4.5 4.5L19 7.5"/></svg>Totais iguais aos da planilha<span class="val">R$ 2.328.659</span></li>
+            <li data-at="6.8"><svg viewBox="0 0 24 24"><path pathLength="1" d="M5 12.5l4.5 4.5L19 7.5"/></svg>Nenhum erro no console</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · VIRADA -->
+  <section class="scene dark" id="virada" data-dur="5.5" data-title="Funciona. Mas está bem desenhado?">
+    <div class="virada">
+      <h2 class="hd"><span class="ln"><span class="mk" data-at=".2">O sistema funciona.</span></span><span class="ln" style="color:var(--ambar)"><span class="mk" data-at="1.3">Mas está bem desenhado?</span></span></h2>
+      <p class="lede rv up" data-at="2.4">O mesmo painel, feito duas vezes: sem a skill de design e com ela.</p>
+    </div>
+  </section>
+
+  <!-- 10 · SEM SKILL -->
+  <section class="scene light" id="sem" data-dur="12" data-title="Sem a skill">
+    <div class="comparar">
+      <div>
+        <span class="rotulo sem rv" data-at=".2">Sem a skill</span>
+        <h2 class="hd m"><span class="ln"><span class="mk" data-at=".3">Correto,</span></span><span class="ln"><span class="mk" data-at=".45">mas genérico</span></span></h2>
+        <div class="pedido curto rv up" data-at=".9"><p class="pedido-l">O pedido falava só de funcionalidade</p><p class="pt"><span class="ghost">…layout responsivo e visual limpo, em tons de verde-petróleo.</span><span class="live" data-type data-at="1.3" data-cps="40"></span></p></div>
+        <ul class="achados">
+          <li data-k="1" class="rv lf" data-at="3.6">Menu lateral padrão de painel</li>
+          <li data-k="2" class="rv lf" data-at="4.8">Quatro cards iguais, com sombra</li>
+          <li data-k="3" class="rv lf" data-at="6">Rosca com dez cores</li>
+          <li data-k="4" class="rv lf" data-at="7.2">Título vago: “Visão geral”</li>
+        </ul>
+      </div>
+      <div class="shot rv sc" data-at=".6">
+        <img src="assets/1-painel-antes.jpg" alt="Painel antes da skill: menu lateral, quatro cards, gráfico de barras e rosca">
+        <div class="call rv" data-at="3.6" style="left:0;top:0;width:18.6%;height:100%"><span style="left:auto;right:10px">1</span></div>
+        <div class="call rv" data-at="4.8" style="left:20.8%;top:11.2%;width:76.6%;height:13.4%"><span style="left:auto;right:10px">2</span></div>
+        <div class="call rv" data-at="6" style="left:72%;top:25.8%;width:25.4%;height:48.4%"><span>3</span></div>
+        <div class="call rv" data-at="7.2" style="left:20.4%;top:2.4%;width:30%;height:7.6%"><span style="left:auto;right:-17px;top:50%;margin-top:-17px">4</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 · COM SKILL -->
+  <section class="scene dark" id="com" data-dur="12" data-title="Com a skill frontend-design">
+    <div class="comparar" style="grid-template-columns:680px 1fr">
+      <div>
+        <span class="rotulo com rv" data-at=".2">Com a skill</span>
+        <h2 class="hd m"><span class="ln"><span class="mk" data-at=".3">Pensa como</span></span><span class="ln"><span class="mk" data-at=".45">designer</span></span></h2>
+        <ol class="etapas" style="margin-top:34px">
+          <li class="rv lf" data-at="1.4"><span class="bola">1</span><div><b>Planeja</b><small>paleta, tipografia e layout para este assunto</small></div></li>
+          <li class="rv lf" data-at="3.4"><span class="bola">2</span><div><b>Revisa contra o genérico</b><small>troca o que parece template</small></div></li>
+          <li class="rv lf" data-at="6.2"><span class="bola">3</span><div><b>Constrói</b><small>reescreve o visual e mantém o CRUD</small></div></li>
+          <li class="rv lf" data-at="8"><span class="bola">4</span><div><b>Testa e se critica</b><small>abre no navegador, inclusive no celular</small></div></li>
+        </ol>
+      </div>
+      <div class="plano">
+        <div class="pedido claro rv rt" data-at=".6"><p class="pedido-l">Você pede</p><p class="pt" style="font-size:26px"><span class="ghost">/frontend-design refatore o dashboard. É o caixa de uma distribuidora de bebidas, usado pelo financeiro.</span><span class="live" data-type data-at="1" data-cps="46"></span></p></div>
+        <div class="swatches">
+          <div class="sw rv up" data-at="3.4"><i style="background:#e6ece8"></i><small>Vidro fosco</small></div>
+          <div class="sw rv up" data-at="3.55"><i style="background:#fbfcfa"></i><small>Folha</small></div>
+          <div class="sw rv up" data-at="3.7"><i style="background:#12281e;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2)"></i><small>Verde-garrafa</small></div>
+          <div class="sw rv up" data-at="3.85"><i style="background:#1b7f57"></i><small>Entrada</small></div>
+          <div class="sw rv up" data-at="4"><i style="background:#c23b2b"></i><small>Tampinha</small></div>
+          <div class="sw rv up" data-at="4.15"><i style="background:#d99a1e"></i><small>Âmbar</small></div>
+        </div>
+        <div class="tipos">
+          <div class="tipo rv up" data-at="4.6"><div class="aa" style="font-family:var(--tit);font-weight:600">Aa 2026</div><small>Barlow Condensed, de etiqueta de caixa: manchete e números</small></div>
+          <div class="tipo rv up" data-at="4.8"><div class="aa" style="font-family:var(--corpo);font-size:76px;padding-top:12px">Aa 123</div><small>IBM Plex Sans: textos e tabelas</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 · ANTES × DEPOIS: PAINEL -->
+  <section class="scene light" id="wipe1" data-dur="12" data-title="Antes e depois: o painel">
+    <div class="ad">
+      <div class="cmp rv sc" data-at=".2">
+        <img class="base" src="assets/1-painel-antes.jpg" alt="Painel sem a skill">
+        <img class="top" src="assets/2-painel-depois.jpg" alt="Painel com a skill">
+        <span class="bar"></span>
+        <span class="tag tag-a">Sem a skill</span>
+        <span class="tag tag-b">Com a skill</span>
+      </div>
+      <div class="mudou">
+        <h2 class="rv up" data-at=".4">O que mudou</h2>
+        <ul>
+          <li class="rv rt" data-at="4.6"><b>Manchete que responde</b><small>“2026 fecha R$ 213 mil no azul” no lugar de “Visão geral”</small></li>
+          <li class="rv rt" data-at="5.4"><b>Três totais com régua</b><small>no lugar de quatro cards iguais</small></li>
+          <li class="rv rt" data-at="6.2"><b>Gráfico divergente</b><small>entradas sobem, saídas descem da linha zero</small></li>
+          <li class="rv rt" data-at="7"><b>Ranking de uma cor</b><small>no lugar da rosca com dez cores</small></li>
+          <li class="rv rt" data-at="7.8"><b>Cara de distribuidora</b><small>tampinha, verde-garrafa e fonte de etiqueta</small></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 · ANTES × DEPOIS: LANÇAMENTOS -->
+  <section class="scene light" id="wipe2" data-dur="9" data-title="Antes e depois: os lançamentos">
+    <div class="ad estreito">
+      <div class="cmp rv sc" data-at=".2">
+        <img class="base" src="assets/3-lancamentos-antes.jpg" alt="Tela de lançamentos sem a skill">
+        <img class="top" src="assets/4-lancamentos-depois.jpg" alt="Tela de lançamentos com a skill">
+        <span class="bar"></span>
+        <span class="tag tag-a">Sem a skill</span>
+        <span class="tag tag-b">Com a skill</span>
+      </div>
+      <div class="mudou">
+        <h2 class="rv up" data-at=".4">E na tabela</h2>
+        <ul>
+          <li class="rv rt" data-at="4.4"><b>Abas no topo</b><small>sobra largura para a tabela</small></li>
+          <li class="rv rt" data-at="5.1"><b>Status com ponto colorido</b><small>no lugar de etiquetas arredondadas</small></li>
+          <li class="rv rt" data-at="5.8"><b>Ícones desenhados</b><small>no lugar de emoji</small></li>
+          <li class="rv rt" data-at="6.5"><b>Botões que dizem o que fazem</b><small>“Salvar lançamento”, “Manter”, “Excluir lançamento”</small></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 · PLANILHA × SISTEMA -->
+  <section class="scene light" id="vs" data-dur="11" data-title="Planilha ou sistema">
+    <h2 class="hd m"><span class="ln"><span class="mk" data-at=".2">O que você ganha</span></span></h2>
+    <div class="tabela-vs">
+      <div class="cab rv" data-at=".6"></div><div class="cab rv" data-at=".6">Na planilha</div><div class="cab rv" data-at=".6">No sistema</div>
+      <div class="tema rv up" data-at="1.4">Lançar um valor</div><div class="antes rv up" data-at="1.6">Digitar na célula certa, torcendo para não quebrar a fórmula</div><div class="depois rv up" data-at="2.4">Formulário que valida e pede confirmação para excluir</div>
+      <div class="tema rv up" data-at="3.4">Entender o mês</div><div class="antes rv up" data-at="3.6">Somar, filtrar e montar o gráfico à mão</div><div class="depois rv up" data-at="4.4">Painel com manchete, gráfico e ranking prontos</div>
+      <div class="tema rv up" data-at="5.4">Achar o que atrasou</div><div class="antes rv up" data-at="5.6">Procurar linha por linha</div><div class="depois rv up" data-at="6.4">Lista “A resolver” com botão para dar baixa</div>
+    </div>
+    <p class="falta rv up" data-at="7.6"><b>Ainda falta</b>Hoje os dados ficam só no navegador de quem usa. O próximo passo é banco de dados e login.</p>
+  </section>
+
+  <!-- 15 · FECHAMENTO -->
+  <section class="scene dark" id="fim" data-dur="10" data-title="Agora é com você">
+    <div class="fim">
+      <h2 class="hd g"><span class="ln"><span class="mk" data-at=".2">Agora é</span></span><span class="ln"><span class="mk" data-at=".4">com você.</span></span></h2>
+      <ul class="habitos">
+        <li class="rv rt" data-at="1.4"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="#D99A1E" stroke-width="5" stroke-dasharray="3.1 2.4"/><circle cx="18" cy="18" r="13" fill="#D99A1E"/></svg><span>Dê contexto, objetivo e limites em cada pedido.</span></li>
+        <li class="rv rt" data-at="2.6"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="#D99A1E" stroke-width="5" stroke-dasharray="3.1 2.4"/><circle cx="18" cy="18" r="13" fill="#D99A1E"/></svg><span>Peça prova: print, log ou número conferido.</span></li>
+        <li class="rv rt" data-at="3.8"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15" fill="none" stroke="#D99A1E" stroke-width="5" stroke-dasharray="3.1 2.4"/><circle cx="18" cy="18" r="13" fill="#D99A1E"/></svg><span>Para o visual, chame a skill de design e diga qual é o assunto.</span></li>
+      </ul>
+    </div>
+    <p class="rodape-cena rv" data-at="5">Aurora Distribuidora é uma empresa fictícia. Todos os dados desta aula foram inventados.</p>
+  </section>
+
+</div>
+<div id="sweep" aria-hidden="true">
+  <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="#12281E" stroke-width="5" stroke-dasharray="3.1 2.4"/><circle cx="18" cy="18" r="13" fill="#12281E"/><circle cx="18" cy="18" r="9.5" fill="#D99A1E"/></svg>
+</div>
+</div>
+
+<div id="ui" role="toolbar" aria-label="Controles do motion">
+  <button id="bPrev" type="button" aria-label="Cena anterior" title="Voltar (←)"><svg viewBox="0 0 24 24"><path d="M15.5 5L8.5 12l7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button id="bNext" type="button" aria-label="Avançar" title="Avançar (→, espaço ou clique)"><svg viewBox="0 0 24 24"><path d="M8.5 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <div id="segs"></div>
+  <span id="nome"></span>
+  <button id="bFull" type="button" aria-label="Tela cheia"><svg viewBox="0 0 24 24"><path d="M4 4h6v2H6v4H4zM20 4v6h-2V6h-4V4zM4 20v-6h2v4h4v2zM20 20h-6v-2h4v-4h2z"/></svg></button>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stage = document.getElementById('stage');
+  const cenas = [...document.querySelectorAll('.scene')];
+  const sweep = document.getElementById('sweep');
+  const ui = document.getElementById('ui');
+
+  /* ---------- escala do palco 1920x1080 ---------- */
+  function encaixar() {
+    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+    stage.style.transform = `translate(${(innerWidth - 1920 * s) / 2}px, ${(innerHeight - 1080 * s) / 2}px) scale(${s})`;
+  }
+  addEventListener('resize', encaixar); encaixar();
+
+  /* ---------- abertura: colunas de células ---------- */
+  (() => {
+    const alturas = [5, 4, 4, 3, 4, 4, 3, 7, 8]; // em células (de 9)
+    const cores = ['#1b7f57', '#1b7f57', '#1b7f57', '#c23b2b', '#1b7f57', '#1b7f57', '#c23b2b', '#1b7f57', '#d99a1e'];
+    const numeros = ['223.717', '186.843', '198.549', '−36.936', '183.823', '178.308', '−48.684', '222.245', '213.193'];
+    const cols = document.getElementById('cols');
+    cols.innerHTML = alturas.map((h, c) => `<div class="col">${Array.from({ length: 9 }, (_, r) =>
+      `<div class="cel ${r < 9 - h ? 'vz' : ''}" style="--i:${c};--c:${cores[c]}">${r === 8 ? numeros[c] : (((c * 5 + r * 3) % 4) === 0 ? '' : ((c * 7919 + r * 1049) % 9000 + 1000).toLocaleString('pt-BR'))}</div>`).join('')}</div>`).join('')
+      + '<span class="leg">Cada coluna de células virou uma barra do gráfico.</span>';
+  })();
+
+  /* ---------- indicador de passos ---------- */
+  document.querySelectorAll('.passos').forEach((el) => {
+    const n = Number(el.dataset.n);
+    el.innerHTML = Array.from({ length: 6 }, (_, i) => `<i class="${i + 1 < n ? 'feito' : i + 1 === n ? 'agora' : ''}"></i>`).join('') + `<span>Passo ${n} de 6</span>`;
+  });
+
+  /* ---------- formatos de número ---------- */
+  const F = {
+    n: (v) => Math.round(v).toLocaleString('pt-BR'),
+    mi: (v) => `R$ ${(v / 1e6).toFixed(2).replace('.', ',')} mi`,
+    mil: (v) => `R$ ${Math.round(v / 1e3)} mil`,
+  };
+  const easeOut = (x) => 1 - Math.pow(1 - x, 3);
+  const easeInOut = (x) => (x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+
+  /* ---------- cache por cena ---------- */
+  const cache = cenas.map((s) => ({
+    at: [...s.querySelectorAll('[data-at]')].map((el) => ({ el, at: Number(el.dataset.at) })),
+    tipo: [...s.querySelectorAll('[data-type]')].map((el) => ({ el, at: Number(el.dataset.at), cps: Number(el.dataset.cps || 50), txt: el.previousElementSibling.textContent, n: -1 })),
+    cont: [...s.querySelectorAll('[data-count]')].map((el) => ({ el, at: Number(el.dataset.at), dur: Number(el.dataset.for || 1.5), alvo: Number(el.dataset.count), fmt: F[el.dataset.fmt] || F.n })),
+    dur: Number(s.dataset.dur),
+  }));
+
+  /* ---------- ganchos de cenas especiais ---------- */
+  const ganchos = {
+    ideia(t, s) {
+      const nodes = s.querySelectorAll('.node');
+      const k = t < 2.6 ? -1 : Math.floor((t - 2.6) / 1.6) % 4;
+      nodes.forEach((n, i) => n.classList.toggle('hot', i === k));
+    },
+    wipe1: (t, s) => cortina(t, s, 1.2, 3.2),
+    wipe2: (t, s) => cortina(t, s, 1, 3),
+  };
+  function cortina(t, s, ini, dur) {
+    const p = 100 - 100 * easeInOut(clamp((t - ini) / dur));
+    s.querySelector('.top').style.clipPath = `inset(0 0 0 ${p}%)`;
+    s.querySelector('.bar').style.left = `${p}%`;
+    s.querySelector('.bar').style.opacity = p <= 0.01 ? 0 : 1;
+    s.querySelector('.tag-a').classList.toggle('on', p > 14);
+    s.querySelector('.tag-b').classList.toggle('on', p < 86);
+  }
+
+  /* ---------- relógio ---------- */
+  let atual = -1, t = 0, ocupado = false, ultimo = performance.now();
+
+  function aplicar(tt) {
+    const c = cache[atual], s = cenas[atual];
+    for (const a of c.at) { const on = tt >= a.at; if (on !== a.el.classList.contains('in')) a.el.classList.toggle('in', on); }
+    for (const d of c.tipo) {
+      const n = Math.max(0, Math.min(d.txt.length, Math.floor((tt - d.at) * d.cps)));
+      if (n !== d.n) { d.el.textContent = d.txt.slice(0, n); d.n = n; }
+      d.el.classList.toggle('typing', tt >= d.at && n < d.txt.length);
+    }
+    for (const k of c.cont) k.el.textContent = k.fmt(k.alvo * easeOut(clamp((tt - k.at) / k.dur)));
+    if (ganchos[s.id]) ganchos[s.id](tt, s);
+  }
+
+  function entrar(i) {
+    cenas.forEach((s, k) => s.classList.toggle('active', k === i));
+    atual = i; t = 0;
+    const c = cache[i];
+    c.at.forEach((a) => a.el.classList.remove('in'));
+    c.tipo.forEach((d) => { d.n = -1; });
+    void cenas[i].offsetWidth; // reinicia transições
+    aplicar(reduz ? 1e6 : 0);
+    desenharUI();
+  }
+
+  // anima a faixa âmbar; o tempo-limite garante que a troca acontece mesmo se o navegador pausar a animação
+  function faixa(de, para, ms) {
+    const a = sweep.animate([{ transform: `translateX(${de})` }, { transform: `translateX(${para})` }], { duration: ms, easing: 'cubic-bezier(.7,0,.3,1)', fill: 'forwards' });
+    return Promise.race([a.finished, new Promise((r) => setTimeout(r, ms + 120))]);
+  }
+
+  async function ir(i, comFaixa = true) {
+    if (ocupado || i < 0 || i >= cenas.length || i === atual) return;
+    if (!comFaixa || reduz || atual < 0) { entrar(i); return; }
+    ocupado = true;
+    try {
+      await faixa('-101%', '0', 380);
+      entrar(i);
+      await faixa('0', '101%', 420);
+    } finally {
+      sweep.getAnimations().forEach((a) => a.cancel());
+      if (atual !== i) entrar(i);
+      ocupado = false;
+    }
+  }
+
+  // A animação de cada cena roda sozinha, mas a cena só troca quando o apresentador avança.
+  function passo(agora) {
+    const dt = Math.min(.25, (agora - ultimo) / 1000); ultimo = agora;
+    if (!ocupado && atual >= 0 && !reduz && t < cache[atual].dur) {
+      t = Math.min(cache[atual].dur, t + dt);
+      aplicar(t);
+      if (t >= cache[atual].dur) desenharUI();
+    }
+    pintarProgresso();
+  }
+
+  // Avançar: se a cena ainda está animando, completa; se já terminou, vai para a próxima.
+  function avancar() {
+    if (ocupado) return;
+    if (!reduz && t < cache[atual].dur - .05) { t = cache[atual].dur; aplicar(t); desenharUI(); return; }
+    ir(atual + 1);
+  }
+  const voltar = () => ir(atual - 1, false);
+  function quadro(agora) { passo(agora); requestAnimationFrame(quadro); }
+  // relógio reserva: se o navegador parar o requestAnimationFrame (aba em segundo plano), o tempo continua
+  setInterval(() => { const agora = performance.now(); if (agora - ultimo > 150) passo(agora); }, 100);
+
+  /* ---------- controles ---------- */
+  const segs = document.getElementById('segs');
+  segs.innerHTML = cenas.map((s, i) => `<button type="button" aria-label="Ir para: ${s.dataset.title}" data-i="${i}"><i><b></b></i></button>`).join('');
+  const fills = [...segs.querySelectorAll('b')];
+  function pintarProgresso() {
+    fills.forEach((f, i) => { f.style.width = i < atual ? '100%' : i > atual ? '0' : `${Math.min(100, (t / cache[atual].dur) * 100)}%`; });
+  }
+  function desenharUI() {
+    document.getElementById('nome').textContent = `${atual + 1}/${cenas.length}  ${cenas[atual].dataset.title}`;
+    const pronta = reduz || t >= cache[atual].dur - .05;
+    const ultima = atual === cenas.length - 1;
+    const b = document.getElementById('bNext');
+    b.classList.toggle('pronto', pronta && !ultima);
+    b.disabled = pronta && ultima;
+    document.getElementById('bPrev').disabled = atual === 0;
+  }
+  document.getElementById('bPrev').onclick = voltar;
+  document.getElementById('bNext').onclick = avancar;
+  document.getElementById('bFull').onclick = () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.());
+  segs.onclick = (e) => { const b = e.target.closest('[data-i]'); if (b) ir(Number(b.dataset.i), false); };
+  // clique no palco também avança (passador de slides e mouse)
+  stage.addEventListener('click', avancar);
+  addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); avancar(); }
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); voltar(); }
+    else if (e.key === 'Home' || e.key === 'r') entrar(0);
+    else if (e.key === 'f') document.getElementById('bFull').click();
+    mostrarUI();
+  });
+
+  let ocultar;
+  function mostrarUI() {
+    ui.classList.remove('oculto');
+    clearTimeout(ocultar);
+    ocultar = setTimeout(() => ui.classList.add('oculto'), 2600);
+  }
+  addEventListener('mousemove', mostrarUI);
+
+  // motion.ver(cena, segundo): congela uma cena num instante (para conferir ou tirar print)
+  window.motion = { ver(i, seg) { entrar(i - 1); t = seg; aplicar(seg); desenharUI(); }, total: cenas.length };
+
+  // ?cena=12 abre direto numa cena (útil na aula)
+  const inicial = Math.max(0, Math.min(cenas.length - 1, Number(new URLSearchParams(location.search).get('cena') || 1) - 1));
+  entrar(inicial);
+  mostrarUI();
+  requestAnimationFrame(quadro);
+})();
+</script>
+</body>
+</html>
