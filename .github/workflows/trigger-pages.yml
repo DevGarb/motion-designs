@@ -1,0 +1,17 @@
+name: Atualizar GitHub Pages
+
+# O deploy roda sempre a partir da main (regra do ambiente github-pages).
+# Um push nesta branch só pede para a main publicar de novo.
+on:
+  push:
+
+permissions:
+  actions: write
+
+jobs:
+  disparar:
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh workflow run pages.yml --ref main -R "$GITHUB_REPOSITORY"
+        env:
+          GH_TOKEN: ${{ github.token }}
