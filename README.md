@@ -12,6 +12,7 @@ Motions e apresentações em HTML do Setor de T.I do Grupo Ramos.
 | `konfia-encontro-02` | KONF I.A · Encontro 02: Skills e agentes (motion) | `/konfia-encontro-02/` |
 | `oyp-apresentacao` | OYP · Optimize your process: apresentação em slides | `/oyp-apresentacao/` |
 | `aula-planilha-sistema` | Da planilha ao sistema: motion da aula com o Claude (sem e com skill) | `/aula-planilha-sistema/` |
+| `alinhamento-ti` | Alinhamento da equipe de TI: responsabilidade, compromisso e autonomia | `/alinhamento-ti/` |
 
 Site: https://devgarb.github.io/motion-designs/
 

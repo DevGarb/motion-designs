@@ -9,6 +9,7 @@ name: Publicar no GitHub Pages
 #   /konfia-encontro-02/    -> branch konfia-encontro-02
 #   /oyp-apresentacao/      -> branch oyp-apresentacao
 #   /aula-planilha-sistema/ -> branch aula-planilha-sistema
+#   /alinhamento-ti/        -> branch alinhamento-ti
 on:
   push:
     branches: [main]
@@ -46,6 +47,8 @@ jobs:
         with: { ref: oyp-apresentacao, path: oyp-apresentacao }
       - uses: actions/checkout@v4
         with: { ref: aula-planilha-sistema, path: aula-planilha-sistema }
+      - uses: actions/checkout@v4
+        with: { ref: alinhamento-ti, path: alinhamento-ti }
       - name: Montar site
         run: |
           mkdir -p _site
@@ -57,6 +60,7 @@ jobs:
           rsync -a --exclude .git --exclude .github konfia-encontro-02/ _site/konfia-encontro-02/
           rsync -a --exclude .git --exclude .github oyp-apresentacao/ _site/oyp-apresentacao/
           rsync -a --exclude .git --exclude .github aula-planilha-sistema/ _site/aula-planilha-sistema/
+          rsync -a --exclude .git --exclude .github alinhamento-ti/ _site/alinhamento-ti/
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
