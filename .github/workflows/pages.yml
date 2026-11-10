@@ -10,6 +10,7 @@ name: Publicar no GitHub Pages
 #   /oyp-apresentacao/      -> branch oyp-apresentacao
 #   /aula-planilha-sistema/ -> branch aula-planilha-sistema
 #   /alinhamento-ti/        -> branch alinhamento-ti
+#   /resultados-ti/         -> branch resultados-ti
 on:
   push:
     branches: [main]
@@ -49,6 +50,8 @@ jobs:
         with: { ref: aula-planilha-sistema, path: aula-planilha-sistema }
       - uses: actions/checkout@v4
         with: { ref: alinhamento-ti, path: alinhamento-ti }
+      - uses: actions/checkout@v4
+        with: { ref: resultados-ti, path: resultados-ti }
       - name: Montar site
         run: |
           mkdir -p _site
@@ -61,6 +64,7 @@ jobs:
           rsync -a --exclude .git --exclude .github oyp-apresentacao/ _site/oyp-apresentacao/
           rsync -a --exclude .git --exclude .github aula-planilha-sistema/ _site/aula-planilha-sistema/
           rsync -a --exclude .git --exclude .github alinhamento-ti/ _site/alinhamento-ti/
+          rsync -a --exclude .git --exclude .github resultados-ti/ _site/resultados-ti/
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
