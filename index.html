@@ -205,6 +205,16 @@ button{font:inherit;color:inherit}
 .comp.units h3{color:var(--muted)}
 .comp.units .cp .tr i{background:var(--accent)}
 
+.mg{display:grid;grid-template-columns:minmax(150px,1.5fr) repeat(3,1fr) minmax(150px,1.5fr);border:1px solid var(--line2);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,var(--panel2),var(--panel))}
+.mg>div{padding:20px 14px;display:flex;align-items:center;justify-content:center;border-top:1px solid var(--line)}
+.mg>.h{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:14px;border-top:0}
+.mg>.n{justify-content:center;flex-direction:column;align-items:flex-start;gap:4px;font-weight:800;font-size:clamp(16px,1.4vw,21px)}
+.mg>.n em{font-style:normal;font-weight:400;font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.03em}
+.mg>.v{font-size:clamp(22px,2.4vw,36px);font-weight:800;letter-spacing:-.03em}
+.mg>.t{font-family:var(--mono);font-size:13px;font-weight:600;text-align:center}
+.mg>.t.ok{color:var(--accent)}
+.mg>.t.bad{color:#ffd24a}
+
 @media (max-width:900px){
   .top,.bottom{padding:0 16px}
   .where span:last-child{display:none}
@@ -562,20 +572,20 @@ button{font:inherit;color:inherit}
   }
 
   function agend() {
-    const A = SS.agend, c = A.conv, q = A.sequencia;
-    const svg = cols({ vals: c, labs: A.meses, fv: v => br(v, 1) + "%", max: 100, cl: i => i < 2 ? "c-ant" : "c-acc", now: i => i >= 2, pl: pls(c, true),
-      bk: [{ a: 2, b: 4, t: "+" + br(c[4] - c[2], 0) + " p.p. de ago a out" }], aria: "Conversão de agendamentos por mês" });
+    const A = SS.agend, a = A.agendados, c = A.conv, q = A.sequencia, tri = a[2] + a[3] + a[4];
+    const svg = cols({ vals: a, labs: A.meses, fv: v => br(v), cl: i => i < 2 ? "c-ant" : "c-acc", now: i => i >= 2, pl: pls(a),
+      bk: [{ a: 2, b: 4, t: pct(a[4], a[2]) + " de ago a out" }], aria: "Agendamentos fechados por mês" });
     return sl("Agendamentos", A.cor, `
-      ${kick("Agendamentos · Painel")}
-      <span class="big md a" style="--d:120ms">${cnt(c[4], { dec: 1, suf: "%", txt: br(c[4], 1) + "%" })}</span>
-      <p class="desc a" style="--d:260ms">de conversão em outubro, o melhor mês da série</p>
-      <div class="delta a" style="--d:380ms">▲ +${br(c[4] - c[2], 0)} p.p. vs agosto (${br(c[2], 1)}%)</div>
+      ${kick("Agendamentos · Automação")}
+      <span class="big md a" style="--d:120ms">${cnt(tri, { txt: br(tri) })}</span>
+      <p class="desc a" style="--d:260ms">agendamentos fechados no trimestre, de ${br(A.clientes)} clientes atendidos</p>
+      <div class="delta a" style="--d:380ms">▲ ${pct(a[4], a[2])} de ago a out (${a[2]} → ${a[4]} por mês)</div>
       <div class="facts">
-        ${fact(q.dias + " dias", `seguidos com 100% de conversão (${q.de} a ${q.ate}, ${q.clientes} clientes). Recorde anterior: ${q.recorde} dias`, 500, true)}
-        ${fact(br(A.agendados), `agendamentos fechados de ${br(A.clientes)} clientes atendidos (${br(A.convTri, 1)}%)`, 620)}
+        ${fact(q.dias + " dias", `seguidos com 100% de clientes agendados (${q.de} a ${q.ate}, ${q.clientes} clientes). Recorde anterior: ${q.recorde} dias`, 500, true)}
+        ${fact(br(c[4], 1) + "%", `de conversão em outubro, contra ${br(c[2], 1)}% em agosto`, 620)}
       </div>`,
-      `${svg}${legend(['<span><i style="background:var(--ant)"></i>jun–jul (antes do trimestre)</span>', '<span><i style="background:var(--accent)"></i>ago–out</span>', "<span>p.p. = pontos percentuais vs mês anterior</span>"])}
-       ${fonte("Conversão = clientes agendados ÷ clientes atendidos. A sequência de 100% segue em andamento.")}`);
+      `${svg}${legend(['<span><i style="background:var(--ant)"></i>jun–jul (antes do trimestre)</span>', '<span><i style="background:var(--accent)"></i>ago–out</span>', "<span>% = variação vs mês anterior</span>"])}
+       ${fonte("Agendamentos fechados por mês. A sequência de 100% segue em andamento.")}`);
   }
 
   function crm() {
@@ -583,11 +593,11 @@ button{font:inherit;color:inherit}
     const svg = cols({ vals: m, labs: ["Ago", "Set", "Out"], fv: v => br(v), pl: pls(m), now: () => true, base: 270, aria: "Atendimentos abertos no Kommo por mês" });
     return sl("CRM Kommo", C.cor, `
       ${kick("CRM Kommo · Atendimentos")}
-      <span class="big md a" style="--d:120ms">${cnt(C.total, { txt: br(C.total) })}</span>
-      <p class="desc a" style="--d:260ms">atendimentos abertos no trimestre, ${C.mediaDia} por dia</p>
-      <div class="delta a" style="--d:380ms">▲ ${pct(m[1], m[0])} de ago para set</div>
+      <span class="big md a" style="--d:120ms">${cnt(C.auto, { txt: br(C.auto) })}</span>
+      <p class="desc a" style="--d:260ms">atendimentos abertos pela automação no trimestre</p>
+      <div class="delta a" style="--d:380ms">▲ ${br(pa, 1)}% de todos os atendimentos (${br(C.total)})</div>
       <div class="facts">
-        ${fact(br(pa, 1) + "%", `abertos por automação (${br(C.auto)}); ${br(C.pessoa)} precisaram de uma pessoa`, 500, true)}
+        ${fact(C.mediaDia + "/dia", `atendimentos abertos no Kommo, ${pct(m[1], m[0])} de ago para set`, 500, true)}
         ${fact(C.funis, "funis ativos: vendas, suporte e cobrança", 620)}
       </div>`,
       `${svg}
@@ -618,59 +628,55 @@ button{font:inherit;color:inherit}
   }
 
   function cobr() {
-    const C = SS.cobr;
-    const svg = cols({ vals: C.taxaMes, labs: ["Ago", "Set"], fv: x => br(x, 1) + "%", max: 100, base: 250, now: () => true,
-      bk: [{ a: 0, b: 1, t: "média " + br(C.taxa, 1) + "%" }], aria: "Taxa de liquidação dos boletos" });
+    const C = SS.cobr, m = C.mensal, tot = m.reduce((a, b) => a + b, 0);
+    const svg = cols({ vals: m, labs: ["Ago", "Set", "Out"], fv: x => br(x), pl: pls(m), now: () => true,
+      bk: [{ a: 0, b: 2, t: pct(m[2], m[0]) + " de ago a out" }], aria: "Boletos emitidos e enviados pela automação por mês" });
     return sl("Cobrança RESOLVE", C.cor, `
-      ${kick("Cobrança RESOLVE · Boletos")}
-      <span class="big md a" style="--d:120ms">${cnt(C.taxa, { dec: 1, suf: "%", txt: br(C.taxa, 1) + "%" })}</span>
-      <p class="desc a" style="--d:260ms">dos boletos liquidados nas referências de ago e set</p>
-      <div class="delta a" style="--d:380ms">▲ pagos com desconto: ${br(C.desconto.ago, 1)}% (ago) → ${br(C.desconto.out, 1)}% (out)</div>
+      ${kick("Cobrança RESOLVE · Boletos automáticos")}
+      <span class="big md a" style="--d:120ms">${cnt(tot, { txt: br(tot) })}</span>
+      <p class="desc a" style="--d:260ms">boletos emitidos e enviados pela automação no trimestre</p>
+      <div class="delta a" style="--d:380ms">▲ ${pct(m[2], m[0])} de ago a out (${br(m[0])} → ${br(m[2])} por mês)</div>
       <div class="facts">
-        ${fact("R$ " + br(C.recebidoMi, 2) + " mi", `recebidos de R$ ${br(C.emitidoMi, 2)} mi emitidos`, 500, true)}
-        ${fact(br(C.emitidos), `boletos emitidos · ${br(C.abertos)} em aberto (${br(C.abertos / C.emitidos * 100, 1)}%)`, 620)}
+        ${fact(br(C.clientes), `clientes alcançados pela régua de cobrança, ${br(C.msgPorCliente, 1)} mensagens por cliente`, 500, true)}
+        ${fact(br(Math.round(tot / 3)), "boletos por mês, em média, sem envio manual", 620)}
       </div>`,
-      `${svg}
-       <div class="hbars tight" style="margin-top:14px">
-         ${hrow("Pagos com desconto · ago", "", br(C.desconto.ago, 1) + "%", C.desconto.ago / 100, 900, "alt")}
-         ${hrow("Pagos com desconto · out", "", br(C.desconto.out, 1) + "%", C.desconto.out / 100, 1000, "lead")}
-       </div>
-       ${fonte("Liquidação das referências de agosto e setembro. Outubro vence em novembro e ainda está em cobrança (44,4%), por isso fica fora da comparação.", 1100)}`);
+      `${svg}${legend(["<span>boletos emitidos por mês</span>", "<span>% = variação vs mês anterior</span>"])}
+       ${fonte("A automação da T.I. busca os boletos no ILEVA e envia a cada cliente todo mês. Boletos emitidos por referência; régua de cobrança do RamosHub.")}`);
   }
 
   function rast() {
-    const R = SS.rast, I = R.inst, A = R.ativ, h = I.horas;
-    const svg = cols({ vals: h, labs: ["Ago", "Set", "Out"], fv: v => v + "h", now: () => true, pl: h.map((x, i) => i ? { t: pct(x, h[i - 1]), up: x <= h[i - 1] } : null),
-      bk: [{ a: 0, b: 2, t: "média " + I.mediaTri + "h" }], aria: "Tempo médio de instalação do rastreador" });
-    return sl("Rastreador", R.cor, `
-      ${kick("Rastreador · Instalação e ativação")}
-      <span class="big md a" style="--d:120ms">${cnt(I.taxa, { dec: 1, suf: "%", txt: br(I.taxa, 1) + "%" })}</span>
-      <p class="desc a" style="--d:260ms">das instalações dentro do prazo de 72h</p>
-      <div class="delta a" style="--d:380ms">▼ ${pct(h[2], h[0])} no tempo médio de ago para out (${h[0]}h → ${h[2]}h)</div>
+    const R = SS.rast, I = R.inst, A = R.ativ, p = I.pedidosMes, tot = p.reduce((a, b) => a + b, 0);
+    const svg = cols({ vals: p, labs: ["Ago", "Set", "Out"], fv: v => br(v), now: () => true, pl: pls(p),
+      bk: [{ a: 0, b: 2, t: pct(p[2], p[0]) + " de ago a out" }], aria: "Pedidos de instalação acompanhados por mês" });
+    return sl("Painel de Instalações RESOLVE", R.cor, `
+      ${kick("Painel de Instalações RESOLVE")}
+      <span class="big md a" style="--d:120ms">${cnt(tot, { txt: br(tot) })}</span>
+      <p class="desc a" style="--d:260ms">clientes com pedido de instalação acompanhado em tempo real pelo painel desenvolvido pela T.I.</p>
+      <div class="delta a" style="--d:380ms">▲ ${pct(p[2], p[0])} de ago a out (${p[0]} → ${p[2]} por mês)</div>
       <div class="facts">
-        ${fact(br(I.concluidas), `instalações concluídas; ${br(I.noPrazo)} no prazo`, 500, true)}
-        ${fact(br(A.total), `veículos ativados (set+out), ${br(A.taxa, 1)}% em até 48h úteis`, 620)}
+        ${fact(br(I.taxa, 1) + "%", `das instalações dentro do prazo de 72h (${br(I.noPrazo)} de ${br(I.concluidas)} concluídas)`, 500, true)}
+        ${fact(br(A.total), `ativações acompanhadas (set+out), ${br(A.taxa, 1)}% em até 48h úteis`, 620)}
         ${fact(br(A.frota), "veículos ativos monitorados na base RESOLVE", 740)}
       </div>`,
-      `${svg}${legend(['<span><i style="background:var(--accent)"></i>tempo médio de instalação, em horas</span>', "<span>% = variação vs mês anterior (azul = tempo caiu)</span>"])}
-       ${fonte("Tempo médio entre o pedido e a instalação concluída. A ativação não guarda agosto no painel, por isso usa set e out.")}`);
+      `${svg}${legend(['<span><i style="background:var(--accent)"></i>pedidos de instalação por mês</span>', "<span>% = variação vs mês anterior</span>"])}
+       ${fonte("Painéis de instalação (SLA de 72h) e de ativação (SLA de 48h úteis). A ativação não guarda agosto no painel, por isso usa set e out.")}`);
   }
 
   function npsCli() {
-    const N = SS.nps;
-    const rows = N.servicos.map((s, i) => hrow(s.n, s.r + " resp.", br(s.v, 1), s.v / 100, 250 + i * 100, s.fraco ? "alt" : "")).join("");
-    return sl("NPS clientes", N.cor, `
-      ${kick("NPS de clientes · Set + Out")}
-      <span class="big md a" style="--d:120ms">${cnt(N.nps, { dec: 1, txt: br(N.nps, 1) })}</span>
-      <p class="desc a" style="--d:260ms">NPS geral, com nota média de ${br(N.nota, 2)} em 10</p>
-      <div class="delta a" style="--d:380ms">▲ ${br(N.set, 1)} (set) → ${br(N.out, 1)} (out)</div>
+    const N = SS.nps, max = N.setores[0].v;
+    const rows = N.setores.map((s, i) => hrow(s.n, s.tipo, cnt(s.v, { txt: br(s.v) }), s.v / max, 250 + i * 80, i === 0 ? "lead" : "")).join("");
+    return sl("Avaliações · Visão geral", N.cor, `
+      ${kick("NPS e CSAT · Visão geral")}
+      <span class="big md a" style="--d:120ms">${cnt(N.total, { txt: br(N.total) })}</span>
+      <p class="desc a" style="--d:260ms">avaliações de clientes recebidas e registradas no painel de NPS e CSAT</p>
+      <div class="delta a" style="--d:380ms">3 canais integrados: Kommo, GoTo e tablet da recepção</div>
       <div class="facts">
-        ${fact(br(N.resp), `respondentes, ${N.cresc}% a mais de set para out`, 500, true)}
-        ${fact(br(N.prom, 1) + "%", `promotores · ${br(N.detr, 1)}% detratores`, 620)}
-      </div>
-      <div class="call a" style="--d:760ms"><b>50,6</b><span>é o NPS da retirada de rastreador, o menor dos serviços. Pedidos aguardando retorno do cliente, sem lembrete automático.</span></div>`,
-      `<div class="hbars">${rows}</div>
-       ${fonte("NPS por tipo de serviço, set + out. Agosto sem dado de pesquisa. As pesquisas são enviadas automaticamente (2.268 no período).", 1000)}`);
+        ${fact(br(N.pesquisasAuto), "pesquisas de NPS enviadas automaticamente ao cliente, sem ação humana", 500, true)}
+        ${fact("2 s", "do tablet da recepção até o painel, com reenvio automático se falhar", 620)}
+        ${fact("79%", "das monitorias ligadas automaticamente à avaliação do cliente (63 de 80)", 740)}
+      </div>`,
+      `<div class="hbars tight">${rows}</div>
+       ${fonte("Avaliações por setor no trimestre (CSAT nos setores de atendimento, NPS no Técnico). Recepção e demais fontes completam o total. Ago " + br(N.mensal[0]) + " · Set " + br(N.mensal[1]) + " · Out " + br(N.mensal[2]) + ": outubro está subestimado, pois 5 fontes pararam de enviar dados em meados do mês.", 1000)}`);
   }
 
   function msg() {
@@ -691,20 +697,19 @@ button{font:inherit;color:inherit}
   }
 
   function bloq() {
-    const B = SS.bloq, tot = B.blocos.reduce((a, b) => a + b, 0), des = B.desbloq.reduce((a, b) => a + b, 0);
-    const svg = cols({ vals: B.blocos, v2: B.desbloq, labs: ["Ago", "Set", "Out"], fv: v => br(v), now: () => true, aria: "Bloqueios e desbloqueios por mês" });
+    const B = SS.bloq, tot = B.blocos.map((v, i) => v + B.liberacoes[i]), sb = B.blocos.reduce((a, b) => a + b, 0), sl2 = B.liberacoes.reduce((a, b) => a + b, 0), all = sb + sl2;
+    const svg = cols({ vals: B.blocos, v2: B.liberacoes, labs: ["Ago", "Set", "Out"], fv: v => br(v), now: () => true, pl: pls(tot), aria: "Bloqueios e liberações por mês" });
     return sl("Bloqueio", B.cor, `
-      ${kick("Bloqueio de inadimplentes")}
-      <span class="big md a" style="--d:120ms"><span class="was">${br(B.antes)}</span><span class="arr"> → </span>${B.depois}</span>
-      <p class="desc a" style="--d:260ms">inadimplentes com serviço ativo, antes e depois da rodada de 21/10</p>
-      <div class="delta a" style="--d:380ms">✔ 100% conferido na API do fornecedor</div>
+      ${kick("Bloqueio de inadimplentes · Ações")}
+      <span class="big md a" style="--d:120ms">${cnt(all, { txt: br(all) })}</span>
+      <p class="desc a" style="--d:260ms">ações de bloqueio e liberação no trimestre</p>
+      <div class="delta a" style="--d:380ms">★ Out · ${br(tot[2])} ações, o mês com mais movimento</div>
       <div class="facts">
-        ${fact(br(B.acoes), `ações no trimestre: ${br(tot)} bloqueios e ${br(des)} desbloqueios`, 500, true)}
-        ${fact(br(B.contas), `contas sob controle (antes: ${br(B.contasAntes)})`, 620)}
-        ${fact(br(B.avisos), "avisos de desligamento enviados (fluxo criado em setembro)", 740)}
+        ${fact(br(sb), "bloqueios no trimestre", 500, true)}
+        ${fact(br(sl2), "liberações no trimestre", 620)}
       </div>`,
-      `${svg}${legend(['<span><i style="background:var(--accent)"></i>bloqueios</span>', '<span><i style="background:#ffd24a"></i>desbloqueios</span>', "<span>total de ações por mês no topo</span>"])}
-       ${fonte("Em outubro a rodada de 21/10 bloqueou 1.210 contas de uma vez. Cada ação é conferida na API do fornecedor.")}`);
+      `${svg}${legend(['<span><i style="background:var(--accent)"></i>bloqueios</span>', '<span><i style="background:#ffd24a"></i>liberações</span>', "<span>total de ações por mês no topo · % = variação vs mês anterior</span>"])}
+       ${fonte("Ago: 166 bloqueios e 224 liberações · Set: 87 e 142 · Out: 889 e 102.")}`);
   }
 
   function patrimonio() {
@@ -728,7 +733,47 @@ button{font:inherit;color:inherit}
        ${fonte("Junho: 295 equipamentos cadastrados. Hoje: levantamento físico de 10/11/2026 (Matriz CearaGPS, CRX e filial Messejana).", 1200)}`);
   }
 
-  const slides = [capa(), chamados(), nps(), tma(), categorias(), patrimonio(), custoGeral(), custoServicos(), iaSdr(), agend(), crm(), lara(), cobr(), rast(), npsCli(), msg(), bloq()];
+  /* ---------- Bloco · Recepção (Matriz) ---------- */
+  function recA() {
+    const R = SS.recepcao, c = R.concluidos, cn = R.cancelados, tot = c.reduce((a, b) => a + b, 0), totC = cn.reduce((a, b) => a + b, 0);
+    const pl = c.map((v, i) => i ? { t: pct(v, c[i - 1]), up: v >= c[i - 1] } : { t: R.crescAgo, up: !R.crescAgo.startsWith("−") });
+    const svg = cols({ vals: c, labs: ["Ago", "Set", "Out"], fv: v => br(v), pl, now: () => true, base: 260, bk: [{ a: 0, b: 2, t: pct(c[2], c[0]) + " de ago a out" }], aria: "Atendimentos concluídos na Recepção por mês" });
+    const taxa = i => cn[i] / (c[i] + cn[i]) * 100, mx = Math.max(...cn);
+    const rows = ["Ago", "Set", "Out"].map((m, i) => hrow("Cancelados · " + m.toLowerCase(), br(taxa(i), 1) + "% dos atendimentos", br(cn[i]), cn[i] / mx, 900 + i * 100, i === 2 ? "lead" : "alt")).join("");
+    return sl("Recepção · Atendimentos", R.cor, `
+      ${kick("Painel da Recepção · Matriz GPS Ceará")}
+      <span class="big md a" style="--d:120ms">${cnt(tot, { txt: br(tot) })}</span>
+      <p class="desc a" style="--d:260ms">atendimentos concluídos e registrados pelo Painel da Recepção</p>
+      <div class="delta a" style="--d:380ms">▲ ${pct(c[2], c[0])} de ago a out (${br(c[0])} → ${br(c[2])})</div>
+      <div class="facts">
+        ${fact("3 indicadores", `medidos em tempo real pelo painel: TMA ${R.tma.media} · TME ${R.tme.media} min · SLA estourado ${br(R.sla.media, 1)}%`, 500, true)}
+        ${fact(totC, `cancelados no trimestre, caindo a cada mês: ${cn.join(" · ")}`, 620)}
+      </div>`,
+      `${svg}<div class="hbars tight" style="margin-top:12px">${rows}</div>
+       ${fonte("Concluídos por mês; a variação de agosto é contra julho. Cancelamento = cancelados ÷ (concluídos + cancelados).", 1200)}`);
+  }
+
+  function recB() {
+    const R = SS.recepcao, T = R.tma, E = R.tme, S = R.sla, M = ["Ago", "Set", "Out"];
+    const row = (nome, sub, vals, t, ok, d) => `<div class="n">${nome}<em>${sub}</em></div>${vals.map(v => `<div class="v">${v}</div>`).join("")}<div class="t ${ok ? "ok" : "bad"}">${t}</div>`;
+    const grid = `<div class="mg a" style="--d:300ms"><div class="h"></div>${M.map(m => `<div class="h">${m}</div>`).join("")}<div class="h">vs mai–jul</div>
+      ${row("TMA", "chegada → conclusão", T.rot, "▼ " + T.varTri + " (" + T.anterior + ")", true)}
+      ${row("TME", "chegada → início", E.min.map(x => x + " min"), "▲ " + E.varTri + " (" + E.anterior + " min)", false)}
+      ${row("SLA estourado", "concluídos fora do prazo", S.pct.map(x => br(x, 1) + "%"), "▼ " + S.varPP + " (" + br(S.anterior, 1) + "%)", true)}</div>`;
+    return sl("Recepção · Tempos", R.cor, `
+      ${kick("Recepção · Tempos de atendimento")}
+      <span class="big md a" style="--d:120ms">${cnt(T.min.reduce((a, b) => a + b, 0) / 3 | 0, { fmt: "hm", txt: T.media })}</span>
+      <p class="desc a" style="--d:260ms">TMA médio: da chegada do cliente até a conclusão</p>
+      <div class="delta a" style="--d:380ms">▼ ${T.varTri} vs mai–jul (${T.anterior})</div>
+      <div class="facts">
+        ${fact(E.media + " min", `TME médio até o início do atendimento. Subiu de ${E.min[0]} para ${E.min[2]} min no trimestre, o único indicador que piorou`, 500, true)}
+        ${fact(br(S.media, 1) + "%", `dos concluídos acima do prazo do serviço (SLA). Melhor mês: out, com ${br(S.pct[2], 1)}%`, 620)}
+      </div>`,
+      `${grid}${legend(['<span><i style="background:var(--accent)"></i>melhora vs mai–jul</span>', '<span><i style="background:#ffd24a"></i>piora vs mai–jul</span>'], 900)}
+       ${fonte("Recepção Matriz, relatório de 10/11/2026. TMA: chegada até conclusão. TME: chegada até início. SLA estourado: concluídos acima do prazo do serviço.", 1000)}`);
+  }
+
+  const slides = [capa(), chamados(), nps(), tma(), categorias(), patrimonio(), custoGeral(), custoServicos(), iaSdr(), agend(), crm(), lara(), cobr(), rast(), npsCli(), msg(), bloq(), recA()]  // recB() (tempos da recepção) fica fora: é desempenho da área;
 
   /* ---------- contadores ---------- */
   const fmtCount = (c, v) => {

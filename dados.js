@@ -103,16 +103,20 @@ window.RESULTADOS = {
   /* Bloco 3 · resultados dos sistemas (ago–out/2026). Fonte: relatório "Resultados dos Sistemas" (dados de 10/11/2026). */
   sistemas: {
     agend: { cor: "#f472b6", meses: ["Jun", "Jul", "Ago", "Set", "Out"], conv: [55.8, 55.7, 57.6, 70.5, 81.3],
-      clientes: 1598, agendados: 1122, convTri: 70.2, sequencia: { dias: 20, clientes: 354, de: "17/10", ate: "09/11", recorde: 4 } },
+      clientes: 1598, agendados: [129, 141, 288, 382, 452], convTri: 70.2, sequencia: { dias: 20, clientes: 354, de: "17/10", ate: "09/11", recorde: 4 } },
     crm: { cor: "#fb923c", total: 68520, auto: 42609, pessoa: 25911, mensal: [17101, 26171, 25248], mediaDia: 745, funis: 23 },
     lara: { cor: "#22d3ee", total: 8051, mensal: [1749, 3219, 3083], boleto: 5395, negoc: 1404, fimSemana: 678, porDia: 134, porDiaAgo: 83 },
-    cobr: { cor: "#a3e635", emitidos: 13189, liquidados: 12469, taxa: 94.5, taxaAmr: 85.8, taxaMes: [95.1, 94.0], recebidoMi: 1.87, emitidoMi: 2.17, abertos: 720,
-      desconto: { ago: 17.2, out: 91.2 } },
-    rast: { cor: "#2dd4bf", inst: { concluidas: 1044, noPrazo: 1037, taxa: 99.3, pedidos: 1602, horas: [130, 108, 115], mediaTri: 114, junho: 350 },
+    cobr: { cor: "#a3e635", mensal: [6294, 6895, 7423], clientes: 10236, msgPorCliente: 6.5 },
+    rast: { cor: "#2dd4bf", inst: { pedidosMes: [466, 522, 614], concluidas: 1044, noPrazo: 1037, taxa: 99.3, pedidos: 1602, horas: [130, 108, 115], mediaTri: 114, junho: 350 },
       ativ: { total: 1846, noPrazo: 1811, taxa: 98.1, frota: 9323 } },
-    nps: { cor: "#e879f9", nps: 64.9, nota: 8.70, resp: 793, prom: 78.3, detr: 13.4, cresc: 85, set: 63.7, out: 65.6,
-      servicos: [{ n: "Preventiva", v: 79.1, r: 182 }, { n: "Vistoria", v: 71.4, r: 7 }, { n: "Manutenção", v: 69.7, r: 218 }, { n: "Venda", v: 64.6, r: 79 }, { n: "Retirada", v: 50.6, r: 257, fraco: true }] },
+    nps: { cor: "#e879f9", total: 11776, mensal: [5496, 3498, 2782], pesquisasAuto: 2268,
+      setores: [{ n: "Suporte", tipo: "CSAT", v: 2537 }, { n: "Central", tipo: "CSAT", v: 2520 }, { n: "Recebíveis", tipo: "CSAT", v: 2185 }, { n: "Comercial", tipo: "CSAT", v: 1998 },
+        { n: "Técnico", tipo: "NPS", v: 793 }, { n: "Agendamento", tipo: "CSAT", v: 648 }, { n: "CRX — Suporte Técnico", tipo: "CSAT", v: 221 }, { n: "Financeiro CRX", tipo: "CSAT", v: 106 }] },
     msg: { cor: "#38bdf8", total: 66278, porDia: 720, mensal: [18454, 25011, 22813], erros: 7, disparos: 15293, segundasVias: 6967 },
-    bloq: { cor: "#f87171", antes: 1213, depois: 0, acoes: 1610, blocos: [166, 87, 889], desbloq: [224, 142, 102], contas: 1688, contasAntes: 499, avisos: 30550 }
+    recepcao: { cor: "#a5b4fc", concluidos: [945, 992, 1038], crescAgo: "−0,8%", cancelados: [98, 74, 63],
+      tma: { min: [90, 95, 87], rot: ["1h30", "1h35", "1h27"], media: "1h30", varTri: "−24,9%", anterior: "2h00" },
+      tme: { min: [12, 15, 19], media: 16, anterior: 13, varTri: "+23,2%" },
+      sla: { pct: [63.3, 60.5, 58.4], media: 60.6, anterior: 68.1, varPP: "−7,5 p.p." } },
+    bloq: { cor: "#f87171", blocos: [166, 87, 889], liberacoes: [224, 142, 102] }
   }
 };
