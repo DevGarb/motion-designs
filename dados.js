@@ -196,7 +196,7 @@ window.APRESENTACAO = {
       ["Backup", "Cópia de segurança. Sem backup testado, não existe backup"] ] },
 
   { tipo: "cena", label: "Chave", cor: "#ef4444",
-    kicker: "Bloco 5 · Na prática", titulo: "Chave embaixo do capacho",
+    kicker: "Bloco 5 · Na prática", titulo: "Chave vazada x chave guardada",
     cenas: [
       { nome: "Errado", sub: "Chave no GitHub", cor: "#ef4444",
         passos: [["🔑", "Chave colada no código"], ["🐙", "Vai para o GitHub"], ["🤖", "Robô acha em minutos"], ["💸", "A conta chega para você"]],
