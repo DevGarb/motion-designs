@@ -344,6 +344,23 @@ button{font:inherit;color:inherit}
 .ck b{font-size:clamp(17px,1.4vw,22px);font-weight:800}
 .ck span{color:var(--muted);font-size:clamp(14px,1.15vw,18px);line-height:1.4}
 @media (max-width:900px){.grid2,.comp,.cards{grid-template-columns:1fr}.agenda{flex-direction:column}.ag-arrow{display:none}.nv,.ck,.tr{grid-template-columns:1fr}.nv:nth-child(n){margin-left:0}}
+
+/* ícones emoji nos cards + cenas ilustradas */
+.cardx .m.ico{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:26px;font-weight:400}
+.cards.c4 .cardx .m.ico{font-size:23px}
+.cenas{display:grid;gap:14px;margin-top:4px}
+.cena{--c:var(--accent);display:grid;grid-template-columns:190px 1fr;column-gap:22px;row-gap:8px;align-items:center;padding:16px 22px;border-radius:18px;
+  border:1px solid color-mix(in oklab,var(--c) 40%,transparent);background:linear-gradient(180deg,color-mix(in oklab,var(--c) 11%,transparent),var(--panel))}
+.cena-h h3{font-size:clamp(20px,1.8vw,28px);font-weight:800;letter-spacing:-.02em;color:var(--c);line-height:1.1}
+.cena-h small{display:block;margin-top:6px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.cena-row{display:flex;align-items:flex-start;gap:6px}
+.cena-p{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;min-width:0}
+.cena-p .em{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:clamp(34px,3.4vw,54px);line-height:1}
+.cena-p .tx{font-size:clamp(12px,1vw,15px);line-height:1.3;color:var(--muted)}
+.cena-ar{position:relative;flex:none;width:20px;height:2px;margin-top:clamp(18px,1.8vw,27px);background:var(--c);opacity:.7}
+.cena-ar::after{content:"";position:absolute;right:-2px;top:-4px;border:5px solid transparent;border-left-color:var(--c);border-right:0}
+.cena-m{grid-column:2;margin:2px 0 0;padding-left:12px;border-left:2px solid var(--c);color:var(--text);font-size:clamp(13px,1.1vw,17px);line-height:1.4}
+@media (max-width:900px){.cena{grid-template-columns:1fr}.cena-m{grid-column:1}.cena-row{flex-wrap:wrap}.cena-ar{display:none}}
 </style>
 </head>
 <body>

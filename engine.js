@@ -23,7 +23,7 @@
         (k < s.etapas.length - 1 ? `<span class="ag-arrow a" style="--d:${380 + k * 160}ms"></span>` : "")).join("")}</div></div>`,
     cards: s => `<div class="inner">${head(s)}
       <div class="cards${(s.cols || 3) === 4 ? " c4" : ""}" style="--n:${s.cols || Math.min(s.itens.length, 3)}">${s.itens.map((c, k) => `
-        <div class="cardx a" style="--d:${300 + k * 110}ms;--c:${c.cor}"><div class="m">${esc(c.sig)}</div><h3>${esc(c.nome)}</h3><p>${esc(c.desc)}</p></div>`).join("")}</div>
+        <div class="cardx a" style="--d:${300 + k * 110}ms;--c:${c.cor}"><div class="m${c.ico ? " ico" : ""}">${esc(c.ico || c.sig)}</div><h3>${esc(c.nome)}</h3><p>${esc(c.desc)}</p></div>`).join("")}</div>
       ${s.nota ? `<p class="notex a" style="--d:${400 + s.itens.length * 110}ms">${esc(s.nota)}</p>` : ""}</div>`,
     produto: s => `<div class="bigsig">${esc(s.sig)}</div>
       <div class="inner sistema">
@@ -125,6 +125,13 @@
     compara: s => `<div class="inner">${head(s)}
       <div class="comp" style="--n:${s.colunas.length}">${s.colunas.map((c, k) => `<div class="cp a" style="--d:${300 + k * 160}ms;--c:${c.cor}"><h3>${esc(c.nome)}</h3><small>${esc(c.sub)}</small>
         <ul>${c.linhas.map((t, j) => `<li class="a" style="--d:${500 + k * 160 + j * 100}ms">${esc(t)}</li>`).join("")}</ul></div>`).join("")}</div></div>`,
+    cena: s => `<div class="inner">${head(s)}
+      <div class="cenas">${s.cenas.map((c, k) => `<div class="cena a" style="--d:${300 + k * 240}ms;--c:${c.cor}">
+        <div class="cena-h"><h3>${esc(c.nome)}</h3><small>${esc(c.sub)}</small></div>
+        <div class="cena-row">${c.passos.map(([e, t], j) => `<div class="cena-p a" style="--d:${520 + k * 240 + j * 170}ms"><span class="em">${esc(e)}</span><span class="tx">${esc(t)}</span></div>` +
+          (j < c.passos.length - 1 ? `<span class="cena-ar a" style="--d:${600 + k * 240 + j * 170}ms"></span>` : "")).join("")}</div>
+        <p class="cena-m">${esc(c.moral)}</p></div>`).join("")}</div>
+      ${s.nota ? `<p class="notex a" style="--d:${500 + s.cenas.length * 240}ms">${esc(s.nota)}</p>` : ""}</div>`,
     checklist: s => `<div class="inner">${head(s)}
       <div class="chk">${s.itens.map(([b, t], k) => `<div class="ck a" style="--d:${300 + k * 130}ms"><span class="box"></span><b>${esc(b)}</b><span>${esc(t)}</span></div>`).join("")}</div></div>`,
     fim: s => `<div class="orbit"></div><div class="orbit o2"></div>
