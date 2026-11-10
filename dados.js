@@ -57,5 +57,38 @@ window.RESULTADOS = {
         { nome: "Troca de componentes", sub: "", p: 4 }
       ]
     }
+  },
+
+  /* Bloco 2 · custo de infra e I.A. Fonte: valores informados pela T.I (10/11/2026).
+     Câmbio = média do dólar no ano. VPS e domínio são anuais, rateados em 12 meses.
+     Claude: 9 licenças, R$ 1.242/mês (a Claude API não é mais usada). */
+  custos: {
+    cor: "#34d399",
+    cambio: 5.12,
+    meses: ["Ago", "Set", "Out"],
+    // AMR: estimativa mensal (infra = Lovable + OpenAI + VPS · licenças = Claude API + ChatGPT)
+    amr: { total: 1807, anual: 21686, infra: 1657, licencas: 150 },
+    servicos: [
+      { nome: "Lovable", curto: "Lovable", grupo: "infra", valores: [1602.21, 984.00, 1495.50], amr: 1028, creditos: [1200, 700, 1050] },
+      { nome: "Claude · 9 licenças", curto: "Claude", grupo: "lic", valores: [1242, 1242, 1242], amrTxt: "AMR: API R$ 110 (saiu)" },
+      { nome: "OpenAI API", curto: "OpenAI", grupo: "infra", usd: [90, 70, 43], amr: 514, amrUsd: 100 },
+      { nome: "VPS Hostinger + domínio", curto: "VPS", grupo: "infra", valores: Array(3).fill((3563.76 + 208.08) / 12), amr: 115 },
+      { nome: "ManyChat", curto: "ManyChat", grupo: "infra", valores: [149.00, 325.33, 249.00], novo: true },
+      { nome: "UazAPI", curto: "UazAPI", grupo: "infra", valores: [139, 139, 139], novo: true },
+      { nome: "ChatGPT Go", curto: "ChatGPT", grupo: "lic", valores: [39.90, 39.90, 39.90], amr: 40 }
+    ]
+  },
+
+  /* I.A SDR (CRX) · atendimentos por mês, nov/25 a out/26. Total desde 23/10/2025: 3.199 (91 em out/25, fora da série). */
+  iaSdr: {
+    cor: "#a78bfa",
+    serie: [
+      { m: "Nov", n: 574 }, { m: "Dez", n: 328 }, { m: "Jan", n: 171 }, { m: "Fev", n: 325 }, { m: "Mar", n: 170 },
+      { m: "Abr", n: 187 }, { m: "Mai", n: 209 }, { m: "Jun", n: 143 }, { m: "Jul", n: 402 },
+      { m: "Ago", n: 267 }, { m: "Set", n: 234 }, { m: "Out", n: 98 }
+    ],
+    idxAnterior: [5, 6, 7], idxAtual: [9, 10, 11], idxPonte: 8,
+    totalAcumulado: 3199, desde: "23/10/2025", mediaAno: 259,
+    humano: { min: 1800, max: 2100 }
   }
 };
