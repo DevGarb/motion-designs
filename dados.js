@@ -16,18 +16,8 @@ window.APRESENTACAO = {
     kicker: "Encontro 05 / 10",
     titulo: ["A língua", "da tecnologia"],
     lead: "Você já construiu um app. Agora vai entender o que aconteceu por baixo e falar a mesma língua do seu time de tecnologia.",
-    stats: [["50+", "termos"], ["6", "blocos"], ["1", "mapa de sistemas"]],
+    stats: [["50+", "termos"], ["5", "blocos"], ["1", "mapa de sistemas"]],
     marquee: ["API", "JSON", "Webhook", "Commit", "Deploy", "Banco de dados", "Token", "Agente", "Workflow", ".env", "LGPD"] },
-
-  { tipo: "agenda", label: "Hoje", cor: "#22d3ee",
-    kicker: "Hoje", titulo: "O caminho de hoje",
-    etapas: [
-      ["0:00", "Estrutura", "Onde as coisas vivem"],
-      ["0:20", "Conversa", "API, JSON e webhook"],
-      ["0:50", "Código", "Commit, deploy e versões"],
-      ["1:15", "IA", "Os termos que você vai ouvir"],
-      ["1:35", "Segurança", "O erro mais caro"],
-      ["1:45", "Mapa", "Os sistemas da sua empresa"] ] },
 
   { tipo: "merge", label: "Por que aprender", cor: "#22d3ee",
     kicker: "Ponte", titulo: ["Entender", "para cobrar"],
@@ -45,6 +35,12 @@ window.APRESENTACAO = {
       { sig: "DB", nome: "Banco de dados", cor: "#f59e0b", desc: "O estoque. Onde os dados ficam guardados, organizados em tabelas." },
       { sig: "AP", nome: "API", cor: "#22d3ee", desc: "O garçom. Leva o pedido do salão até a cozinha e traz a resposta." } ],
     nota: "O app que você construiu no Lovable tem os quatro. Você só viu o salão." },
+
+  { tipo: "fluxo", label: "Viagem do pedido", cor: "#60a5fa",
+    kicker: "Bloco 1 · Estrutura", titulo: "A viagem de um pedido",
+    etapas: ["Cliente pede", "Salão", "Garçom", "Cozinha", "Estoque", "Prato na mesa"],
+    exemplo: "Você toca em \"ver meus pedidos\" no app → a tela (salão) chama a API (garçom) → o back-end (cozinha) confere as regras → busca no banco (estoque) → devolve a lista em JSON (o prato) → a tela mostra.",
+    pontos: ["O cliente nunca entra na cozinha: só vê o salão.", "Se o prato demora, o problema pode estar em qualquer etapa. Saber a ordem ajuda a cobrar a certa.", "Cada etapa tem um dono técnico. Pergunte quem."] },
 
   { tipo: "tabela", label: "Onde vive", cor: "#60a5fa",
     kicker: "Bloco 1 · Estrutura", titulo: "Onde os sistemas moram",
@@ -91,14 +87,14 @@ window.APRESENTACAO = {
   { tipo: "compara", label: "API x Webhook", cor: "#22d3ee",
     kicker: "Bloco 2 · Quem avisa quem", titulo: "Perguntar ou ser avisado",
     colunas: [
-      { nome: "API (polling)", cor: "#60a5fa", sub: "Você vai até a janela olhar", linhas: ["Seu sistema pergunta de tempos em tempos", "\"Chegou cliente novo?\" a cada 5 min", "Gasta pedido mesmo quando nada mudou"] },
-      { nome: "Webhook", cor: "#22d3ee", sub: "A campainha toca", linhas: ["O outro sistema avisa na hora que acontece", "\"Chegou cliente novo\" e já manda os dados", "É o gatilho das automações do n8n"] } ] },
+      { nome: "API (polling)", cor: "#60a5fa", sub: "Ligar na pizzaria: \"já saiu?\"", linhas: ["Seu sistema pergunta de tempos em tempos", "\"Chegou cliente novo?\" a cada 5 min", "Gasta pedido mesmo quando nada mudou"] },
+      { nome: "Webhook", cor: "#22d3ee", sub: "O entregador toca a campainha", linhas: ["O outro sistema avisa na hora que acontece", "\"Chegou cliente novo\" e já manda os dados", "É o gatilho das automações do n8n"] } ] },
 
   { tipo: "tabela", label: "Mais termos", cor: "#22d3ee",
     kicker: "Bloco 2 · Glossário", titulo: "O que você vai ouvir nas reuniões",
     linhas: [
-      ["Chave de API (token)", "A senha que identifica quem está pedindo"],
-      ["Rate limit", "Limite de pedidos por minuto. Passou, bloqueia"],
+      ["Token de API (o crachá)", "Prova quem está pedindo. Não é o token da IA"],
+      ["Rate limit", "A catraca do buffet: um prato por vez. Passou do limite, trava"],
       ["Integração", "Dois sistemas trocando dados sozinhos"],
       ["REST", "O jeito mais comum de montar uma API"],
       ["Payload", "O conteúdo que vai dentro do pedido"],
@@ -110,19 +106,19 @@ window.APRESENTACAO = {
     kicker: "Bloco 3 · Código e versão", titulo: "Do pedido ao app no ar",
     etapas: ["Mudança", "Commit", "Push", "GitHub", "Deploy", "No ar"],
     exemplo: "Você pediu \"adiciona gráfico de 30 dias\" → o Claude Code alterou o código → fez commit → enviou com push para o GitHub → o Lovable publicou (deploy) → o gráfico apareceu no seu celular.",
-    pontos: ["Commit é uma foto salva da mudança, com uma mensagem dizendo o que mudou.", "O GitHub guarda todas as fotos. Dá para voltar a qualquer uma.", "Deploy é colocar a versão nova no ar para os usuários."] },
+    pontos: ["Commit é salvar o jogo, com uma mensagem dizendo o que mudou.", "O GitHub guarda todos os saves. Dá para voltar a qualquer um.", "Deploy é colocar a versão nova no ar para os usuários."] },
 
   { tipo: "cards", label: "Termos do GitHub", cor: "#a78bfa",
     kicker: "Bloco 3 · Glossário", titulo: "O vocabulário do GitHub", cols: 4,
     itens: [
       { sig: "RP", nome: "Repositório", cor: "#a78bfa", desc: "A pasta do projeto com todo o histórico. O seu app tem um, e é seu." },
-      { sig: "CM", nome: "Commit", cor: "#a78bfa", desc: "Foto salva de uma mudança. Ex.: \"adiciona gráfico de ouro\"." },
-      { sig: "BR", nome: "Branch", cor: "#a78bfa", desc: "Cópia paralela para testar sem quebrar o que está no ar." },
-      { sig: "PR", nome: "Pull Request", cor: "#a78bfa", desc: "Pedido para juntar a cópia ao principal. Alguém revisa e aprova." },
+      { sig: "CM", nome: "Commit", cor: "#a78bfa", desc: "Salvar o jogo. Cada save tem uma mensagem. Ex.: \"adiciona gráfico de ouro\"." },
+      { sig: "BR", nome: "Branch", cor: "#a78bfa", desc: "Jogar numa cópia do save para testar sem perder o jogo principal." },
+      { sig: "PR", nome: "Pull Request", cor: "#a78bfa", desc: "Mostrar o jogo ao chefe antes de valer. Alguém revisa e aprova." },
       { sig: "CL", nome: "Clone", cor: "#60a5fa", desc: "Baixar uma cópia do repositório para o seu computador." },
       { sig: "PS", nome: "Push / Pull", cor: "#60a5fa", desc: "Enviar mudanças para o GitHub / trazer de lá." },
       { sig: "DP", nome: "Deploy", cor: "#00e676", desc: "Publicar a versão nova. O botão Publish do Lovable." },
-      { sig: "RB", nome: "Rollback", cor: "#ef4444", desc: "Voltar para a versão anterior quando algo quebra." } ] },
+      { sig: "RB", nome: "Rollback", cor: "#ef4444", desc: "Carregar o save anterior quando algo quebra." } ] },
 
   { tipo: "compara", label: "Ambientes", cor: "#a78bfa",
     kicker: "Bloco 3 · Onde testar", titulo: "Nunca teste no que está no ar",
@@ -136,12 +132,12 @@ window.APRESENTACAO = {
   { tipo: "cards", label: "Termos de IA", cor: "#f97316",
     kicker: "Bloco 4 · Inteligência artificial", titulo: "O vocabulário da IA", cols: 4,
     itens: [
-      { sig: "LL", nome: "LLM", cor: "#f97316", desc: "Modelo de linguagem. Claude, ChatGPT, Gemini." },
+      { sig: "LL", nome: "LLM", cor: "#f97316", desc: "Um autocompletar com superpoderes. Claude, ChatGPT, Gemini." },
       { sig: "PR", nome: "Prompt", cor: "#f97316", desc: "A instrução que você dá. O briefing bem feito." },
-      { sig: "TK", nome: "Token", cor: "#f97316", desc: "Pedaço de texto. É assim que a IA lê e que você paga. 1 página ≈ 600 tokens." },
-      { sig: "CX", nome: "Contexto", cor: "#f97316", desc: "Quanto a IA lembra numa conversa. Cabe um contrato inteiro." },
-      { sig: "AL", nome: "Alucinação", cor: "#ef4444", desc: "A IA inventa algo com confiança. Por isso se confere fonte." },
-      { sig: "RG", nome: "RAG", cor: "#a78bfa", desc: "A IA consulta os seus documentos antes de responder." },
+      { sig: "TK", nome: "Token", cor: "#f97316", desc: "A ficha de fliperama: cada pedaço de texto gasta uma. 1 página ≈ 600 tokens." },
+      { sig: "CX", nome: "Contexto", cor: "#f97316", desc: "A mesa de trabalho: o que cabe nela a IA enxerga. Cabe um contrato." },
+      { sig: "AL", nome: "Alucinação", cor: "#ef4444", desc: "O estagiário que nunca diz \"não sei\": inventa com confiança. Confira a fonte." },
+      { sig: "RG", nome: "RAG", cor: "#a78bfa", desc: "Prova com consulta: a IA lê os seus documentos antes de responder." },
       { sig: "MC", nome: "MCP / Conector", cor: "#22d3ee", desc: "A tomada que liga a IA ao Gmail, Drive, CRM." },
       { sig: "VC", nome: "Vibecoding", cor: "#00e676", desc: "Criar software descrevendo o que quer. O que você fez no Lovable." } ],
     nota: "Skill e agente você já conhece do Encontro 2." },
@@ -161,7 +157,7 @@ window.APRESENTACAO = {
     kicker: "Bloco 5 · O erro mais caro", titulo: "Segurança em seis termos",
     linhas: [
       [".env", "Arquivo secreto com as chaves. Nunca vai para o GitHub"],
-      ["Chave exposta", "Quem acha, usa. E a conta vem para você"],
+      ["Chave exposta", "Chave embaixo do capacho: robôs varrem repositórios atrás delas"],
       ["2FA", "Segundo código no celular para entrar"],
       ["HTTPS / SSL", "O cadeado do navegador: conexão protegida"],
       ["LGPD", "Dado pessoal de cliente não vai para IA pública"],
@@ -181,6 +177,16 @@ window.APRESENTACAO = {
       "- process.env.ANTHROPIC_API_KEY" ] },
 
   /* ---------------- FECHAMENTO ---------------- */
+
+  { tipo: "tabela", label: "Tradutor", cor: "#00e676",
+    kicker: "Fechamento · Na prática", titulo: "Tradutor de reunião",
+    linhas: [
+      ["\"Subiu para produção\"", "Já está no ar para os clientes"],
+      ["\"Tá em homologação\"", "Está no test-drive esperando sua aprovação"],
+      ["\"Deu timeout\"", "O sistema demorou demais para responder"],
+      ["\"Erro 500\"", "Quebrou no servidor, não foi você"],
+      ["\"Vou fazer um rollback\"", "Vou voltar para a versão que funcionava"],
+      ["\"Chegou via webhook\"", "O outro sistema avisou sozinho, na hora"] ] },
 
   { tipo: "checklist", label: "Mapa de sistemas", cor: "#00e676",
     kicker: "Mão na massa", titulo: "O mapa de sistemas da sua empresa",
