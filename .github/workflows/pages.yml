@@ -7,6 +7,7 @@ name: Publicar no GitHub Pages
 #   /roteirizador-frotas/   -> branch roteirizador-frotas
 #   /konfia-encontro-01/    -> branch konfia-encontro-01
 #   /konfia-encontro-02/    -> branch konfia-encontro-02
+#   /konfia-encontro-05/    -> branch konfia-encontro-05
 #   /oyp-apresentacao/      -> branch oyp-apresentacao
 #   /aula-planilha-sistema/ -> branch aula-planilha-sistema
 #   /alinhamento-ti/        -> branch alinhamento-ti
@@ -45,6 +46,8 @@ jobs:
       - uses: actions/checkout@v4
         with: { ref: konfia-encontro-02, path: konfia-encontro-02 }
       - uses: actions/checkout@v4
+        with: { ref: konfia-encontro-05, path: konfia-encontro-05 }
+      - uses: actions/checkout@v4
         with: { ref: oyp-apresentacao, path: oyp-apresentacao }
       - uses: actions/checkout@v4
         with: { ref: aula-planilha-sistema, path: aula-planilha-sistema }
@@ -61,6 +64,7 @@ jobs:
           rsync -a --exclude .git --exclude .github --exclude design roteirizador-frotas/ _site/roteirizador-frotas/
           rsync -a --exclude .git --exclude .github konfia-encontro-01/ _site/konfia-encontro-01/
           rsync -a --exclude .git --exclude .github konfia-encontro-02/ _site/konfia-encontro-02/
+          rsync -a --exclude .git --exclude .github konfia-encontro-05/ _site/konfia-encontro-05/
           rsync -a --exclude .git --exclude .github oyp-apresentacao/ _site/oyp-apresentacao/
           rsync -a --exclude .git --exclude .github aula-planilha-sistema/ _site/aula-planilha-sistema/
           rsync -a --exclude .git --exclude .github alinhamento-ti/ _site/alinhamento-ti/
