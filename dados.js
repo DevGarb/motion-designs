@@ -66,16 +66,16 @@ window.RESULTADOS = {
     cor: "#34d399",
     cambio: 5.12,
     meses: ["Ago", "Set", "Out"],
-    // AMR: estimativa mensal (infra = Lovable + OpenAI + VPS · licenças = Claude API + ChatGPT)
-    amr: { total: 1807, anual: 21686, infra: 1657, licencas: 150 },
+    // AMR: estimativa mensal. Infra = só a VPS · ferramentas = Lovable + OpenAI + Claude API + ChatGPT
+    amr: { total: 1807, anual: 21686, infra: 115, ferramentas: 1692 },
     servicos: [
-      { nome: "Lovable", curto: "Lovable", grupo: "infra", valores: [1602.21, 984.00, 1495.50], amr: 1028, creditos: [1200, 700, 1050] },
-      { nome: "Claude · 9 licenças", curto: "Claude", grupo: "lic", valores: [1242, 1242, 1242], amrTxt: "AMR: API R$ 110 (saiu)" },
-      { nome: "OpenAI API", curto: "OpenAI", grupo: "infra", usd: [90, 70, 43], amr: 514, amrUsd: 100 },
+      { nome: "Lovable", curto: "Lovable", grupo: "ferr", valores: [1602.21, 984.00, 1495.50], amr: 1028, creditos: [1200, 700, 1050] },
+      { nome: "Claude · 9 licenças", curto: "Claude", grupo: "ferr", valores: [1242, 1242, 1242], amrTxt: "AMR: API R$ 110 (saiu)" },
+      { nome: "OpenAI API", curto: "OpenAI", grupo: "ferr", usd: [90, 70, 43], amr: 514, amrUsd: 100 },
       { nome: "VPS Hostinger + domínio", curto: "VPS", grupo: "infra", valores: Array(3).fill((3563.76 + 208.08) / 12), amr: 115 },
-      { nome: "ManyChat", curto: "ManyChat", grupo: "infra", valores: [149.00, 325.33, 249.00], novo: true },
-      { nome: "UazAPI", curto: "UazAPI", grupo: "infra", valores: [139, 139, 139], novo: true },
-      { nome: "ChatGPT Go", curto: "ChatGPT", grupo: "lic", valores: [39.90, 39.90, 39.90], amr: 40 }
+      { nome: "ManyChat", curto: "ManyChat", grupo: "ferr", valores: [149.00, 325.33, 249.00], novo: true },
+      { nome: "UazAPI", curto: "UazAPI", grupo: "ferr", valores: [139, 139, 139], novo: true },
+      { nome: "ChatGPT Go", curto: "ChatGPT", grupo: "ferr", valores: [39.90, 39.90, 39.90], amr: 40 }
     ]
   },
 
