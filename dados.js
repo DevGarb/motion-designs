@@ -38,11 +38,19 @@ window.RESULTADOS = {
       mediaAtual: { minutos: 416, rotulo: "6h56" },
       medianaAgoSet: 47, medianaOut: 34
     },
+    patrimonio: {
+      unidades: [{ nome: "Matriz CearaGPS", n: 285 }, { nome: "CRX", n: 30 }, { nome: "Filial Messejana", n: 9 }],
+      itens: [
+        { nome: "Monitores", n: 119, junho: 136 }, { nome: "Notebooks", n: 98, junho: 134 }, { nome: "Celulares", n: 74 },
+        { nome: "Desktops", n: 12, junho: 11 }, { nome: "TVs", n: 11, junho: 11 }, { nome: "Impressoras", n: 5, junho: 3 }, { nome: "Tablets", n: 5 }
+      ],
+      preventivas: { meses: ["Jul", "Ago", "Set", "Out"], valores: [14, 36, 28, 10], total: 88, anterior: 63, mesesAnterior: 3 }
+    },
     categorias: {
       periodo: "ago a out",
       lista: [
         { nome: "Equipamentos & Logística", n: 254, destaque: true },
-        { nome: "Avulsos / outros", n: 216 },
+        { nome: "Sistemas: desenvolvimento, manutenção e suporte", n: 216 },
         { nome: "Acessos & Identidade", n: 201 },
         { nome: "Usuário", n: 117 },
         { nome: "Service ERP", n: 96 },
@@ -90,5 +98,21 @@ window.RESULTADOS = {
     idxAnterior: [5, 6, 7], idxAtual: [9, 10, 11], idxPonte: 8,
     totalAcumulado: 3199, desde: "23/10/2025", mediaAno: 259,
     humano: { min: 1800, max: 2100 }
+  },
+
+  /* Bloco 3 · resultados dos sistemas (ago–out/2026). Fonte: relatório "Resultados dos Sistemas" (dados de 10/11/2026). */
+  sistemas: {
+    agend: { cor: "#f472b6", meses: ["Jun", "Jul", "Ago", "Set", "Out"], conv: [55.8, 55.7, 57.6, 70.5, 81.3],
+      clientes: 1598, agendados: 1122, convTri: 70.2, sequencia: { dias: 20, clientes: 354, de: "17/10", ate: "09/11", recorde: 4 } },
+    crm: { cor: "#fb923c", total: 68520, auto: 42609, pessoa: 25911, mensal: [17101, 26171, 25248], mediaDia: 745, funis: 23 },
+    lara: { cor: "#22d3ee", total: 8051, mensal: [1749, 3219, 3083], boleto: 5395, negoc: 1404, fimSemana: 678, porDia: 134, porDiaAgo: 83 },
+    cobr: { cor: "#a3e635", emitidos: 13189, liquidados: 12469, taxa: 94.5, taxaAmr: 85.8, taxaMes: [95.1, 94.0], recebidoMi: 1.87, emitidoMi: 2.17, abertos: 720,
+      desconto: { ago: 17.2, out: 91.2 } },
+    rast: { cor: "#2dd4bf", inst: { concluidas: 1044, noPrazo: 1037, taxa: 99.3, pedidos: 1602, horas: [130, 108, 115], mediaTri: 114, junho: 350 },
+      ativ: { total: 1846, noPrazo: 1811, taxa: 98.1, frota: 9323 } },
+    nps: { cor: "#e879f9", nps: 64.9, nota: 8.70, resp: 793, prom: 78.3, detr: 13.4, cresc: 85, set: 63.7, out: 65.6,
+      servicos: [{ n: "Preventiva", v: 79.1, r: 182 }, { n: "Vistoria", v: 71.4, r: 7 }, { n: "Manutenção", v: 69.7, r: 218 }, { n: "Venda", v: 64.6, r: 79 }, { n: "Retirada", v: 50.6, r: 257, fraco: true }] },
+    msg: { cor: "#38bdf8", total: 66278, porDia: 720, mensal: [18454, 25011, 22813], erros: 7, disparos: 15293, segundasVias: 6967 },
+    bloq: { cor: "#f87171", antes: 1213, depois: 0, acoes: 1610, blocos: [166, 87, 889], desbloq: [224, 142, 102], contas: 1688, contasAntes: 499, avisos: 30550 }
   }
 };

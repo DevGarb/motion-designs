@@ -186,6 +186,25 @@ button{font:inherit;color:inherit}
 .hb.lic .ct{color:#ffd24a}
 .nov{display:inline-block;margin-left:10px;padding:2px 9px;border-radius:999px;border:1px solid color-mix(in oklab,var(--accent) 60%,transparent);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600;vertical-align:2px}
 
+.sbar{display:flex;height:46px;border-radius:12px;overflow:hidden;margin-top:22px}
+.sbar span{display:flex;align-items:center;padding:0 14px;font-family:var(--mono);font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;width:0;transition:width .3s}
+.on .sbar span{width:var(--w);transition:width 1.3s var(--ease) 1s}
+.big .was{font-size:.62em;color:var(--dim);letter-spacing:-.04em}
+.big .arr{font-size:.5em;color:var(--muted);vertical-align:.12em}
+
+.pgrid{display:grid;gap:11px}
+.pr .pn{font-size:clamp(15px,1.2vw,18px);font-weight:700;margin-bottom:4px}
+.pt{display:grid;grid-template-columns:52px 1fr 56px;align-items:center;gap:10px;margin-top:3px}
+.pt .pl{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.pt .track{height:13px}
+.pt .track.ant i{background:var(--ant)}
+.pt b{font-size:clamp(15px,1.3vw,19px);font-weight:800;text-align:right;letter-spacing:-.02em}
+.pt b.nil{color:var(--dim);font-weight:400}
+
+.comp.units{border-color:var(--line2);background:linear-gradient(180deg,var(--panel2),var(--panel));max-width:460px;margin-top:22px}
+.comp.units h3{color:var(--muted)}
+.comp.units .cp .tr i{background:var(--accent)}
+
 @media (max-width:900px){
   .top,.bottom{padding:0 16px}
   .where span:last-child{display:none}
@@ -252,6 +271,7 @@ button{font:inherit;color:inherit}
         <div class="chips a" style="--d:600ms">
           <span class="chip"><i></i>Bloco 1 · GRTI</span>
           <span class="chip"><i></i>Bloco 2 · Custos e I.A SDR</span>
+          <span class="chip"><i></i>Bloco 3 · Sistemas</span>
           <span class="chip dash">Nov parcial (1–9) fica fora das médias</span>
           ${D.emConstrucao ? `<span class="chip dash">Em construção</span>` : ""}
         </div>
@@ -325,7 +345,7 @@ button{font:inherit;color:inherit}
         </aside>
         <div>
           <div class="npsrow">${rings}</div>
-          <p class="fonte a" style="--d:1000ms">Nota de 1 a 5. Abr–jun: só a média do trimestre (o AMR não abriu por mês). Out fechou em 4,98; nov parcial em 4,97 (73 avaliações).</p>
+          <p class="fonte a" style="--d:1000ms">Nota de 1 a 5. Abr–jun: só a média do trimestre. Out fechou em 4,98; nov parcial em 4,97 (73 avaliações).</p>
         </div>
       </div>` };
   }
@@ -359,7 +379,7 @@ button{font:inherit;color:inherit}
         <div>
           <svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="TMA por mês">${s}</svg>
           <div class="legend a" style="--d:900ms"><span><i style="background:var(--accent)"></i>% azul = TMA caiu (melhorou)</span><span><i style="background:#33405e"></i>% cinza = TMA subiu</span></div>
-          <p class="fonte a" style="--d:1000ms">Abr–jun: regra do AMR. Jul em diante: regra atual (início do atendimento até a 1ª vez em Aguardando Aprovação, tempo corrido). As duas não são comparáveis; por isso o corte.</p>
+          <p class="fonte a" style="--d:1000ms">Abr–jun: regra de cálculo anterior. Jul em diante: regra atual (início do atendimento até a 1ª vez em Aguardando Aprovação, tempo corrido). As duas não são comparáveis; por isso o corte.</p>
         </div>
       </div>` };
   }
@@ -367,7 +387,7 @@ button{font:inherit;color:inherit}
   /* ---------- 5. categorias ---------- */
   function categorias() {
     const K = G.categorias, max = K.lista[0].n;
-    const bars = K.lista.map((c, i) => `<div class="hb ${c.destaque ? "lead" : ""} ${c.nome.startsWith("Avulsos") ? "alt" : ""} a" style="--d:${200 + i * 100}ms">
+    const bars = K.lista.map((c, i) => `<div class="hb ${c.destaque ? "lead" : ""} ${c.nome.startsWith("Sistemas") ? "alt" : ""} a" style="--d:${200 + i * 100}ms">
       <div class="top2"><span class="nm">${c.destaque ? "★ " : ""}${esc(c.nome)}</span><span class="ct">${cnt(c.n, { txt: c.n })}</span></div>
       <div class="track"><i style="--w:${(c.n / max).toFixed(3)};--d:${200 + i * 100}ms"></i></div></div>`).join("");
     const comp = K.composicaoLider.map((c, i) => `<div class="cp"><b>${esc(c.nome)}${c.sub ? `<em>${esc(c.sub)}</em>` : ""}</b><span>${c.p}%</span>
@@ -382,7 +402,7 @@ button{font:inherit;color:inherit}
         </aside>
         <div>
           <div class="hbars">${bars}</div>
-          <p class="fonte a" style="--d:1000ms">Chamados abertos de ago a out por categoria. “Avulsos / outros” reúne o que não cabe nas categorias fixas: de suporte simples (wifi, acesso ao Office) a demanda de projeto. Participação dentro da categoria líder é aproximada.</p>
+          <p class="fonte a" style="--d:1000ms">Chamados abertos de ago a out por categoria. “Sistemas: desenvolvimento, manutenção e suporte” reúne o que não cabe nas categorias fixas: evolução e suporte dos sistemas criados pela T.I., além de pedidos avulsos (wifi, acesso ao Office). Participação dentro da categoria líder é aproximada.</p>
         </div>
       </div>` };
   }
@@ -403,41 +423,26 @@ button{font:inherit;color:inherit}
   })();
 
   function custoGeral() {
-    const A = CU.amr, M = cal.mes, W = 1000, H = 440, base = 360, top = 130, max = 4200, bw = 130, step = W / 4, x = i => step * i + step / 2;
-    const hh = v => v / max * (base - top);
-    const cols = [{ lab: "AMR · jun", bot: A.ferramentas, top: A.infra, ant: true }, ...M.map(m => ({ lab: m.m, bot: m.ferr, top: m.infra }))];
-    let s = "";
-    cols.forEach((c, i) => {
-      const hi = hh(c.bot), hl = hh(c.top), d = i * 130, tot = c.bot + c.top;
-      s += `<rect class="bar ${c.ant ? "c-ant" : "c-acc"}" x="${x(i) - bw / 2}" y="${base - hi}" width="${bw}" height="${hi}" rx="6" style="--d:${d}ms"/>
-        <rect class="bar ${c.ant ? "c-bri" : "c-gold"}" x="${x(i) - bw / 2}" y="${base - hi - hl}" width="${bw}" height="${hl}" rx="4" style="--d:${d + 250}ms"/>`;
-      if (hi >= 34) s += `<text class="fade" x="${x(i)}" y="${base - hi / 2 + 7}" text-anchor="middle" font-size="19" font-weight="700" fill="#fff" style="--d:${d + 600}ms">R$ ${br(c.bot)}</text>`;
-      if (hl >= 30) s += `<text class="fade" x="${x(i)}" y="${base - hi - hl / 2 + 7}" text-anchor="middle" font-size="19" font-weight="700" fill="#1a1500" style="--d:${d + 700}ms">R$ ${br(c.top)}</text>`;
-      s += `<text class="val fade" x="${x(i)}" y="${base - hi - hl - 14}" style="--d:${d + 600}ms">R$ ${br(tot)}</text>
-        <text class="mon ${i ? "now" : ""}" x="${x(i)}" y="${base + 36}">${esc(c.lab)}</text>`;
-      if (i) s += pill(x(i), base + 52, i === 1 ? pc0(tot, A.total) : pct(tot, cols[i - 1].bot + cols[i - 1].top), true).replace('class="fade"', `class="fade" style="--d:${d + 800}ms"`);
-      else s += `<text class="mt fade" x="${x(i)}" y="${base + 72}" text-anchor="middle" fill="#596076" font-size="15">estimativa</text>`;
-    });
-    const x1 = x(1) - bw / 2, x2 = x(3) + bw / 2, by = 70;
-    s += `<path class="brk draw" pathLength="1" d="M${x1},${by + 14} L${x1},${by} L${x2},${by} L${x2},${by + 14}" stroke="#ffffff" style="--d:1100ms"/>
-      <text class="fade" x="${(x1 + x2) / 2}" y="${by - 12}" text-anchor="middle" font-size="22" font-weight="800" fill="#ffffff" style="--d:1500ms">média R$ ${br(cal.mediaTotal)} · ${pc0(cal.mediaTotal, A.total)} vs AMR</text>`;
+    const M = cal.mes, tot = M.map(m => m.total);
+    const svg = cols({ vals: M.map(m => m.ferr), v2: M.map(m => m.infra), labs: M.map(m => m.m), fv: v => "R$ " + br(v), now: () => true, pl: pls(tot), max: 4600,
+      bk: [{ a: 0, b: 2, t: "média R$ " + br(cal.mediaTotal) + " por mês" }], aria: "Custo mensal de ferramentas e infra, de ago a out" });
     return { label: "Custos · Visão geral", cor: CU.cor, html: `
       <div class="inner split">
         <aside>
-          <div class="kicker a" style="--d:0ms"><i></i>Custos · Infra e I.A</div>
+          <div class="kicker a" style="--d:0ms"><i></i>Custos · Ferramentas e infra</div>
           <span class="big md a" style="--d:120ms"><small>R$ </small>${cnt(cal.mediaTotal, { txt: br(cal.mediaTotal) })}</span>
           <p class="desc a" style="--d:260ms">por mês, na média de ago a out</p>
-          <div class="delta a" style="--d:380ms">▲ ${pc0(cal.mediaTotal, A.total)} vs AMR (R$ ${br(A.total)}/mês)</div>
+          <div class="delta a" style="--d:380ms">R$ ${br(cal.total)} gastos no trimestre</div>
           <div class="facts">
-            <div class="fact a" style="--d:500ms"><b>R$ ${br(cal.mediaFerr)}</b><span>ferramentas por mês: Lovable, Claude, OpenAI, ManyChat, UazAPI e ChatGPT (AMR: R$ ${br(A.ferramentas)})</span></div>
-            <div class="fact hl a" style="--d:620ms"><b>R$ ${br(cal.mediaInfra)}</b><span>infra por mês: VPS Hostinger e domínio (AMR: R$ ${br(A.infra)})</span></div>
-            <div class="fact a" style="--d:740ms"><b>R$ ${br(cal.total)}</b><span>gastos de ago a out · ≈ R$ ${br(Math.round(cal.mediaTotal * 12 / 1000))} mil por ano (AMR: R$ ${br(A.anual)})</span></div>
+            <div class="fact a" style="--d:500ms"><b>R$ ${br(cal.mediaFerr)}</b><span>ferramentas por mês: Lovable, Claude, OpenAI, ManyChat, UazAPI e ChatGPT</span></div>
+            <div class="fact hl a" style="--d:620ms"><b>R$ ${br(cal.mediaInfra)}</b><span>infra por mês: VPS Hostinger e domínio</span></div>
+            <div class="fact a" style="--d:740ms"><b>≈ R$ ${br(Math.round(cal.mediaTotal * 12 / 1000))} mil</b><span>por ano, mantido o ritmo de ago a out</span></div>
           </div>
         </aside>
         <div>
-          <svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Custo mensal de infra e I.A, AMR contra ago a out">${s}</svg>
-          <div class="legend a" style="--d:900ms"><span><i style="background:var(--accent)"></i>ferramentas</span><span><i style="background:#ffd24a"></i>infra (VPS)</span><span><i style="background:var(--ant)"></i>AMR (estimativa)</span></div>
-          <p class="fonte a" style="--d:1000ms">Valores mensais de ago a out. OpenAI convertida a R$ 5,12 (média do dólar no ano). VPS e domínio são anuais, rateados em 12 meses. AMR: ferramentas = Lovable, OpenAI, Claude API e ChatGPT; infra = VPS.</p>
+          ${svg}
+          <div class="legend a" style="--d:900ms"><span><i style="background:var(--accent)"></i>ferramentas</span><span><i style="background:#ffd24a"></i>infra (VPS)</span><span>% = variação vs mês anterior</span></div>
+          <p class="fonte a" style="--d:1000ms">Valores mensais de ago a out. OpenAI convertida a R$ 5,12 (média do dólar no ano). VPS e domínio são anuais, rateados em 12 meses.</p>
         </div>
       </div>` };
   }
@@ -448,11 +453,11 @@ button{font:inherit;color:inherit}
     const lov = cal.sv.find(s => s.curto === "Lovable"), oa = cal.sv.find(s => s.curto === "OpenAI");
     const cred = lov.creditos.reduce((a, b) => a + b, 0), lovTot = lov.v.reduce((a, b) => a + b, 0);
     const oaUsd = oa.usd.reduce((a, b) => a + b, 0) / oa.usd.length;
-    const novos = cal.sv.filter(s => s.novo).map(s => s.curto);
+    const pf = cal.mediaFerr / cal.mediaTotal * 100;
     const rows = L.map((s, i) => {
-      const sub = s.amrTxt || (s.amr ? (Math.abs(s.med / s.amr - 1) < .02 ? `AMR: R$ ${br(s.amr)} · igual` : `AMR: R$ ${br(s.amr)} · ${pc0(s.med, s.amr)}`) : "");
+      const sub = s.v.map(x => br(x)).join(" · ");
       return `<div class="hb ${s.grupo === "infra" ? "lic" : ""} a" style="--d:${200 + i * 90}ms">
-        <div class="top2"><span class="nm">${esc(s.nome)}${s.novo ? `<span class="nov">novo</span>` : ""}${sub ? `<em>${esc(sub)}</em>` : ""}</span><span class="ct">${cnt(s.med, { pre: "R$ ", txt: "R$ " + br(s.med) })}</span></div>
+        <div class="top2"><span class="nm">${esc(s.nome)}<em>${esc(sub)}</em></span><span class="ct">${cnt(s.med, { pre: "R$ ", txt: "R$ " + br(s.med) })}</span></div>
         <div class="track"><i style="--w:${(s.med / max).toFixed(3)};--d:${200 + i * 90}ms"></i></div></div>`;
     }).join("");
     return { label: "Custos · Por serviço", cor: CU.cor, html: `
@@ -463,14 +468,14 @@ button{font:inherit;color:inherit}
           <p class="desc a" style="--d:380ms">${esc(L[0].curto)} e ${esc(L[1].curto)} somam R$ ${br(t2v)} dos R$ ${br(cal.mediaTotal)} mensais.</p>
           <div class="facts">
             <div class="fact a" style="--d:500ms"><b>${br(cred)}</b><span>créditos Lovable em ago–out (R$ ${br(lovTot)})</span></div>
-            <div class="fact a" style="--d:620ms"><b>+${novos.length}</b><span>serviços novos: ${esc(novos.join(" e "))}</span></div>
-            <div class="fact a" style="--d:740ms"><b>US$ ${br(oaUsd)}</b><span>OpenAI por mês, abaixo dos US$ ${oa.amrUsd} do AMR (de US$ ${oa.usd[0]} em ago para US$ ${oa.usd[2]} em out)</span></div>
+            <div class="fact a" style="--d:620ms"><b>${br(pf, 0)}%</b><span>do custo mensal é ferramenta; a infra (VPS e domínio) é ${br(100 - pf, 0)}%</span></div>
+            <div class="fact a" style="--d:740ms"><b>US$ ${br(oaUsd)}</b><span>OpenAI por mês, de US$ ${oa.usd[0]} em ago para US$ ${oa.usd[2]} em out</span></div>
           </div>
         </aside>
         <div>
           <div class="hbars tight">${rows}</div>
-          <div class="legend a" style="--d:1000ms"><span><i style="background:var(--accent)"></i>ferramentas</span><span><i style="background:#ffd24a"></i>infra (VPS)</span></div>
-          <p class="fonte a" style="--d:1100ms">Média mensal de ago a out, em R$. Claude: 9 licenças (R$ 1.242/mês); a Claude API não é mais usada. VPS Hostinger e domínio: anuais, rateados em 12 meses.</p>
+          <div class="legend a" style="--d:1000ms"><span><i style="background:var(--accent)"></i>ferramentas</span><span><i style="background:#ffd24a"></i>infra (VPS)</span><span>ao lado do nome: R$ em ago · set · out</span></div>
+          <p class="fonte a" style="--d:1100ms">Média mensal de ago a out, em R$. Claude: 9 licenças (R$ 1.242/mês). VPS Hostinger e domínio: anuais, rateados em 12 meses.</p>
         </div>
       </div>` };
   }
@@ -518,12 +523,212 @@ button{font:inherit;color:inherit}
         <div>
           <svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Atendimentos da I.A SDR por mês, de novembro a outubro">${s}</svg>
           <div class="legend a" style="--d:900ms"><span><i style="background:var(--ant)"></i>abr–jun</span><span><i style="background:var(--bri)"></i>jul (ponte)</span><span><i style="background:var(--accent)"></i>ago–out</span><span>% = variação vs mês anterior</span><span>linha tracejada = média dos 12 meses (${S.mediaAno})</span></div>
-          <p class="fonte a" style="--d:1000ms">Atendimentos da I.A SDR (CRX) por mês, de nov/25 a out/26. Nov sem variação: o mês anterior (out/25) só tem dados desde o dia 23. O AMR citava ~150 leads/mês; aqui a medida é atendimento.</p>
+          <p class="fonte a" style="--d:1000ms">Atendimentos da I.A SDR (CRX) por mês, de nov/25 a out/26. Nov sem variação: o mês anterior (out/25) só tem dados desde o dia 23.</p>
         </div>
       </div>` };
   }
 
-  const slides = [capa(), chamados(), nps(), tma(), categorias(), custoGeral(), custoServicos(), iaSdr()];
+  /* ---------- Bloco 3 · sistemas ---------- */
+  const SS = D.sistemas;
+  const kick = t => `<div class="kicker a" style="--d:0ms"><i></i>${t}</div>`;
+  const fact = (b, t, d, hl) => `<div class="fact ${hl ? "hl" : ""} a" style="--d:${d}ms"><b>${b}</b><span>${t}</span></div>`;
+  const sl = (label, cor, aside, right) => ({ label, cor, html: `<div class="inner split"><aside>${aside}</aside><div>${right}</div></div>` });
+  const legend = (items, d = 900) => `<div class="legend a" style="--d:${d}ms">${items.join("")}</div>`;
+  const fonte = (t, d = 1000) => `<p class="fonte a" style="--d:${d}ms">${t}</p>`;
+  const pls = (v, pp) => v.map((x, i) => i ? (pp ? { t: (x - v[i - 1] >= 0 ? "+" : "−") + br(Math.abs(x - v[i - 1]), 1) + " p.p.", up: x >= v[i - 1] } : { t: pct(x, v[i - 1]), up: x >= v[i - 1] }) : null);
+  const hrow = (nome, em, val, w, d, cls = "") => `<div class="hb ${cls} a" style="--d:${d}ms"><div class="top2"><span class="nm">${esc(nome)}${em ? `<em>${esc(em)}</em>` : ""}</span><span class="ct">${val}</span></div><div class="track"><i style="--w:${w.toFixed(3)};--d:${d}ms"></i></div></div>`;
+
+  // gráfico de colunas genérico (opção v2 = segunda pilha em dourado)
+  function cols(o) {
+    const W = 1000, vals = o.vals, n = vals.length, step = W / n, base = o.base || 310, top = 120, bw = o.bw || Math.min(110, step * .62);
+    const v2 = o.v2 || null, tot = vals.map((v, i) => v + (v2 ? v2[i] : 0)), max = o.max || Math.max(...tot) * 1.1;
+    const x = i => step * i + step / 2, hh = v => v / max * (base - top);
+    let s = "";
+    vals.forEach((v, i) => {
+      const h = hh(v), d = i * 110; let yt = base - h;
+      s += `<rect class="bar ${o.cl ? o.cl(i) : "c-acc"}" x="${x(i) - bw / 2}" y="${base - h}" width="${bw}" height="${h}" rx="6" style="--d:${d}ms"/>`;
+      if (v2) { const h2 = hh(v2[i]); s += `<rect class="bar c-gold" x="${x(i) - bw / 2}" y="${base - h - h2}" width="${bw}" height="${h2}" rx="4" style="--d:${d + 200}ms"/>`; yt -= h2; }
+      s += `<text class="val fade" x="${x(i)}" y="${yt - 14}" style="--d:${d + 500}ms">${o.fv(tot[i])}</text>
+        <text class="mon ${o.now && o.now(i) ? "now" : ""}" x="${x(i)}" y="${base + 34}">${esc(o.labs[i])}</text>`;
+      const p = o.pl && o.pl[i];
+      if (p) s += pill(x(i), base + 50, p.t, p.up).replace('class="fade"', `class="fade" style="--d:${d + 700}ms"`);
+    });
+    (o.bk || []).forEach((b, j) => {
+      const x1 = x(b.a) - bw / 2, x2 = x(b.b) + bw / 2, y = 66, d = 900 + j * 200;
+      s += `<path class="brk draw" pathLength="1" d="M${x1},${y + 14} L${x1},${y} L${x2},${y} L${x2},${y + 14}" stroke="${b.cor || "#fff"}" style="--d:${d}ms"/>
+        <text class="fade" x="${(x1 + x2) / 2}" y="${y - 12}" text-anchor="middle" font-size="22" font-weight="800" fill="${b.cor || "#fff"}" style="--d:${d + 400}ms">${b.t}</text>`;
+    });
+    return `<svg class="chart" viewBox="0 0 ${W} ${base + (o.pl ? 90 : 56)}" role="img" aria-label="${esc(o.aria)}">${s}</svg>`;
+  }
+
+  function agend() {
+    const A = SS.agend, c = A.conv, q = A.sequencia;
+    const svg = cols({ vals: c, labs: A.meses, fv: v => br(v, 1) + "%", max: 100, cl: i => i < 2 ? "c-ant" : "c-acc", now: i => i >= 2, pl: pls(c, true),
+      bk: [{ a: 2, b: 4, t: "+" + br(c[4] - c[2], 0) + " p.p. de ago a out" }], aria: "Conversão de agendamentos por mês" });
+    return sl("Agendamentos", A.cor, `
+      ${kick("Agendamentos · Painel")}
+      <span class="big md a" style="--d:120ms">${cnt(c[4], { dec: 1, suf: "%", txt: br(c[4], 1) + "%" })}</span>
+      <p class="desc a" style="--d:260ms">de conversão em outubro, o melhor mês da série</p>
+      <div class="delta a" style="--d:380ms">▲ +${br(c[4] - c[2], 0)} p.p. vs agosto (${br(c[2], 1)}%)</div>
+      <div class="facts">
+        ${fact(q.dias + " dias", `seguidos com 100% de conversão (${q.de} a ${q.ate}, ${q.clientes} clientes). Recorde anterior: ${q.recorde} dias`, 500, true)}
+        ${fact(br(A.agendados), `agendamentos fechados de ${br(A.clientes)} clientes atendidos (${br(A.convTri, 1)}%)`, 620)}
+      </div>`,
+      `${svg}${legend(['<span><i style="background:var(--ant)"></i>jun–jul (antes do trimestre)</span>', '<span><i style="background:var(--accent)"></i>ago–out</span>', "<span>p.p. = pontos percentuais vs mês anterior</span>"])}
+       ${fonte("Conversão = clientes agendados ÷ clientes atendidos. A sequência de 100% segue em andamento.")}`);
+  }
+
+  function crm() {
+    const C = SS.crm, m = C.mensal, pa = C.auto / C.total * 100;
+    const svg = cols({ vals: m, labs: ["Ago", "Set", "Out"], fv: v => br(v), pl: pls(m), now: () => true, base: 270, aria: "Atendimentos abertos no Kommo por mês" });
+    return sl("CRM Kommo", C.cor, `
+      ${kick("CRM Kommo · Atendimentos")}
+      <span class="big md a" style="--d:120ms">${cnt(C.total, { txt: br(C.total) })}</span>
+      <p class="desc a" style="--d:260ms">atendimentos abertos no trimestre, ${C.mediaDia} por dia</p>
+      <div class="delta a" style="--d:380ms">▲ ${pct(m[1], m[0])} de ago para set</div>
+      <div class="facts">
+        ${fact(br(pa, 1) + "%", `abertos por automação (${br(C.auto)}); ${br(C.pessoa)} precisaram de uma pessoa`, 500, true)}
+        ${fact(C.funis, "funis ativos: vendas, suporte e cobrança", 620)}
+      </div>`,
+      `${svg}
+       <div class="sbar a" style="--d:900ms"><span style="--w:${pa.toFixed(1)}%;background:var(--accent);color:#1a0d00">${br(pa, 1)}% automação · ${br(C.auto)}</span><span style="--w:${(100 - pa).toFixed(1)}%;background:#33405e">${br(100 - pa, 1)}% pessoa · ${br(C.pessoa)}</span></div>
+       ${fonte("Atendimentos abertos por mês. A barra mostra quanto do total nasceu de uma automação, sem ação humana.", 1100)}`);
+  }
+
+  function lara() {
+    const L = SS.lara, m = L.mensal, dem = L.total - L.boleto - L.negoc;
+    const svg = cols({ vals: m, labs: ["Ago", "Set", "Out"], fv: v => br(v), pl: pls(m), now: () => true, base: 250, aria: "Atendimentos da Lara Financeiro por mês" });
+    return sl("Lara Financeiro", L.cor, `
+      ${kick("Lara · IA financeira no WhatsApp")}
+      <span class="big md a" style="--d:120ms">${cnt(L.total, { txt: br(L.total) })}</span>
+      <p class="desc a" style="--d:260ms">atendimentos no trimestre, 24h por dia</p>
+      <div class="delta a" style="--d:380ms">▲ ${pct(m[1], m[0])} de ago para set</div>
+      <div class="facts">
+        ${fact(L.porDia + "/dia", `por dia útil (em agosto: ${L.porDiaAgo})`, 500, true)}
+        ${fact(br(L.negoc), `negociações e acordos fechados (${br(L.negoc / L.total * 100, 1)}%)`, 620)}
+        ${fact(br(L.fimSemana), "atendimentos em fim de semana e feriado", 740)}
+      </div>`,
+      `${svg}
+       <div class="hbars tight" style="margin-top:14px">
+         ${hrow("Boleto / 2ª via", br(L.boleto / L.total * 100, 1) + "% dos pedidos", br(L.boleto), L.boleto / L.total, 900)}
+         ${hrow("Negociação / acordo", br(L.negoc / L.total * 100, 1) + "%", br(L.negoc), L.negoc / L.total, 1000, "alt")}
+         ${hrow("Demais pedidos", br(dem / L.total * 100, 1) + "%", br(dem), dem / L.total, 1100, "alt")}
+       </div>
+       ${fonte("Atendimentos recebidos pela Lara Financeiro por mês, e tipo de pedido no trimestre.", 1200)}`);
+  }
+
+  function cobr() {
+    const C = SS.cobr;
+    const svg = cols({ vals: C.taxaMes, labs: ["Ago", "Set"], fv: x => br(x, 1) + "%", max: 100, base: 250, now: () => true,
+      bk: [{ a: 0, b: 1, t: "média " + br(C.taxa, 1) + "%" }], aria: "Taxa de liquidação dos boletos" });
+    return sl("Cobrança RESOLVE", C.cor, `
+      ${kick("Cobrança RESOLVE · Boletos")}
+      <span class="big md a" style="--d:120ms">${cnt(C.taxa, { dec: 1, suf: "%", txt: br(C.taxa, 1) + "%" })}</span>
+      <p class="desc a" style="--d:260ms">dos boletos liquidados nas referências de ago e set</p>
+      <div class="delta a" style="--d:380ms">▲ pagos com desconto: ${br(C.desconto.ago, 1)}% (ago) → ${br(C.desconto.out, 1)}% (out)</div>
+      <div class="facts">
+        ${fact("R$ " + br(C.recebidoMi, 2) + " mi", `recebidos de R$ ${br(C.emitidoMi, 2)} mi emitidos`, 500, true)}
+        ${fact(br(C.emitidos), `boletos emitidos · ${br(C.abertos)} em aberto (${br(C.abertos / C.emitidos * 100, 1)}%)`, 620)}
+      </div>`,
+      `${svg}
+       <div class="hbars tight" style="margin-top:14px">
+         ${hrow("Pagos com desconto · ago", "", br(C.desconto.ago, 1) + "%", C.desconto.ago / 100, 900, "alt")}
+         ${hrow("Pagos com desconto · out", "", br(C.desconto.out, 1) + "%", C.desconto.out / 100, 1000, "lead")}
+       </div>
+       ${fonte("Liquidação das referências de agosto e setembro. Outubro vence em novembro e ainda está em cobrança (44,4%), por isso fica fora da comparação.", 1100)}`);
+  }
+
+  function rast() {
+    const R = SS.rast, I = R.inst, A = R.ativ, h = I.horas;
+    const svg = cols({ vals: h, labs: ["Ago", "Set", "Out"], fv: v => v + "h", now: () => true, pl: h.map((x, i) => i ? { t: pct(x, h[i - 1]), up: x <= h[i - 1] } : null),
+      bk: [{ a: 0, b: 2, t: "média " + I.mediaTri + "h" }], aria: "Tempo médio de instalação do rastreador" });
+    return sl("Rastreador", R.cor, `
+      ${kick("Rastreador · Instalação e ativação")}
+      <span class="big md a" style="--d:120ms">${cnt(I.taxa, { dec: 1, suf: "%", txt: br(I.taxa, 1) + "%" })}</span>
+      <p class="desc a" style="--d:260ms">das instalações dentro do prazo de 72h</p>
+      <div class="delta a" style="--d:380ms">▼ ${pct(h[2], h[0])} no tempo médio de ago para out (${h[0]}h → ${h[2]}h)</div>
+      <div class="facts">
+        ${fact(br(I.concluidas), `instalações concluídas; ${br(I.noPrazo)} no prazo`, 500, true)}
+        ${fact(br(A.total), `veículos ativados (set+out), ${br(A.taxa, 1)}% em até 48h úteis`, 620)}
+        ${fact(br(A.frota), "veículos ativos monitorados na base RESOLVE", 740)}
+      </div>`,
+      `${svg}${legend(['<span><i style="background:var(--accent)"></i>tempo médio de instalação, em horas</span>', "<span>% = variação vs mês anterior (azul = tempo caiu)</span>"])}
+       ${fonte("Tempo médio entre o pedido e a instalação concluída. A ativação não guarda agosto no painel, por isso usa set e out.")}`);
+  }
+
+  function npsCli() {
+    const N = SS.nps;
+    const rows = N.servicos.map((s, i) => hrow(s.n, s.r + " resp.", br(s.v, 1), s.v / 100, 250 + i * 100, s.fraco ? "alt" : "")).join("");
+    return sl("NPS clientes", N.cor, `
+      ${kick("NPS de clientes · Set + Out")}
+      <span class="big md a" style="--d:120ms">${cnt(N.nps, { dec: 1, txt: br(N.nps, 1) })}</span>
+      <p class="desc a" style="--d:260ms">NPS geral, com nota média de ${br(N.nota, 2)} em 10</p>
+      <div class="delta a" style="--d:380ms">▲ ${br(N.set, 1)} (set) → ${br(N.out, 1)} (out)</div>
+      <div class="facts">
+        ${fact(br(N.resp), `respondentes, ${N.cresc}% a mais de set para out`, 500, true)}
+        ${fact(br(N.prom, 1) + "%", `promotores · ${br(N.detr, 1)}% detratores`, 620)}
+      </div>
+      <div class="call a" style="--d:760ms"><b>50,6</b><span>é o NPS da retirada de rastreador, o menor dos serviços. Pedidos aguardando retorno do cliente, sem lembrete automático.</span></div>`,
+      `<div class="hbars">${rows}</div>
+       ${fonte("NPS por tipo de serviço, set + out. Agosto sem dado de pesquisa. As pesquisas são enviadas automaticamente (2.268 no período).", 1000)}`);
+  }
+
+  function msg() {
+    const M = SS.msg, m = M.mensal;
+    const svg = cols({ vals: m, labs: ["Ago", "Set", "Out"], fv: v => br(v), pl: pls(m), now: () => true, aria: "Mensagens geradas pelo RamosHub por mês" });
+    return sl("Mensageria", M.cor, `
+      ${kick("RamosHub · Disparos")}
+      <span class="big md a" style="--d:120ms">${cnt(M.total, { txt: br(M.total) })}</span>
+      <p class="desc a" style="--d:260ms">mensagens geradas pelo RamosHub, ${M.porDia} por dia</p>
+      <div class="delta a" style="--d:380ms">▲ ${pct(m[1], m[0])} de ago para set</div>
+      <div class="facts">
+        ${fact(M.erros, `erros de envio (${br(M.erros / M.total * 100, 2)}% do total)`, 500, true)}
+        ${fact(br(M.disparos), "disparos de serviço sem atendente, 0% de intervenção humana", 620)}
+        ${fact(br(M.segundasVias), "segundas vias de boleto autoatendidas (ligações evitadas)", 740)}
+      </div>`,
+      `${svg}${legend(["<span>mensagens geradas por mês no RamosHub (Inside)</span>"])}
+       ${fonte("Disparos de serviço: 2ª via, avisos de evento e aniversários. A entrega dos avisos de evento subiu de 39% em agosto para 90% em setembro.")}`);
+  }
+
+  function bloq() {
+    const B = SS.bloq, tot = B.blocos.reduce((a, b) => a + b, 0), des = B.desbloq.reduce((a, b) => a + b, 0);
+    const svg = cols({ vals: B.blocos, v2: B.desbloq, labs: ["Ago", "Set", "Out"], fv: v => br(v), now: () => true, aria: "Bloqueios e desbloqueios por mês" });
+    return sl("Bloqueio", B.cor, `
+      ${kick("Bloqueio de inadimplentes")}
+      <span class="big md a" style="--d:120ms"><span class="was">${br(B.antes)}</span><span class="arr"> → </span>${B.depois}</span>
+      <p class="desc a" style="--d:260ms">inadimplentes com serviço ativo, antes e depois da rodada de 21/10</p>
+      <div class="delta a" style="--d:380ms">✔ 100% conferido na API do fornecedor</div>
+      <div class="facts">
+        ${fact(br(B.acoes), `ações no trimestre: ${br(tot)} bloqueios e ${br(des)} desbloqueios`, 500, true)}
+        ${fact(br(B.contas), `contas sob controle (antes: ${br(B.contasAntes)})`, 620)}
+        ${fact(br(B.avisos), "avisos de desligamento enviados (fluxo criado em setembro)", 740)}
+      </div>`,
+      `${svg}${legend(['<span><i style="background:var(--accent)"></i>bloqueios</span>', '<span><i style="background:#ffd24a"></i>desbloqueios</span>', "<span>total de ações por mês no topo</span>"])}
+       ${fonte("Em outubro a rodada de 21/10 bloqueou 1.210 contas de uma vez. Cada ação é conferida na API do fornecedor.")}`);
+  }
+
+  function patrimonio() {
+    const P = G.patrimonio, tot = P.itens.reduce((a, i) => a + i.n, 0), max = Math.max(...P.itens.map(i => i.n), ...P.itens.map(i => i.junho || 0));
+    const jun = P.itens.reduce((a, i) => a + (i.junho || 0), 0), pv = P.preventivas;
+    const rows = P.itens.map((i, k) => {
+      const d = 200 + k * 100, wj = (i.junho || 0) / max, wn = i.n / max;
+      return `<div class="pr a" style="--d:${d}ms"><div class="pn">${esc(i.nome)}</div>
+        <div class="pt"><span class="pl">Junho</span><div class="track ant"><i style="--w:${wj.toFixed(3)};--d:${d}ms"></i></div><b class="${i.junho ? "" : "nil"}">${i.junho || "—"}</b></div>
+        <div class="pt"><span class="pl">Hoje</span><div class="track"><i style="--w:${wn.toFixed(3)};--d:${d + 120}ms"></i></div><b>${cnt(i.n, { txt: i.n })}</b></div></div>`;
+    }).join("");
+    return sl("GRTI · Patrimônio", G.cor, `
+      ${kick("GRTI · Patrimônio")}
+      <span class="big md a" style="--d:120ms">${cnt(tot, { txt: tot })}</span>
+      <p class="desc a" style="--d:260ms">equipamentos no patrimônio hoje</p>
+      <div class="delta a" style="--d:380ms">▲ +${tot - jun} desde junho (${jun} → ${tot})</div>
+      <div class="comp units a" style="--d:500ms"><h3>Hoje, por unidade</h3>${P.unidades.map((u, i) => `<div class="cp"><b>${esc(u.nome)}</b><span>${u.n}</span><div class="tr"><i style="--w:${(u.n / P.unidades[0].n).toFixed(3)};--d:${i * 90}ms"></i></div></div>`).join("")}</div>
+      <div class="facts"><div class="fact hl a" style="--d:720ms"><b>${pv.total}</b><span>preventivas feitas de ${pv.meses[0].toLowerCase()} a out: ${br(pv.total / pv.valores.length)} por mês (abr–jun: ${br(pv.anterior / pv.mesesAnterior)} por mês, total ${pv.anterior})</span></div></div>`,
+      `<div class="pgrid">${rows}</div>
+       ${legend(['<span><i style="background:var(--ant)"></i>junho</span>', '<span><i style="background:var(--accent)"></i>hoje</span>', "<span>celulares e tablets passaram a ser controlados</span>"], 1100)}
+       ${fonte("Junho: 295 equipamentos cadastrados. Hoje: levantamento físico de 10/11/2026 (Matriz CearaGPS, CRX e filial Messejana).", 1200)}`);
+  }
+
+  const slides = [capa(), chamados(), nps(), tma(), categorias(), patrimonio(), custoGeral(), custoServicos(), iaSdr(), agend(), crm(), lara(), cobr(), rast(), npsCli(), msg(), bloq()];
 
   /* ---------- contadores ---------- */
   const fmtCount = (c, v) => {
