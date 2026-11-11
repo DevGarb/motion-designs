@@ -201,6 +201,24 @@ button{font:inherit;color:inherit}
 .pt b{font-size:clamp(15px,1.3vw,19px);font-weight:800;text-align:right;letter-spacing:-.02em}
 .pt b.nil{color:var(--dim);font-weight:400}
 
+.pgrid.w .pt{grid-template-columns:70px 1fr 96px}
+.pgrid .pn{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.pn .vr.pu{color:var(--accent)}
+.pn .vr.pd{color:#ffd24a}
+.pn .vr.pz{color:var(--dim)}
+.pn .vr{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.04em;color:#ffd24a}
+.pn .vr.dn{color:#34d399}
+.notas{margin-top:16px;padding:14px 18px;border-radius:14px;border:1px solid var(--line2);background:color-mix(in oklab,var(--accent) 4%,transparent)}
+.notas h3{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.notas ul{list-style:none;display:grid;gap:5px}
+.notas li{position:relative;padding-left:14px;font-size:clamp(12px,.95vw,14px);line-height:1.4;color:var(--muted)}
+.notas li::before{content:"";position:absolute;left:0;top:.6em;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.notas li b{color:var(--text,#e8ecf5);font-weight:600}
+.gr9{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.gr9 .it{padding:12px 14px 14px;border-radius:16px;border:1px solid var(--line2);background:linear-gradient(180deg,var(--panel2),var(--panel))}
+.gr9 .it svg{display:block;width:100%;height:clamp(50px,11vh,130px);margin-bottom:10px}
+.gr9 .it i{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.1em}
+.gr9 .it b{display:block;margin-top:5px;font-size:clamp(14px,1.25vw,19px);font-weight:700;line-height:1.2}
 .comp.units{border-color:var(--line2);background:linear-gradient(180deg,var(--panel2),var(--panel));max-width:460px;margin-top:22px}
 .comp.units h3{color:var(--muted)}
 .comp.units .cp .tr i{background:var(--accent)}
@@ -285,6 +303,19 @@ button{font:inherit;color:inherit}
           <span class="chip dash">Nov parcial (1–9) fica fora das médias</span>
           ${D.emConstrucao ? `<span class="chip dash">Em construção</span>` : ""}
         </div>
+      </div>` };
+  }
+
+  /* slide de transição entre blocos (reaproveita o estilo da capa) */
+  function trans(label, cor, kicker, t1, t2, lead) {
+    return { label, cor, html: `
+      <div class="inner capa">
+        <div class="kicker a" style="--d:0ms"><i></i>${esc(kicker)}</div>
+        <h1>
+          <span class="line"><span style="--d:80ms">${esc(t1)}</span></span>
+          <span class="line"><span style="--d:200ms" class="outline">${esc(t2)}</span></span>
+        </h1>
+        <p class="lead a" style="--d:420ms">${esc(lead)}</p>
       </div>` };
   }
 
@@ -389,7 +420,12 @@ button{font:inherit;color:inherit}
         <div>
           <svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="TMA por mês">${s}</svg>
           <div class="legend a" style="--d:900ms"><span><i style="background:var(--accent)"></i>% azul = TMA caiu (melhorou)</span><span><i style="background:#33405e"></i>% cinza = TMA subiu</span></div>
-          <p class="fonte a" style="--d:1000ms">Abr–jun: regra de cálculo anterior. Jul em diante: regra atual (início do atendimento até a 1ª vez em Aguardando Aprovação, tempo corrido). As duas não são comparáveis; por isso o corte.</p>
+          <div class="notas a" style="--d:1000ms"><h3>Regra de cálculo</h3><ul>
+            <li><b>Abr–jun:</b> o tempo contava desde que o técnico pegava o chamado, mesmo em aberto, até o cliente avaliar</li>
+            <li><b>Jul em diante:</b> conta do início do atendimento até o fechamento pelo técnico (tempo corrido)</li>
+            <li><b>Por que mudou:</b> o dado passa a refletir o tempo real do atendimento</li>
+            <li><b>Comparação:</b> as duas regras não são comparáveis, por isso o corte no gráfico</li>
+          </ul></div>
         </div>
       </div>` };
   }
@@ -412,7 +448,6 @@ button{font:inherit;color:inherit}
         </aside>
         <div>
           <div class="hbars">${bars}</div>
-          <p class="fonte a" style="--d:1000ms">Chamados abertos de ago a out por categoria. “Sistemas: desenvolvimento, manutenção e suporte” reúne o que não cabe nas categorias fixas: evolução e suporte dos sistemas criados pela T.I., além de pedidos avulsos (wifi, acesso ao Office). Participação dentro da categoria líder é aproximada.</p>
         </div>
       </div>` };
   }
@@ -490,6 +525,35 @@ button{font:inherit;color:inherit}
       </div>` };
   }
 
+  /* Comparativo de custos: só serviços que já existiam no trimestre anterior (ManyChat e UazAPI são novos e ficam fora). */
+  function custoComp() {
+    const L = cal.sv.filter(s => s.ant).sort((a, b) => b.med - a.med);
+    const ant = L.reduce((a, s) => a + s.ant, 0), atu = L.reduce((a, s) => a + s.med, 0);
+    const novos = cal.sv.filter(s => !s.ant).reduce((a, s) => a + s.med, 0);
+    const max = Math.max(...L.map(s => s.med), ...L.map(s => s.ant));
+    const oa = L.find(s => s.curto === "OpenAI"), lov = L.find(s => s.curto === "Lovable"), cl = L.find(s => s.curto === "Claude");
+    const oaUsd = oa.usd.reduce((a, b) => a + b, 0) / oa.usd.length;
+    const rows = L.map((s, k) => {
+      const d = 200 + k * 110, up = s.med >= s.ant, nm = s.curto === "Claude" ? "Claude (API → 9 licenças)" : s.nome.replace(" + domínio", "");
+      return `<div class="pr a" style="--d:${d}ms"><div class="pn"><span>${esc(nm)}</span><span class="vr ${up ? "" : "dn"}">${Math.abs(s.med / s.ant - 1) < 0.01 ? "= igual" : (up ? "▲ " : "▼ ") + pc0(s.med, s.ant).replace(/^[+−]/, "")}</span></div>
+        <div class="pt"><span class="pl">Abr–Jun</span><div class="track ant"><i style="--w:${(s.ant / max).toFixed(3)};--d:${d}ms"></i></div><b>R$ ${br(s.ant)}</b></div>
+        <div class="pt"><span class="pl">Ago–Out</span><div class="track"><i style="--w:${(s.med / max).toFixed(3)};--d:${d + 120}ms"></i></div><b>${cnt(s.med, { pre: "R$ ", txt: "R$ " + br(s.med) })}</b></div></div>`;
+    }).join("");
+    return sl("Custos · Comparativo", CU.cor, `
+      ${kick("Custos · Trimestre anterior vs atual")}
+      <span class="big md a" style="--d:120ms"><span class="was" style="display:block;line-height:1.05">R$ ${br(ant)} <span class="arr">→</span></span><small>R$ </small>${cnt(atu, { txt: br(atu) })}</span>
+      <p class="desc a" style="--d:260ms">por mês, nos ${L.length} serviços que já existiam em abr–jun</p>
+      <div class="delta a" style="--d:380ms">▲ ${pc0(atu, ant)} na média mensal (+R$ ${br(atu - ant)})</div>
+      <div class="facts">
+        ${fact("+R$ " + br(cl.med - cl.ant), "Claude: a API de R$ " + cl.ant + " saiu e entraram 9 licenças de R$ 1.242 por mês", 500, true)}
+        ${fact(pc0(oa.med, oa.ant), `OpenAI: US$ ${br(oaUsd)} por mês, contra US$ ${oa.antUsd} no trimestre anterior`, 620)}
+        ${fact(pc0(lov.med, lov.ant), "Lovable: R$ " + br(lov.med) + " por mês, contra R$ " + br(lov.ant), 740)}
+      </div>`,
+      `<div class="pgrid w">${rows}</div>
+       ${legend(['<span><i style="background:var(--ant)"></i>abr–jun</span>', '<span><i style="background:var(--accent)"></i>ago–out</span>', "<span>média mensal em R$</span>"], 1100)}
+       ${fonte("Abr–jun: estimativa mensal da época. Ago–out: média dos valores informados. ManyChat e UazAPI (R$ " + br(novos) + " por mês) são novos e ficam fora da comparação.", 1200)}`);
+  }
+
   /* ---------- Bloco 2 · I.A SDR ---------- */
   function iaSdr() {
     const S = D.iaSdr, v = S.serie.map(x => x.n), n = v.length, W = 1000, H = 440, base = 340, top = 120, max = 650, step = W / n, bw = 54, x = i => step * i + step / 2;
@@ -528,12 +592,11 @@ button{font:inherit;color:inherit}
             <div class="fact hl a" style="--d:500ms"><b>Jul · ${jul}</b><span>maior mês de 2026</span></div>
             <div class="fact a" style="--d:620ms"><b>${br(S.totalAcumulado)}</b><span>atendimentos desde ${esc(S.desde)} · média de ${S.mediaAno}/mês</span></div>
           </div>
-          <div class="call a" style="--d:760ms"><b>R$ ${br(S.humano.min)}–${br(S.humano.max)}</b><span>é o salário bruto mensal de um SDR humano, sem encargos. A I.A SDR roda dentro do custo de infra mostrado antes.</span></div>
         </aside>
         <div>
           <svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Atendimentos da I.A SDR por mês, de novembro a outubro">${s}</svg>
           <div class="legend a" style="--d:900ms"><span><i style="background:var(--ant)"></i>abr–jun</span><span><i style="background:var(--bri)"></i>jul (ponte)</span><span><i style="background:var(--accent)"></i>ago–out</span><span>% = variação vs mês anterior</span><span>linha tracejada = média dos 12 meses (${S.mediaAno})</span></div>
-          <p class="fonte a" style="--d:1000ms">Atendimentos da I.A SDR (CRX) por mês, de nov/25 a out/26. Nov sem variação: o mês anterior (out/25) só tem dados desde o dia 23.</p>
+          <p class="fonte a" style="--d:1000ms">Atendimentos da I.A SDR (GRX) por mês, de nov/25 a out/26. Nov sem variação: o mês anterior (out/25) só tem dados desde o dia 23.</p>
         </div>
       </div>` };
   }
@@ -578,7 +641,7 @@ button{font:inherit;color:inherit}
     return sl("Agendamentos", A.cor, `
       ${kick("Agendamentos · Automação")}
       <span class="big md a" style="--d:120ms">${cnt(tri, { txt: br(tri) })}</span>
-      <p class="desc a" style="--d:260ms">agendamentos fechados no trimestre, de ${br(A.clientes)} clientes atendidos</p>
+      <p class="desc a" style="--d:260ms">agendamentos fechados no trimestre, de ${br(A.clientes)} clientes atendidos: <b style="color:var(--accent)">${br(A.convTri, 1)}% de taxa de sucesso</b></p>
       <div class="delta a" style="--d:380ms">▲ ${pct(a[4], a[2])} de ago a out (${a[2]} → ${a[4]} por mês)</div>
       <div class="facts">
         ${fact(q.dias + " dias", `seguidos com 100% de clientes agendados (${q.de} a ${q.ate}, ${q.clientes} clientes). Recorde anterior: ${q.recorde} dias`, 500, true)}
@@ -607,9 +670,9 @@ button{font:inherit;color:inherit}
 
   function lara() {
     const L = SS.lara, m = L.mensal, dem = L.total - L.boleto - L.negoc;
-    const svg = cols({ vals: m, labs: ["Ago", "Set", "Out"], fv: v => br(v), pl: pls(m), now: () => true, base: 250, aria: "Atendimentos da Lara Financeiro por mês" });
-    return sl("Lara Financeiro", L.cor, `
-      ${kick("Lara · IA financeira no WhatsApp")}
+    const svg = cols({ vals: m, labs: ["Ago", "Set", "Out"], fv: v => br(v), pl: pls(m), now: () => true, base: 250, aria: "Atendimentos da Lara Back-office por mês" });
+    return sl("Lara Back-office", L.cor, `
+      ${kick("Lara · IA back-office no WhatsApp")}
       <span class="big md a" style="--d:120ms">${cnt(L.total, { txt: br(L.total) })}</span>
       <p class="desc a" style="--d:260ms">atendimentos no trimestre, 24h por dia</p>
       <div class="delta a" style="--d:380ms">▲ ${pct(m[1], m[0])} de ago para set</div>
@@ -624,7 +687,7 @@ button{font:inherit;color:inherit}
          ${hrow("Negociação / acordo", br(L.negoc / L.total * 100, 1) + "%", br(L.negoc), L.negoc / L.total, 1000, "alt")}
          ${hrow("Demais pedidos", br(dem / L.total * 100, 1) + "%", br(dem), dem / L.total, 1100, "alt")}
        </div>
-       ${fonte("Atendimentos recebidos pela Lara Financeiro por mês, e tipo de pedido no trimestre.", 1200)}`);
+       ${fonte("Atendimentos recebidos pela Lara Back-office por mês, e tipo de pedido no trimestre.", 1200)}`);
   }
 
   function cobr() {
@@ -637,7 +700,7 @@ button{font:inherit;color:inherit}
       <p class="desc a" style="--d:260ms">boletos emitidos e enviados pela automação no trimestre</p>
       <div class="delta a" style="--d:380ms">▲ ${pct(m[2], m[0])} de ago a out (${br(m[0])} → ${br(m[2])} por mês)</div>
       <div class="facts">
-        ${fact(br(C.clientes), `clientes alcançados pela régua de cobrança, ${br(C.msgPorCliente, 1)} mensagens por cliente`, 500, true)}
+        ${fact(br(m[2]), `boletos em outubro, o maior mês do trimestre (+${br(m[2] - m[0])} por mês que em agosto)`, 500, true)}
         ${fact(br(Math.round(tot / 3)), "boletos por mês, em média, sem envio manual", 620)}
       </div>`,
       `${svg}${legend(["<span>boletos emitidos por mês</span>", "<span>% = variação vs mês anterior</span>"])}
@@ -646,20 +709,27 @@ button{font:inherit;color:inherit}
 
   function rast() {
     const R = SS.rast, I = R.inst, A = R.ativ, p = I.pedidosMes, tot = p.reduce((a, b) => a + b, 0);
+    const ext = SS.agend.agendados.slice(2).reduce((a, b) => a + b, 0);
     const svg = cols({ vals: p, labs: ["Ago", "Set", "Out"], fv: v => br(v), now: () => true, pl: pls(p),
       bk: [{ a: 0, b: 2, t: pct(p[2], p[0]) + " de ago a out" }], aria: "Pedidos de instalação acompanhados por mês" });
     return sl("Painel de Instalações RESOLVE", R.cor, `
       ${kick("Painel de Instalações RESOLVE")}
       <span class="big md a" style="--d:120ms">${cnt(tot, { txt: br(tot) })}</span>
-      <p class="desc a" style="--d:260ms">clientes com pedido de instalação acompanhado em tempo real pelo painel desenvolvido pela T.I.</p>
+      <p class="desc a" style="--d:260ms">pedidos de instalação acompanhados em tempo real pelo painel da T.I.</p>
       <div class="delta a" style="--d:380ms">▲ ${pct(p[2], p[0])} de ago a out (${p[0]} → ${p[2]} por mês)</div>
       <div class="facts">
-        ${fact(br(I.taxa, 1) + "%", `das instalações dentro do prazo de 72h (${br(I.noPrazo)} de ${br(I.concluidas)} concluídas)`, 500, true)}
-        ${fact(br(A.total), `ativações acompanhadas (set+out), ${br(A.taxa, 1)}% em até 48h úteis`, 620)}
-        ${fact(br(A.frota), "veículos ativos monitorados na base RESOLVE", 740)}
+        ${fact(br(I.taxa, 1) + "%", `das instalações no prazo de 72h (${br(I.noPrazo)} de ${br(I.concluidas)})`, 500, true)}
+        ${fact(br(A.total), `ativações acompanhadas, ${br(A.taxa, 1)}% em até 48h úteis`, 620)}
+        ${fact(br(A.frota), "veículos ativos monitorados", 740)}
       </div>`,
       `${svg}${legend(['<span><i style="background:var(--accent)"></i>pedidos de instalação por mês</span>', "<span>% = variação vs mês anterior</span>"])}
-       ${fonte("Painéis de instalação (SLA de 72h) e de ativação (SLA de 48h úteis). A ativação não guarda agosto no painel, por isso usa set e out.")}`);
+       <div class="notas a" style="--d:1000ms"><h3>Sobre o painel</h3><ul>
+         <li><b>Substituiu:</b> uma planilha confusa, que ajudava pouco na operação</li>
+         <li><b>Ganho:</b> melhor visualização e acompanhamento dos clientes</li>
+         <li><b>Uso:</b> agendamento externo (clientes) e interno (colaboradores)</li>
+         <li><b>Ativação:</b> só set e out, agosto não consta no painel</li>
+         <li><b>Diferença:</b> ${br(tot - ext)} acima dos ${br(ext)} agendamentos externos são os internos, <b style="color:var(--accent)">${pct(tot, ext)}</b></li>
+       </ul></div>`);
   }
 
   function npsCli() {
@@ -683,17 +753,90 @@ button{font:inherit;color:inherit}
     const M = SS.msg, m = M.mensal;
     const svg = cols({ vals: m, labs: ["Ago", "Set", "Out"], fv: v => br(v), pl: pls(m), now: () => true, aria: "Mensagens geradas pelo RamosHub por mês" });
     return sl("Mensageria", M.cor, `
-      ${kick("RamosHub · Disparos")}
+      ${kick("RamosHub · Cobrança e serviços")}
       <span class="big md a" style="--d:120ms">${cnt(M.total, { txt: br(M.total) })}</span>
-      <p class="desc a" style="--d:260ms">mensagens geradas pelo RamosHub, ${M.porDia} por dia</p>
-      <div class="delta a" style="--d:380ms">▲ ${pct(m[1], m[0])} de ago para set</div>
+      <p class="desc a" style="--d:260ms">mensagens geradas pelo RamosHub, de cobrança e de serviço, ${M.porDia} por dia</p>
+      <div class="delta a" style="--d:380ms">▲ ${pct(M.enviadas, M.ant.enviadas)} enviadas vs abr–jun (${br(M.ant.enviadas)} → ${br(M.enviadas)})</div>
       <div class="facts">
-        ${fact(M.erros, `erros de envio (${br(M.erros / M.total * 100, 2)}% do total)`, 500, true)}
+        ${fact(br(100 - M.erros / M.total * 100, 2) + "%", `taxa de sucesso: só ${M.erros} erros de envio em ${br(M.total)} mensagens (${br(M.erros / M.total * 100, 2)}%)`, 500, true)}
         ${fact(br(M.disparos), "disparos de serviço sem atendente, 0% de intervenção humana", 620)}
-        ${fact(br(M.segundasVias), "segundas vias de boleto autoatendidas (ligações evitadas)", 740)}
+        ${fact(br(Math.round(M.total / 3)), "mensagens por mês · média abr–jun: " + br(M.ant.mes) + " · <b style=\"color:var(--accent)\">▲ " + pct(M.total / 3, M.ant.mes) + "</b>", 680)}
       </div>`,
-      `${svg}${legend(["<span>mensagens geradas por mês no RamosHub (Inside)</span>"])}
-       ${fonte("Disparos de serviço: 2ª via, avisos de evento e aniversários. A entrega dos avisos de evento subiu de 39% em agosto para 90% em setembro.")}`);
+      `${svg}${legend(["<span>mensagens geradas por mês no RamosHub</span>"])}
+       <div class="notas a" style="--d:1000ms"><h3>Origem e critérios</h3><ul>
+         <li><b>Canal:</b> WhatsApp oficial (Meta)</li>
+         <li><b>Origem:</b> o RamosHub lê o sistema legado (Inside) e a API da ILEVA (Resolve)</li>
+         <li><b>Conteúdo:</b> cobrança, 2ª via, avisos de evento, aniversários e outros templates da Meta</li>
+         <li><b>Taxa de sucesso:</b> mensagens sem erro de envio ÷ mensagens geradas</li>
+         <li><b>Avisos de evento:</b> taxa de entrega subiu de 39% (agosto) para 90% (setembro), +51 p.p.</li>
+         <li><b>Abr–jun:</b> ${br(M.ant.enviadas)} mensagens enviadas em 90 dias</li>
+       </ul></div>`);
+  }
+
+  function disp() {
+    const M = SS.msg, T = M.tipos, tot = T.reduce((a, t) => a + t.mensal.reduce((x, y) => x + y, 0), 0);
+    const sum = t => t.mensal.reduce((a, b) => a + b, 0), mx = Math.max(...T.map(sum));
+    const rows = T.map((t, i) => hrow(t.n, br(sum(t) / tot * 100, 0) + "% · ago " + br(t.mensal[0]) + " · set " + br(t.mensal[1]) + " · out " + br(t.mensal[2]), br(sum(t)), sum(t) / mx, 900 + i * 100, i === 0 ? "lead" : "alt")).join("");
+    const av = T[1];
+    return sl("Disparos de serviço", M.cor, `
+      ${kick("Disparos de serviço · Ago a Out")}
+      <span class="big md a" style="--d:120ms">${cnt(tot, { txt: br(tot) })}</span>
+      <p class="desc a" style="--d:260ms">disparos de serviço enviados sozinhos <b style="color:var(--accent)">de agosto a outubro</b>, ${br(Math.round(tot / 92))} por dia</p>
+      <div class="delta a" style="--d:380ms">100% sem atendente no caminho</div>
+      <div class="facts">
+        ${fact(br(sum(T[0])), "segundas vias de boleto entregues por autoatendimento, a maior fatia (" + br(sum(T[0]) / tot * 100, 0) + "%)", 500, true)}
+        ${fact(br(sum(av)), "avisos de evento (sinistro e assistência). Taxa de entrega: 39% em agosto → 90% em setembro (+51 p.p.)", 620)}
+        ${fact(br(sum(T[2])), "mensagens de aniversário para clientes RESOLVE", 740)}
+      </div>`,
+      `<div class="hbars">${rows}</div>
+       ${fonte("Disparos de serviço = mensagens automáticas, sem atendente. Total por tipo no trimestre, com os valores de ago, set e out.", 1200)}`);
+  }
+
+  /* ---------- Entregas do trimestre (lista; detalhes por sistema entram depois) ---------- */
+  function entregas() {
+    const L = ["Alertas ProTrack", "Indique & Ganhe", "NPS geral", "Painel de RH (vagas)", "Sistema Motoloc", "Painel de Recebíveis", "Aviso de eventos RESOLVE", "NPS de eventos RESOLVE", "Painel de agendamento"];
+    const A = "var(--accent)", M = "var(--muted)", R = "#f87171", G = "#34d399", Y = "#fbbf24";
+    const star = (cx, cy, r, fill) => { let pts = []; for (let k = 0; k < 10; k++) { const a = -Math.PI / 2 + k * Math.PI / 5, rr = k % 2 ? r * .45 : r; pts.push((cx + rr * Math.cos(a)).toFixed(1) + "," + (cy + rr * Math.sin(a)).toFixed(1)); } return `<polygon points="${pts.join(" ")}" fill="${fill ? A : "none"}" stroke="${A}" stroke-width="1.6" stroke-linejoin="round"/>`; };
+    const bar = (x, y, w, o = .35) => `<rect x="${x}" y="${y}" width="${w}" height="6" rx="3" fill="${M}" opacity="${o}"/>`;
+    const fr = `<rect x="1" y="1" width="158" height="88" rx="9" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.14)"/>`;
+    const ILU = [
+      // 1 alertas ProTrack: lista de alertas + sino
+      `${fr}${[[22, R, 62], [42, Y, 46], [62, G, 70]].map(([y, c, w]) => `<circle cx="20" cy="${y}" r="5" fill="${c}"/>${bar(32, y - 7, w, .4)}${bar(32, y + 2, w * .6, .22)}`).join("")}
+       <path d="M128 14c-7 0-11 5-11 12v8l-4 6h30l-4-6v-8c0-7-4-12-11-12z" fill="none" stroke="${A}" stroke-width="2" stroke-linejoin="round"/><circle cx="128" cy="45" r="3" fill="${A}"/><circle cx="138" cy="16" r="4" fill="${R}"/>`,
+      // 2 indique & ganhe: formulário + pódio com estrela
+      `${fr}<rect x="14" y="16" width="56" height="10" rx="3" fill="none" stroke="${M}" opacity=".6"/><rect x="14" y="32" width="56" height="10" rx="3" fill="none" stroke="${M}" opacity=".6"/><rect x="14" y="52" width="56" height="14" rx="4" fill="${A}" opacity=".85"/>
+       <rect x="84" y="50" width="20" height="26" rx="2" fill="${A}" opacity=".35"/><rect x="108" y="38" width="20" height="38" rx="2" fill="${A}" opacity=".75"/><rect x="132" y="58" width="16" height="18" rx="2" fill="${A}" opacity=".25"/>${star(118, 26, 9, true)}`,
+      // 3 NPS geral: velocímetro
+      `${fr}<path d="M30 66A50 50 0 0 1 44.6 30.6" fill="none" stroke="${R}" stroke-width="9" stroke-linecap="round"/><path d="M48 28A50 50 0 0 1 112 28" fill="none" stroke="${Y}" stroke-width="9" stroke-linecap="round"/><path d="M115.4 30.6A50 50 0 0 1 130 66" fill="none" stroke="${G}" stroke-width="9" stroke-linecap="round"/>
+       <line x1="80" y1="66" x2="104" y2="30" stroke="${A}" stroke-width="3" stroke-linecap="round"/><circle cx="80" cy="66" r="5" fill="${A}"/>${bar(46, 78, 68, .3)}`,
+      // 4 RH vagas: cartões de vaga + lupa
+      `${fr}${[14, 34, 54].map((y, k) => `<rect x="12" y="${y}" width="102" height="18" rx="5" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.16)"/><circle cx="23" cy="${y + 9}" r="4.5" fill="none" stroke="${A}" stroke-width="1.8"/>${bar(33, y + 4, 40 + k * 8, .4)}${bar(33, y + 11, 24, .2)}<rect x="90" y="${y + 5}" width="18" height="8" rx="4" fill="${A}" opacity="${k === 0 ? .9 : .4}"/>`).join("")}
+       <circle cx="136" cy="38" r="11" fill="none" stroke="${A}" stroke-width="2.4"/><line x1="144" y1="46" x2="152" y2="55" stroke="${A}" stroke-width="3" stroke-linecap="round"/>`,
+      // 5 Motoloc: moto + pin
+      `${fr}<line x1="14" y1="74" x2="146" y2="74" stroke="rgba(255,255,255,.14)"/><circle cx="42" cy="62" r="12" fill="none" stroke="${A}" stroke-width="3"/><circle cx="112" cy="62" r="12" fill="none" stroke="${A}" stroke-width="3"/>
+       <path d="M42 62L58 40h26l16 12 12 10M58 40l-6-8h-8M84 40l10-10h10" fill="none" stroke="${A}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="60" y="34" width="22" height="6" rx="3" fill="${A}" opacity=".6"/>
+       <path d="M132 12a8 8 0 0 1 8 8c0 6-8 14-8 14s-8-8-8-14a8 8 0 0 1 8-8z" fill="${R}" opacity=".9"/><circle cx="132" cy="20" r="3" fill="#0b0d12"/>`,
+      // 6 recebíveis: monitor com barras e linha
+      `<rect x="18" y="8" width="124" height="60" rx="6" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/><line x1="80" y1="68" x2="80" y2="78" stroke="rgba(255,255,255,.25)" stroke-width="3"/><line x1="58" y1="80" x2="102" y2="80" stroke="rgba(255,255,255,.25)" stroke-width="3" stroke-linecap="round"/>
+       ${[[30, 20], [48, 30], [66, 24], [84, 38]].map(([x, h]) => `<rect x="${x}" y="${58 - h}" width="12" height="${h}" rx="2" fill="${A}" opacity=".5"/>`).join("")}
+       <polyline points="32,44 52,36 70,40 92,22" fill="none" stroke="${G}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/><text x="122" y="26" text-anchor="middle" font-family="var(--mono)" font-size="14" font-weight="700" fill="${A}">R$</text><rect x="108" y="36" width="28" height="6" rx="3" fill="${M}" opacity=".35"/><rect x="108" y="46" width="20" height="6" rx="3" fill="${M}" opacity=".2"/>`,
+      // 7 aviso de eventos: balões + sino
+      `${fr}<rect x="12" y="14" width="86" height="24" rx="9" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.2)"/><path d="M26 38l-2 8 10-8z" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.2)"/>${bar(22, 21, 60, .4)}${bar(22, 29, 36, .22)}
+       <rect x="62" y="48" width="86" height="24" rx="9" fill="${A}" opacity=".22" stroke="${A}"/><path d="M134 72l2 8-10-8z" fill="${A}" opacity=".35"/><path d="M72 60l5 5 9-10" fill="none" stroke="${A}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>${bar(94, 56, 40, .5)}
+       <path d="M130 12c-5 0-8 4-8 9v5l-3 4h22l-3-4v-5c0-5-3-9-8-9z" fill="none" stroke="${A}" stroke-width="2"/>`,
+      // 8 NPS de eventos: estrelas + barra
+      `${fr}${[0, 1, 2, 3, 4].map(k => star(28 + k * 26, 34, 11, k < 4)).join("")}<rect x="22" y="58" width="116" height="9" rx="4.5" fill="${M}" opacity=".2"/><rect x="22" y="58" width="94" height="9" rx="4.5" fill="${G}" opacity=".85"/><circle cx="140" cy="16" r="6" fill="none" stroke="${A}" stroke-width="1.8"/><path d="M137 17q3 3 6 0" fill="none" stroke="${A}" stroke-width="1.6" stroke-linecap="round"/>`,
+      // 9 agendamento: calendário
+      `<rect x="20" y="8" width="120" height="74" rx="8" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/><rect x="20" y="8" width="120" height="16" rx="8" fill="${A}" opacity=".5"/><line x1="48" y1="4" x2="48" y2="14" stroke="${A}" stroke-width="3" stroke-linecap="round"/><line x1="112" y1="4" x2="112" y2="14" stroke="${A}" stroke-width="3" stroke-linecap="round"/>
+       ${Array.from({ length: 21 }, (_, n) => { const c = n % 7, r = Math.floor(n / 7), on = [2, 5, 9, 12, 16].includes(n); return `<rect x="${30 + c * 15}" y="${31 + r * 15}" width="11" height="10" rx="2.5" fill="${on ? A : M}" opacity="${on ? .9 : .22}"/>`; }).join("")}
+       <circle cx="132" cy="74" r="10" fill="${G}"/><path d="M127 74l4 4 7-8" fill="none" stroke="#0b0d12" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`
+    ];
+    const cards = L.map((n, i) => `<div class="it a" style="--d:${300 + i * 90}ms"><svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${ILU[i]}</svg><i>${String(i + 1).padStart(2, "0")}</i><b>${esc(n)}</b></div>`).join("");
+    return sl("Entregas do trimestre", "#fbbf24", `
+      ${kick("Entregas · Ago a Out")}
+      <span class="big md a" style="--d:120ms">${cnt(L.length, { txt: L.length })}</span>
+      <p class="desc a" style="--d:260ms">sistemas entregues pela T.I no trimestre</p>`,
+      `<div class="gr9">${cards}</div>`);
   }
 
   function bloq() {
@@ -716,21 +859,20 @@ button{font:inherit;color:inherit}
     const P = G.patrimonio, tot = P.itens.reduce((a, i) => a + i.n, 0), max = Math.max(...P.itens.map(i => i.n), ...P.itens.map(i => i.junho || 0));
     const jun = P.itens.reduce((a, i) => a + (i.junho || 0), 0), pv = P.preventivas;
     const rows = P.itens.map((i, k) => {
-      const d = 200 + k * 100, wj = (i.junho || 0) / max, wn = i.n / max;
-      return `<div class="pr a" style="--d:${d}ms"><div class="pn">${esc(i.nome)}</div>
-        <div class="pt"><span class="pl">Junho</span><div class="track ant"><i style="--w:${wj.toFixed(3)};--d:${d}ms"></i></div><b class="${i.junho ? "" : "nil"}">${i.junho || "—"}</b></div>
-        <div class="pt"><span class="pl">Hoje</span><div class="track"><i style="--w:${wn.toFixed(3)};--d:${d + 120}ms"></i></div><b>${cnt(i.n, { txt: i.n })}</b></div></div>`;
+      const d = 200 + k * 100, wj = (i.junho || 0) / max, wn = i.n / max, dv = i.n - (i.junho || 0);
+      return `<div class="pr a" style="--d:${d}ms"><div class="pn"><span>${esc(i.nome)}</span><span class="vr ${dv > 0 ? "pu" : dv < 0 ? "pd" : "pz"}">${dv > 0 ? "+" : dv < 0 ? "−" : ""}${Math.abs(dv)}</span></div>
+        <div class="pt"><span class="pl">Abr–Jun</span><div class="track ant"><i style="--w:${wj.toFixed(3)};--d:${d}ms"></i></div><b class="${i.junho ? "" : "nil"}">${i.junho || "—"}</b></div>
+        <div class="pt"><span class="pl">Atual</span><div class="track"><i style="--w:${wn.toFixed(3)};--d:${d + 120}ms"></i></div><b>${cnt(i.n, { txt: i.n })}</b></div></div>`;
     }).join("");
     return sl("GRTI · Patrimônio", G.cor, `
       ${kick("GRTI · Patrimônio")}
       <span class="big md a" style="--d:120ms">${cnt(tot, { txt: tot })}</span>
-      <p class="desc a" style="--d:260ms">equipamentos no patrimônio hoje</p>
-      <div class="delta a" style="--d:380ms">▲ +${tot - jun} desde junho (${jun} → ${tot})</div>
-      <div class="comp units a" style="--d:500ms"><h3>Hoje, por unidade</h3>${P.unidades.map((u, i) => `<div class="cp"><b>${esc(u.nome)}</b><span>${u.n}</span><div class="tr"><i style="--w:${(u.n / P.unidades[0].n).toFixed(3)};--d:${i * 90}ms"></i></div></div>`).join("")}</div>
+      <p class="desc a" style="--d:260ms">equipamentos no patrimônio atual</p>
+      <div class="delta a" style="--d:380ms">▲ +${tot - jun} desde abr–jun (${jun} → ${tot})</div>
+      <div class="comp units a" style="--d:500ms"><h3>Atual, por unidade</h3>${P.unidades.map((u, i) => `<div class="cp"><b>${esc(u.nome)}</b><span>${u.n}</span><div class="tr"><i style="--w:${(u.n / P.unidades[0].n).toFixed(3)};--d:${i * 90}ms"></i></div></div>`).join("")}</div>
       <div class="facts"><div class="fact hl a" style="--d:720ms"><b>${pv.total}</b><span>preventivas feitas de ${pv.meses[0].toLowerCase()} a out: ${br(pv.total / pv.valores.length)} por mês (abr–jun: ${br(pv.anterior / pv.mesesAnterior)} por mês, total ${pv.anterior})</span></div></div>`,
-      `<div class="pgrid">${rows}</div>
-       ${legend(['<span><i style="background:var(--ant)"></i>junho</span>', '<span><i style="background:var(--accent)"></i>hoje</span>', "<span>celulares e tablets passaram a ser controlados</span>"], 1100)}
-       ${fonte("Junho: 295 equipamentos cadastrados. Hoje: levantamento físico de 10/11/2026 (Matriz CearaGPS, CRX e filial Messejana).", 1200)}`);
+      `<div class="pgrid w">${rows}</div>
+       ${legend(['<span><i style="background:var(--ant)"></i>abr–jun</span>', '<span><i style="background:var(--accent)"></i>atual</span>', "<span>celulares e tablets passaram a ser controlados</span>"], 1100)}`);
   }
 
   /* ---------- Bloco · Recepção (Matriz) ---------- */
@@ -773,7 +915,16 @@ button{font:inherit;color:inherit}
        ${fonte("Recepção Matriz, relatório de 10/11/2026. TMA: chegada até conclusão. TME: chegada até início. SLA estourado: concluídos acima do prazo do serviço.", 1000)}`);
   }
 
-  const slides = [capa(), chamados(), nps(), tma(), categorias(), patrimonio(), custoGeral(), custoServicos(), iaSdr(), agend(), crm(), lara(), cobr(), rast(), npsCli(), msg(), bloq(), recA()]  // recB() (tempos da recepção) fica fora: é desempenho da área;
+  const slides = [capa(), chamados(), categorias(), nps(), tma(), patrimonio(),
+    trans("Transição · Custos", CU.cor, "Próximo bloco", "Custos", "e Infraestrutura", "Ferramentas, I.A e infra: quanto custa manter a operação."),
+    custoGeral(), custoServicos(), custoComp(),
+    trans("Transição · I.A", "#a78bfa", "Próximo bloco", "Inteligência", "Artificial", "As I.As em operação: I.A SDR (GRX) e Lara."),
+    iaSdr(), lara(),
+    trans("Transição · Automações", "#2dd4bf", "Próximo bloco", "Automações", "e Sistemas", "Agendamentos, cobrança RESOLVE e painel de instalações."),
+    agend(), cobr(), rast(), /* bloq() oculto por enquanto: para voltar, reinserir bloq() aqui, depois de rast() */
+    crm(), recA(), npsCli(), disp(), msg(),
+    trans("Transição · Entregas", "#fbbf24", "Entregas do trimestre", "9 sistemas", "entregues", "Ago a Out: o que a T.I colocou no ar para a operação."),
+    entregas()]  // recB() (tempos da recepção) fica fora: é desempenho da área;
 
   /* ---------- contadores ---------- */
   const fmtCount = (c, v) => {
