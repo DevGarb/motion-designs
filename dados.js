@@ -14,8 +14,9 @@ window.RESULTADOS = {
   grti: {
     cor: "#60a5fa",
     chamados: {
-      valores: [462, 331, 347, 495, 397, 473, 423],
-      mediaAnterior: 380, mediaAtual: 431, crescimento: 13.4,
+      // mai, jun, jul (trimestre anterior) · ago, set, out (atual)
+      valores: [331, 347, 495, 397, 473, 423],
+      mediaAnterior: 391, mediaAtual: 431, crescimento: 10.2,
       totalTrimestre: 1293,
       melhorMes: { mes: "Set", n: 473 },   // maior do último trimestre
       picoSerie: { mes: "Jul", n: 495 }
@@ -41,8 +42,8 @@ window.RESULTADOS = {
     patrimonio: {
       unidades: [{ nome: "Matriz CearaGPS", n: 285 }, { nome: "GRX", n: 30 }, { nome: "Filial Messejana", n: 9 }],
       itens: [
-        { nome: "Monitores", n: 119, junho: 136 }, { nome: "Notebooks", n: 98, junho: 134 }, { nome: "Celulares", n: 74 },
-        { nome: "Desktops", n: 12, junho: 11 }, { nome: "TVs", n: 11, junho: 11 }, { nome: "Impressoras", n: 5, junho: 3 }, { nome: "Tablets", n: 6 }
+        { nome: "Monitores", n: 119, junho: 124 }, { nome: "Notebooks", n: 98, junho: 102 }, { nome: "Celulares", n: 74 },
+        { nome: "Desktops", n: 12, junho: 11 }, { nome: "TVs", n: 19, junho: 11 }, { nome: "Impressoras", n: 5, junho: 3 }, { nome: "Tablets", n: 6 }
       ],
       preventivas: { meses: ["Jul", "Ago", "Set", "Out"], valores: [14, 36, 28, 10], total: 88, anterior: 63, mesesAnterior: 3 }
     },
@@ -58,9 +59,8 @@ window.RESULTADOS = {
       ],
       // composição da categoria líder (participação aproximada, %)
       composicaoLider: [
+        { nome: "Movimentação e entrega de equipamento", sub: "entrega, recebimento, substituição, equipamento e periférico", p: 54 },
         { nome: "Suporte endpoint", sub: "impressora, áudio, periféricos, pilha", p: 38 },
-        { nome: "Movimentação de item", sub: "entrega, recebimento, substituição", p: 28 },
-        { nome: "Entrega de equipamento", sub: "equipamento e periférico", p: 26 },
         { nome: "Erro Windows / SO", sub: "", p: 5 },
         { nome: "Troca de componentes", sub: "", p: 4 }
       ]
@@ -68,7 +68,7 @@ window.RESULTADOS = {
   },
 
   /* Bloco 2 · custo de infra e I.A. Fonte: valores informados pela T.I (10/11/2026).
-     Câmbio = média do dólar no ano. VPS e domínio são anuais, rateados em 12 meses.
+     Câmbio = média do dólar no ano. VPS e domínio: R$ 114 por mês até dezembro; a partir daí R$ 314 (ajuste do contrato).
      Claude: 9 licenças, R$ 1.242/mês (a Claude API não é mais usada). */
   custos: {
     cor: "#34d399",
@@ -80,7 +80,7 @@ window.RESULTADOS = {
       { nome: "Lovable", curto: "Lovable", grupo: "ferr", valores: [1602.21, 984.00, 1495.50], ant: 1028, creditos: [1200, 700, 1050] },
       { nome: "Claude · 9 licenças", curto: "Claude", grupo: "ferr", valores: [1242, 1242, 1242], ant: 110, antTxt: "antes: API R$ 110 (saiu)" },
       { nome: "OpenAI API", curto: "OpenAI", grupo: "ferr", usd: [90, 70, 43], ant: 514, antUsd: 100 },
-      { nome: "VPS Hostinger + domínio", curto: "VPS", grupo: "infra", valores: Array(3).fill((3563.76 + 208.08) / 12), ant: 115 },
+      { nome: "VPS Hostinger + domínio", curto: "VPS", grupo: "infra", valores: Array(3).fill(114), ant: 115, aPartirDeDez: 314.32 },
       { nome: "ManyChat", curto: "ManyChat", grupo: "ferr", valores: [149.00, 325.33, 249.00], novo: true },
       { nome: "UazAPI", curto: "UazAPI", grupo: "ferr", valores: [139, 139, 139], novo: true },
       { nome: "ChatGPT Go", curto: "ChatGPT", grupo: "ferr", valores: [39.90, 39.90, 39.90], ant: 40 }
@@ -134,7 +134,8 @@ window.RESULTADOS = {
       tipos: [
         { n: "2ª via de boleto", sub: "autoatendimento, ligações evitadas", mensal: [4150, 1934, 883] },
         { n: "Avisos de evento", sub: "sinistro e assistência", mensal: [4333, 795, 1019] },
-        { n: "Aniversariantes RESOLVE", sub: "relacionamento com o cliente", mensal: [702, 714, 763] }
+        { n: "Boas-vindas RESOLVE", sub: "70% de 2.179 (divisão aproximada)", mensal: [491, 500, 534] },
+        { n: "Aniversariantes RESOLVE", sub: "30% de 2.179 (divisão aproximada)", mensal: [211, 214, 229] }
       ] },
     recepcao: { cor: "#a5b4fc", concluidos: [945, 992, 1038], crescAgo: "−0,8%", cancelados: [98, 74, 63],
       tma: { min: [90, 95, 87], rot: ["1h30", "1h35", "1h27"], media: "1h30", varTri: "−24,9%", anterior: "2h00" },

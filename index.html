@@ -328,13 +328,13 @@ button{font:inherit;color:inherit}
   /* ---------- 2. chamados ---------- */
   function chamados() {
     const C = G.chamados, v = C.valores;
-    const W = 1000, H = 440, top = 130, base = 340, max = 540, bw = 88, step = W / 7, x = i => step * i + step / 2;
+    const W = 1000, H = 440, top = 130, base = 340, max = 540, bw = 100, step = W / 6, x = i => step * i + step / 2;
     let s = "";
     v.forEach((n, i) => {
       const h = (n / max) * (base - top), d = i * 90;
-      s += `<rect class="bar ${COR(i)}" x="${x(i) - bw / 2}" y="${base - h}" width="${bw}" height="${h}" rx="6" style="--d:${d}ms"/>
+      s += `<rect class="bar ${i < 3 ? "c-ant" : "c-acc"}" x="${x(i) - bw / 2}" y="${base - h}" width="${bw}" height="${h}" rx="6" style="--d:${d}ms"/>
         <text class="val fade" x="${x(i)}" y="${base - h - 14}" style="--d:${d + 500}ms">${n}</text>
-        <text class="mon ${i >= 4 ? "now" : ""}" x="${x(i)}" y="${base + 36}">${MESES[i]}</text>`;
+        <text class="mon ${i >= 3 ? "now" : ""}" x="${x(i)}" y="${base + 36}">${MESES[i + 1]}</text>`;
       s += i ? pill(x(i), base + 52, pct(v[i], v[i - 1]), v[i] >= v[i - 1]).replace('class="fade"', `class="fade" style="--d:${d + 700}ms"`) : `<text class="mt fade" x="${x(i)}" y="${base + 72}" text-anchor="middle" fill="#596076" font-size="15">—</text>`;
     });
     const bracket = (a, b, txt, cor, d) => {
@@ -343,24 +343,24 @@ button{font:inherit;color:inherit}
         <text class="fade" x="${(x1 + x2) / 2}" y="${y - 12}" text-anchor="middle" font-size="22" font-weight="800" fill="${cor}" style="--d:${d + 400}ms">${txt}</text>`;
     };
     s += bracket(0, 2, "média " + C.mediaAnterior, "#b8c6e6", 900);
-    s += bracket(4, 6, "média " + C.mediaAtual + " · +" + br(C.crescimento, 1) + "%", "#ffffff", 1100);
-    s += `<text class="tag-t fade" x="${x(3)}" y="96" fill="#8e96aa" style="--d:1000ms">▲ PICO DA SÉRIE</text>
-          <text class="tag-t fade" x="${x(5)}" y="108" fill="#ffd24a" style="--d:1300ms">★ MAIOR DO TRIMESTRE</text>`;
+    s += bracket(3, 5, "média " + C.mediaAtual + " · +" + br(C.crescimento, 1) + "%", "#ffffff", 1100);
+    s += `<text class="tag-t fade" x="${x(2)}" y="96" fill="#8e96aa" style="--d:1000ms">▲ PICO DA SÉRIE</text>
+          <text class="tag-t fade" x="${x(4)}" y="108" fill="#ffd24a" style="--d:1300ms">★ MAIOR DO TRIMESTRE</text>`;
     return { label: "GRTI · Chamados", cor: G.cor, html: `
       <div class="inner split">
         <aside>
           <div class="kicker a" style="--d:0ms"><i></i>GRTI · Chamados</div>
           <span class="big a" style="--d:120ms">${cnt(C.mediaAtual, { txt: C.mediaAtual })}</span>
           <p class="desc a" style="--d:260ms">chamados por mês, na média de ago a out</p>
-          <div class="delta a" style="--d:380ms">▲ ${cnt(C.crescimento, { dec: 1, pre: "+", suf: "%", txt: "+" + br(C.crescimento, 1) + "%" })} vs abr–jun (média ${C.mediaAnterior})</div>
+          <div class="delta a" style="--d:380ms">▲ ${cnt(C.crescimento, { dec: 1, pre: "+", suf: "%", txt: "+" + br(C.crescimento, 1) + "%" })} vs mai–jul (média ${C.mediaAnterior})</div>
           <div class="facts">
             <div class="fact hl a" style="--d:500ms"><b>${C.melhorMes.mes} · ${C.melhorMes.n}</b><span>mês com mais chamados do trimestre</span></div>
             <div class="fact a" style="--d:620ms"><b>${br(C.totalTrimestre)}</b><span>chamados abertos de ago a out · ${C.picoSerie.mes} (${C.picoSerie.n}) segue como pico da série</span></div>
           </div>
         </aside>
         <div>
-          <svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Chamados por mês, de abril a outubro">${s}</svg>
-          <div class="legend a" style="--d:900ms"><span><i style="background:var(--ant)"></i>abr–jun</span><span><i style="background:var(--bri)"></i>jul (ponte)</span><span><i style="background:var(--accent)"></i>ago–out</span><span>% = variação vs mês anterior</span></div>
+          <svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Chamados por mês, de maio a outubro">${s}</svg>
+          <div class="legend a" style="--d:900ms"><span><i style="background:var(--ant)"></i>mai–jul</span><span><i style="background:var(--accent)"></i>ago–out</span><span>% = variação vs mês anterior</span></div>
         </div>
       </div>` };
   }
@@ -378,6 +378,21 @@ button{font:inherit;color:inherit}
         <div class="s">${esc(it.sub)}</div>
       </div>`;
     }).join("");
+    // gráfico simples da evolução da nota (escala ampliada)
+    const lo = 4.95, hi = 5.005, cw = 1000, ch = 230, ctop = 52, cbase = 150, cstep = cw / N.itens.length;
+    const cx = i => cstep * i + cstep / 2, cy = v => cbase - (v - lo) / (hi - lo) * (cbase - ctop);
+    const cp = (a, b) => { let d = ""; for (let i = a; i <= b; i++) d += (i === a ? "M" : "L") + cx(i) + "," + cy(N.itens[i].nota); return d; };
+    let cs = `<text class="mt fade" x="0" y="22" fill="#8e96aa" font-size="13" letter-spacing="1" style="--d:1000ms">NOTA MÉDIA POR PERÍODO</text>
+      <path class="fade" d="${cp(0, 1)}" fill="none" stroke="var(--ant)" stroke-width="4" stroke-dasharray="9 8" style="--d:1000ms"/>
+      <path class="draw" pathLength="1" d="${cp(1, N.itens.length - 1)}" stroke="var(--accent)" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" style="--d:1100ms"/>`;
+    N.itens.forEach((it, i) => {
+      const d = 1000 + i * 140, ant = it.antigo;
+      cs += `<circle class="pop ${ant ? "c-ant" : "c-acc"}" cx="${cx(i)}" cy="${cy(it.nota)}" r="9" style="--d:${d}ms"/>
+        <text class="val fade" x="${cx(i)}" y="${cy(it.nota) - 18}" style="--d:${d + 300}ms">${br(it.nota, 2)}</text>
+        <text class="mon ${ant ? "" : "now"}" x="${cx(i)}" y="${cbase + 34}">${esc(it.rot)}</text>`;
+      if (i) { const dlt = it.nota - N.itens[i - 1].nota; cs += pill(cx(i), cbase + 50, Math.abs(dlt) < 0.005 ? "0,00" : (dlt > 0 ? "+" : "−") + br(Math.abs(dlt), 2), dlt >= 0).replace('class="fade"', `class="fade" style="--d:${d + 500}ms"`); }
+    });
+    const chartNps = `<svg class="chart" viewBox="0 0 ${cw} ${ch}" role="img" aria-label="Nota média de satisfação por período" style="margin-top:18px">${cs}</svg>`;
     return { label: "GRTI · Satisfação", cor: G.cor, html: `
       <div class="inner split inv">
         <aside>
@@ -392,7 +407,8 @@ button{font:inherit;color:inherit}
         </aside>
         <div>
           <div class="npsrow">${rings}</div>
-          <p class="fonte a" style="--d:1000ms">Nota de 1 a 5. Abr–jun: só a média do trimestre. Out fechou em 4,98; nov parcial em 4,97 (73 avaliações).</p>
+          ${chartNps}
+          <p class="fonte a" style="--d:1400ms">Nota de 1 a 5. Abr–jun: só a média do trimestre. Gráfico em escala ampliada (4,95 a 5,00) para mostrar a variação.</p>
         </div>
       </div>` };
   }
@@ -493,7 +509,7 @@ button{font:inherit;color:inherit}
         <div>
           ${svg}
           <div class="legend a" style="--d:900ms"><span><i style="background:var(--accent)"></i>ferramentas</span><span><i style="background:#ffd24a"></i>infra (VPS)</span><span>% = variação vs mês anterior</span></div>
-          <p class="fonte a" style="--d:1000ms">Valores mensais de ago a out. OpenAI convertida a R$ 5,12 (média do dólar no ano). VPS e domínio são anuais, rateados em 12 meses.</p>
+          <p class="fonte a" style="--d:1000ms">Valores mensais de ago a out. OpenAI convertida a R$ 5,12 (média do dólar no ano). VPS e domínio: R$ ${br(cal.sv.find(x => x.curto === "VPS").v[0])} por mês até dezembro; a partir daí, R$ 314.</p>
         </div>
       </div>` };
   }
@@ -526,7 +542,7 @@ button{font:inherit;color:inherit}
         <div>
           <div class="hbars tight">${rows}</div>
           <div class="legend a" style="--d:1000ms"><span><i style="background:var(--accent)"></i>ferramentas</span><span><i style="background:#ffd24a"></i>infra (VPS)</span><span>ao lado do nome: R$ em ago · set · out</span></div>
-          <p class="fonte a" style="--d:1100ms">Média mensal de ago a out, em R$. Claude: 9 licenças (R$ 1.242/mês). VPS Hostinger e domínio: anuais, rateados em 12 meses.</p>
+          <p class="fonte a" style="--d:1100ms">Média mensal de ago a out, em R$. Claude: 9 licenças (R$ 1.242/mês). VPS Hostinger e domínio: R$ ${br(cal.sv.find(x => x.curto === "VPS").v[0])} por mês até dezembro; a partir daí, R$ 314.</p>
         </div>
       </div>` };
   }
@@ -727,18 +743,18 @@ button{font:inherit;color:inherit}
   function cobr() {
     const C = SS.cobr, m = C.mensal, tot = m.reduce((a, b) => a + b, 0);
     const svg = cols({ vals: m, labs: ["Ago", "Set", "Out"], fv: x => br(x), pl: pls(m), now: () => true,
-      bk: [{ a: 0, b: 2, t: pct(m[2], m[0]) + " de ago a out" }], aria: "Boletos emitidos e enviados pela automação por mês" });
+      bk: [{ a: 0, b: 2, t: pct(m[2], m[0]) + " de ago a out" }], aria: "Mensagens de cobrança emitidas e enviadas pela automação por mês" });
     return sl("Cobrança RESOLVE", C.cor, `
-      ${kick("Cobrança RESOLVE · Boletos automáticos")}
+      ${kick("Cobrança RESOLVE · Mensagens automáticas")}
       <span class="big md a" style="--d:120ms">${cnt(tot, { txt: br(tot) })}</span>
-      <p class="desc a" style="--d:260ms">boletos emitidos e enviados pela automação no trimestre</p>
+      <p class="desc a" style="--d:260ms">mensagens de cobrança emitidas e enviadas pela automação no trimestre</p>
       <div class="delta a" style="--d:380ms">▲ ${pct(m[2], m[0])} de ago a out (${br(m[0])} → ${br(m[2])} por mês)</div>
       <div class="facts">
-        ${fact(br(m[2]), `boletos em outubro, o maior mês do trimestre (+${br(m[2] - m[0])} por mês que em agosto)`, 500, true)}
-        ${fact(br(Math.round(tot / 3)), "boletos por mês, em média, sem envio manual", 620)}
+        ${fact(br(m[2]), `mensagens de cobrança em outubro, o maior mês do trimestre (+${br(m[2] - m[0])} que em agosto)`, 500, true)}
+        ${fact(br(Math.round(tot / 3)), "mensagens de cobrança por mês, em média, sem envio manual", 620)}
       </div>`,
-      `${svg}${legend(["<span>boletos emitidos por mês</span>", "<span>% = variação vs mês anterior</span>"])}
-       ${fonte("A automação da T.I. busca os boletos no ILEVA e envia a cada cliente todo mês. Boletos emitidos por referência; régua de cobrança do RamosHub.")}`);
+      `${svg}${legend(["<span>mensagens de cobrança por mês</span>", "<span>% = variação vs mês anterior</span>"])}
+       ${fonte("A automação da T.I. envia as mensagens de cobrança a cada cliente todo mês, pela régua de cobrança do RamosHub, a partir dos boletos do ILEVA.")}`);
   }
 
   function rast() {
@@ -820,10 +836,10 @@ button{font:inherit;color:inherit}
       <div class="facts">
         ${fact(br(sum(T[0])), "segundas vias de boleto entregues por autoatendimento, a maior fatia (" + br(sum(T[0]) / tot * 100, 0) + "%)", 500, true)}
         ${fact(br(sum(av)), "avisos de evento (sinistro e assistência). Taxa de entrega: 39% em agosto → 90% em setembro (+51 p.p.)", 620)}
-        ${fact(br(sum(T[2])), "mensagens de aniversário para clientes RESOLVE", 740)}
+        ${fact(br(sum(T[2]) + sum(T[3])), "mensagens de boas-vindas e aniversário para clientes RESOLVE: " + br(sum(T[2])) + " de boas-vindas e " + br(sum(T[3])) + " de aniversário", 740)}
       </div>`,
       `<div class="hbars">${rows}</div>
-       ${fonte("Disparos de serviço = mensagens automáticas, sem atendente. Total por tipo no trimestre, com os valores de ago, set e out.", 1200)}`);
+       ${fonte("Disparos de serviço = mensagens automáticas, sem atendente. Total por tipo no trimestre, com os valores de ago, set e out. Boas-vindas e aniversário: divisão aproximada (70% e 30%) do grupo de relacionamento RESOLVE.", 1200)}`);
   }
 
   /* ---------- Encerramento: manchete + números do trimestre ---------- */
@@ -832,7 +848,7 @@ button{font:inherit;color:inherit}
     const K = [
       [SS.msg.total, "mensagens automáticas pelo RamosHub"],
       [SS.crm.auto, "atendimentos abertos por automação"],
-      [bol, "boletos emitidos e enviados"],
+      [bol, "mensagens de cobrança emitidas"],
       [SS.nps.total, "avaliações de clientes coletadas"],
       [9, "sistemas entregues"]
     ];
