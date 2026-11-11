@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 @property --accent { syntax: '<color>'; inherits: true; initial-value: #60a5fa; }
-:root{
+:root{--sp:1.6;
   --bg:#0a0c11; --bg2:#11141c;
   --panel:rgba(255,255,255,.035); --panel2:rgba(255,255,255,.06);
   --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.14);
@@ -73,15 +73,15 @@ button{font:inherit;color:inherit}
   opacity:0;visibility:hidden;transform:translateX(3%) scale(.985);
   transition:opacity .5s var(--ease),transform .7s var(--ease),visibility 0s .7s}
 .slide.past{transform:translateX(-3%) scale(.985)}
-.slide.on{opacity:1;visibility:visible;transform:none;transition:opacity .7s var(--ease) .1s,transform .9s var(--ease) .1s,visibility 0s}
+.slide.on{opacity:1;visibility:visible;transform:none;transition:opacity calc(.7s * var(--sp)) var(--ease) calc(.1s * var(--sp)),transform calc(.9s * var(--sp)) var(--ease) calc(.1s * var(--sp)),visibility 0s}
 .inner{width:min(1360px,100%);position:relative}
 
 /* entrada em cascata */
 .a{opacity:0;transform:translateY(26px);filter:blur(8px);transition:opacity .4s,transform .4s,filter .4s}
-.on .a{opacity:1;transform:none;filter:none;transition:opacity .8s var(--ease),transform 1s var(--ease),filter .8s var(--ease);transition-delay:calc(var(--d,0ms) + 250ms)}
+.on .a{opacity:1;transform:none;filter:none;transition:opacity calc(.8s * var(--sp)) var(--ease),transform calc(1s * var(--sp)) var(--ease),filter calc(.8s * var(--sp)) var(--ease);transition-delay:calc((var(--d,0ms) * var(--sp)) + calc(250ms * var(--sp)))}
 .line{display:block;overflow:hidden;padding-bottom:.06em}
 .line>span{display:block;transform:translateY(110%);transition:transform .4s}
-.on .line>span{transform:none;transition:transform 1.1s var(--ease) calc(var(--d,0ms) + 250ms)}
+.on .line>span{transform:none;transition:transform calc(1.1s * var(--sp)) var(--ease) calc((var(--d,0ms) * var(--sp)) + calc(250ms * var(--sp)))}
 .kicker{font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:12px}
 .kicker i{width:28px;height:1px;background:var(--accent)}
 .outline{color:transparent;-webkit-text-stroke:2px var(--accent)}
@@ -117,13 +117,13 @@ button{font:inherit;color:inherit}
 .chart .mt{font-family:var(--mono)}
 .c-ant{fill:var(--ant)} .c-bri{fill:var(--bri)} .c-acc{fill:var(--accent)}
 .bar{transform-box:fill-box;transform-origin:bottom;transform:scaleY(0);transition:transform .3s}
-.on .bar{transform:none;transition:transform 1.1s var(--ease) calc(var(--d,0ms) + 450ms)}
+.on .bar{transform:none;transition:transform calc(1.1s * var(--sp)) var(--ease) calc((var(--d,0ms) * var(--sp)) + calc(450ms * var(--sp)))}
 .fade{opacity:0;transition:opacity .3s}
-.on .fade{opacity:1;transition:opacity .7s var(--ease) calc(var(--d,0ms) + 450ms)}
+.on .fade{opacity:1;transition:opacity calc(.7s * var(--sp)) var(--ease) calc((var(--d,0ms) * var(--sp)) + calc(450ms * var(--sp)))}
 .pop{opacity:0;transform:scale(.3);transform-box:fill-box;transform-origin:center;transition:opacity .3s,transform .3s}
-.on .pop{opacity:1;transform:none;transition:opacity .5s var(--ease) calc(var(--d,0ms) + 450ms),transform .8s cubic-bezier(.3,1.6,.5,1) calc(var(--d,0ms) + 450ms)}
+.on .pop{opacity:1;transform:none;transition:opacity calc(.5s * var(--sp)) var(--ease) calc((var(--d,0ms) * var(--sp)) + calc(450ms * var(--sp))),transform calc(.8s * var(--sp)) cubic-bezier(.3,1.6,.5,1) calc((var(--d,0ms) * var(--sp)) + calc(450ms * var(--sp)))}
 .draw{fill:none;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .3s}
-.on .draw{stroke-dashoffset:0;transition:stroke-dashoffset 1.4s var(--ease) calc(var(--d,0ms) + 450ms)}
+.on .draw{stroke-dashoffset:0;transition:stroke-dashoffset calc(1.4s * var(--sp)) var(--ease) calc((var(--d,0ms) * var(--sp)) + calc(450ms * var(--sp)))}
 .val{font-size:30px;font-weight:800;text-anchor:middle;fill:var(--text);letter-spacing:-.02em}
 .mon{font-size:21px;font-weight:600;text-anchor:middle;fill:var(--muted)}
 .mon.now{fill:var(--text)}
@@ -142,13 +142,13 @@ button{font:inherit;color:inherit}
 .ring .trk{fill:none;stroke:var(--line2);stroke-width:9}
 .ring .arc{fill:none;stroke:var(--accent);stroke-width:9;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .3s}
 .ring.ant .arc{stroke:var(--ant)}
-.on .ring .arc{stroke-dashoffset:var(--off);transition:stroke-dashoffset 1.6s var(--ease) calc(var(--d,0ms) + 500ms)}
+.on .ring .arc{stroke-dashoffset:var(--off);transition:stroke-dashoffset calc(1.6s * var(--sp)) var(--ease) calc((var(--d,0ms) * var(--sp)) + calc(500ms * var(--sp)))}
 .ring .n{position:absolute;inset:0;display:grid;place-items:center;font-size:clamp(20px,1.7vw,28px);font-weight:800;letter-spacing:-.03em}
 .ring .r{margin-top:14px;font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
 .ring .s{margin-top:4px;font-size:clamp(12px,.95vw,14px);color:var(--muted)}
 .stars{display:flex;gap:6px;margin-top:22px}
 .stars svg{width:28px;height:28px;fill:var(--line2);transition:fill .3s}
-.on .stars svg{fill:#ffd24a;transition:fill .5s var(--ease) calc(var(--d,0ms) + 800ms + var(--i)*140ms)}
+.on .stars svg{fill:#ffd24a;transition:fill calc(.5s * var(--sp)) var(--ease) calc((var(--d,0ms) * var(--sp)) + calc(800ms * var(--sp)) + var(--i)*calc(140ms * var(--sp)))}
 
 /* categorias */
 .hbars{display:grid;gap:16px}
@@ -159,7 +159,7 @@ button{font:inherit;color:inherit}
 .hb.lead .ct{color:#ffd24a}
 .track{height:20px;border-radius:5px;background:rgba(255,255,255,.05);overflow:hidden}
 .track i{display:block;height:100%;border-radius:5px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
-.on .track i{transform:scaleX(var(--w));transition:transform 1.2s var(--ease) calc(var(--d,0ms) + 500ms)}
+.on .track i{transform:scaleX(var(--w));transition:transform calc(1.2s * var(--sp)) var(--ease) calc((var(--d,0ms) * var(--sp)) + calc(500ms * var(--sp)))}
 .hb.lead .track i{background:#ffd24a}
 .hb.alt .track i{background:var(--bri)}
 .comp{margin-top:26px;padding:20px 22px;border-radius:18px;border:1px solid color-mix(in oklab,#ffd24a 40%,transparent);background:color-mix(in oklab,#ffd24a 6%,transparent);max-width:520px}
@@ -170,7 +170,7 @@ button{font:inherit;color:inherit}
 .cp span{font-family:var(--mono);font-size:14px;text-align:right}
 .cp .tr{grid-column:1/-1;height:6px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden}
 .cp .tr i{display:block;height:100%;background:#ffd24a;transform:scaleX(0);transform-origin:left;transition:transform .3s}
-.on .cp .tr i{transform:scaleX(var(--w));transition:transform 1s var(--ease) calc(var(--d,0ms) + 700ms)}
+.on .cp .tr i{transform:scaleX(var(--w));transition:transform calc(1s * var(--sp)) var(--ease) calc((var(--d,0ms) * var(--sp)) + calc(700ms * var(--sp)))}
 
 /* callout */
 .call{margin-top:26px;max-width:440px;padding:18px 20px;border-radius:16px;border:1px solid var(--line2);background:linear-gradient(180deg,var(--panel2),var(--panel))}
@@ -188,7 +188,7 @@ button{font:inherit;color:inherit}
 
 .sbar{display:flex;height:46px;border-radius:12px;overflow:hidden;margin-top:22px}
 .sbar span{display:flex;align-items:center;padding:0 14px;font-family:var(--mono);font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;width:0;transition:width .3s}
-.on .sbar span{width:var(--w);transition:width 1.3s var(--ease) 1s}
+.on .sbar span{width:var(--w);transition:width calc(1.3s * var(--sp)) var(--ease) calc(1s * var(--sp))}
 .big .was{font-size:.62em;color:var(--dim);letter-spacing:-.04em}
 .big .arr{font-size:.5em;color:var(--muted);vertical-align:.12em}
 
@@ -219,8 +219,14 @@ button{font:inherit;color:inherit}
 .gr9 .it svg{display:block;width:100%;height:clamp(50px,11vh,130px);margin-bottom:10px}
 .gr9 .it i{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.1em}
 .gr9 .it b{display:block;margin-top:5px;font-size:clamp(14px,1.25vw,19px);font-weight:700;line-height:1.2}
+.fim{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:clamp(22px,4vh,44px);max-width:1200px}
+.fim .fk{padding:16px 16px 18px;border-radius:16px;border:1px solid var(--line2);background:linear-gradient(180deg,var(--panel2),var(--panel))}
+.fim .fk b{display:block;font-size:clamp(26px,3.2vw,50px);font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--accent)}
+.fim .fk>span{display:block;margin-top:9px;font-size:clamp(12px,.95vw,15px);line-height:1.35;color:var(--muted)}
+.fim-foot{margin-top:clamp(18px,3vh,34px);font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
 .comp.units{border-color:var(--line2);background:linear-gradient(180deg,var(--panel2),var(--panel));max-width:460px;margin-top:22px}
 .comp.units h3{color:var(--muted)}
+.comp.units .cp{grid-template-columns:1fr 78px}
 .comp.units .cp .tr i{background:var(--accent)}
 
 .mg{display:grid;grid-template-columns:minmax(150px,1.5fr) repeat(3,1fr) minmax(150px,1.5fr);border:1px solid var(--line2);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,var(--panel2),var(--panel))}
@@ -297,11 +303,11 @@ button{font:inherit;color:inherit}
         </h1>
         <p class="lead a" style="--d:420ms">${esc(D.periodo)}. ${esc(D.subtitulo)}</p>
         <div class="chips a" style="--d:600ms">
-          <span class="chip"><i></i>Bloco 1 · GRTI</span>
-          <span class="chip"><i></i>Bloco 2 · Custos e I.A SDR</span>
-          <span class="chip"><i></i>Bloco 3 · Sistemas</span>
-          <span class="chip dash">Nov parcial (1–9) fica fora das médias</span>
-          ${D.emConstrucao ? `<span class="chip dash">Em construção</span>` : ""}
+          <span class="chip"><i></i>01 · GRTI</span>
+          <span class="chip"><i></i>02 · Custos</span>
+          <span class="chip"><i></i>03 · Inteligência Artificial</span>
+          <span class="chip"><i></i>04 · Automações e Sistemas</span>
+          <span class="chip"><i></i>05 · Entregas do trimestre</span>
         </div>
       </div>` };
   }
@@ -554,6 +560,34 @@ button{font:inherit;color:inherit}
        ${fonte("Abr–jun: estimativa mensal da época. Ago–out: média dos valores informados. ManyChat e UazAPI (R$ " + br(novos) + " por mês) são novos e ficam fora da comparação.", 1200)}`);
   }
 
+  /* ---------- Custos da Meta (WhatsApp) por chip ---------- */
+  function metaCusto() {
+    const M = D.meta, C = M.chips, tm = C.reduce((a, c) => a + c.msgs, 0), tc = C.reduce((a, c) => a + c.custo, 0);
+    const mil = c => c.custo / c.msgs * 1000, mx = Math.max(...C.map(c => c.custo));
+    const mult = M.tarifa.marketing / M.tarifa.utilitaria;
+    const fin = C.find(c => c.n === "Financeiro CearaGPS" && c.sub === "Ativos"), com = C.find(c => c.n === "Comercial CearaGPS");
+    const rows = C.map((c, i) => hrow(c.n + (c.sub ? " · " + c.sub : ""), br(c.msgs) + " msgs · R$ " + br(mil(c), 0) + "/mil", "R$ " + br(c.custo), c.custo / mx, 300 + i * 90, c.mkt >= 0.5 ? "lead" : "")).join("");
+    return sl("Custos · Meta (WhatsApp)", M.cor, `
+      ${kick("Custos · WhatsApp Meta · " + M.periodo)}
+      <span class="big md a" style="--d:120ms"><small>R$ </small>${cnt(tc, { txt: br(tc) })}</span>
+      <p class="desc a" style="--d:260ms">de custo da Meta, em ${br(tm)} mensagens enviadas por ${C.length} chips</p>
+      <div class="comp units a" style="--d:420ms"><h3>Tipo de template · custo por mensagem</h3>
+        <div class="cp"><b>Utilitária e serviço</b><span>R$ ${br(M.tarifa.utilitaria, 3)}</span><div class="tr"><i style="--w:${(M.tarifa.utilitaria / M.tarifa.marketing).toFixed(3)};--d:200ms"></i></div></div>
+        <div class="cp"><b>Marketing</b><span>R$ ${br(M.tarifa.marketing, 2)}</span><div class="tr"><i style="--w:1;--d:300ms;background:#ffd24a"></i></div></div>
+      </div>
+      <div class="facts">
+        ${fact(br(mult, 0) + "×", "mais caro por mensagem no template de marketing. A T.I usa utilitária e serviço, de menor custo", 700, true)}
+      </div>`,
+      `<div class="hbars tight">${rows}</div>
+       ${legend(['<span><i style="background:#ffd24a"></i>maior parte do custo vem de template de marketing</span>', '<span><i style="background:var(--accent)"></i>utilitária e serviço</span>'], 1000)}
+       <div class="notas a" style="--d:1100ms"><h3>Comparativo</h3><ul>
+         <li><b>Financeiro CearaGPS (Ativos):</b> R$ ${br(fin.custo)} para ${br(fin.msgs)} mensagens, com template utilitário</li>
+         <li><b>Comercial CearaGPS:</b> R$ ${br(com.custo)} para ${br(com.msgs)} mensagens, com template de marketing</li>
+         <li><b>Resultado:</b> gasto parecido, <b style="color:var(--accent)">${br(fin.msgs / com.msgs, 0)}× mais mensagens</b> e custo por mensagem até ${br(mult, 0)}× menor com o template certo</li>
+         <li><b>Base:</b> ${M.periodo}, custo informado pela Meta por chip e categoria</li>
+       </ul></div></ul></div>`);
+  }
+
   /* ---------- Bloco 2 · I.A SDR ---------- */
   function iaSdr() {
     const S = D.iaSdr, v = S.serie.map(x => x.n), n = v.length, W = 1000, H = 440, base = 340, top = 120, max = 650, step = W / n, bw = 54, x = i => step * i + step / 2;
@@ -792,6 +826,29 @@ button{font:inherit;color:inherit}
        ${fonte("Disparos de serviço = mensagens automáticas, sem atendente. Total por tipo no trimestre, com os valores de ago, set e out.", 1200)}`);
   }
 
+  /* ---------- Encerramento: manchete + números do trimestre ---------- */
+  function fim() {
+    const bol = SS.cobr.mensal.reduce((a, b) => a + b, 0);
+    const K = [
+      [SS.msg.total, "mensagens automáticas pelo RamosHub"],
+      [SS.crm.auto, "atendimentos abertos por automação"],
+      [bol, "boletos emitidos e enviados"],
+      [SS.nps.total, "avaliações de clientes coletadas"],
+      [9, "sistemas entregues"]
+    ];
+    const cards = K.map(([n, t], i) => `<div class="fk a" style="--d:${700 + i * 140}ms"><b>${cnt(n, { txt: br(n) })}</b><span>${esc(t)}</span></div>`).join("");
+    return { label: "Encerramento", cor: G.cor, html: `
+      <div class="inner capa">
+        <div class="kicker a" style="--d:0ms"><i></i>${esc(D.equipe)} · ${esc(D.empresa)} · Ago a Out 2026</div>
+        <h1>
+          <span class="line"><span style="--d:80ms">Tecnologia que</span></span>
+          <span class="line"><span style="--d:200ms" class="outline">move a operação</span></span>
+        </h1>
+        <div class="fim">${cards}</div>
+        <p class="fim-foot a" style="--d:1700ms">Resultados T.I</p>
+      </div>` };
+  }
+
   /* ---------- Entregas do trimestre (lista; detalhes por sistema entram depois) ---------- */
   function entregas() {
     const L = ["Alertas ProTrack", "Indique & Ganhe", "NPS geral", "Painel de RH (vagas)", "Sistema Motoloc", "Painel de Recebíveis", "Aviso de eventos RESOLVE", "NPS de eventos RESOLVE", "Painel de agendamento"];
@@ -917,14 +974,15 @@ button{font:inherit;color:inherit}
 
   const slides = [capa(), chamados(), categorias(), nps(), tma(), patrimonio(),
     trans("Transição · Custos", CU.cor, "Próximo bloco", "Custos", "e Infraestrutura", "Ferramentas, I.A e infra: quanto custa manter a operação."),
-    custoGeral(), custoServicos(), custoComp(),
+    custoGeral(), custoServicos(), custoComp(), metaCusto(),
     trans("Transição · I.A", "#a78bfa", "Próximo bloco", "Inteligência", "Artificial", "As I.As em operação: I.A SDR (GRX) e Lara."),
     iaSdr(), lara(),
     trans("Transição · Automações", "#2dd4bf", "Próximo bloco", "Automações", "e Sistemas", "Agendamentos, cobrança RESOLVE e painel de instalações."),
     agend(), cobr(), rast(), /* bloq() oculto por enquanto: para voltar, reinserir bloq() aqui, depois de rast() */
     crm(), recA(), npsCli(), disp(), msg(),
     trans("Transição · Entregas", "#fbbf24", "Entregas do trimestre", "9 sistemas", "entregues", "Ago a Out: o que a T.I colocou no ar para a operação."),
-    entregas()]  // recB() (tempos da recepção) fica fora: é desempenho da área;
+    entregas(),
+    fim()]  // recB() (tempos da recepção) fica fora: é desempenho da área;
 
   /* ---------- contadores ---------- */
   const fmtCount = (c, v) => {
@@ -934,7 +992,8 @@ button{font:inherit;color:inherit}
   function runCounts(el) {
     el.querySelectorAll(".cnt").forEach(c => {
       cancelAnimationFrame(c._r);
-      const to = +c.dataset.to, t0 = performance.now() + 450, dur = 1500;
+      const SP = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sp")) || 1;
+      const to = +c.dataset.to, t0 = performance.now() + 450 * SP, dur = 1500 * SP;
       c.textContent = fmtCount(c, 0);
       const tick = now => {
         const p = Math.min(1, Math.max(0, (now - t0) / dur)), e = 1 - Math.pow(1 - p, 3);
@@ -944,7 +1003,7 @@ button{font:inherit;color:inherit}
       c._r = requestAnimationFrame(tick);
       // garantia: se o navegador pausar o rAF (aba em segundo plano), o valor final entra por timer
       clearTimeout(c._t);
-      c._t = setTimeout(() => { cancelAnimationFrame(c._r); c.textContent = fmtCount(c, to); }, 450 + dur + 150);
+      c._t = setTimeout(() => { cancelAnimationFrame(c._r); c.textContent = fmtCount(c, to); }, 450 * SP + dur + 150);
     });
   }
 

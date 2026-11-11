@@ -87,6 +87,22 @@ window.RESULTADOS = {
     ]
   },
 
+  /* Custos da Meta (WhatsApp) por chip · 28/08 a 05/11/2026. Volume diário da Graph API; custo informado pela Meta por chip e categoria.
+     Fonte: relatório de custos da Meta (06/11/2026). Tarifas por mensagem: marketing lite R$ 0,32 · utilitária e serviço R$ 0,035. */
+  meta: {
+    cor: "#34d399", periodo: "28/08 a 05/11",
+    // ordenado por custo; mkt = parte do custo que vem de template de marketing (custo por chip e categoria)
+    chips: [
+      { n: "Financeiro CearaGPS", sub: "Ativos", msgs: 122131, custo: 2710.33, mkt: 0.0007 },
+      { n: "Comercial CearaGPS", sub: "", msgs: 7956, custo: 2434.55, mkt: 0.9999 },
+      { n: "Financeiro CearaGPS", sub: "Negativados", msgs: 9559, custo: 1110.06, mkt: 0.9237 },
+      { n: "Suporte CearaGPS", sub: "", msgs: 30374, custo: 989.17, mkt: 0 },
+      { n: "Resolve Financeiro", sub: "", msgs: 36674, custo: 687.04, mkt: 0 },
+      { n: "Resolve Proteção Veicular", sub: "", msgs: 7124, custo: 220.45, mkt: 0.5764 }
+    ],
+    tarifa: { marketing: 0.32, utilitaria: 0.035 }
+  },
+
   /* I.A SDR (GRX) · atendimentos por mês, nov/25 a out/26. Total desde 23/10/2025: 3.199 (91 em out/25, fora da série). */
   iaSdr: {
     cor: "#a78bfa",
