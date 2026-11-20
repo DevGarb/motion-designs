@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Novo Modelo de Gestão de Ponto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#C1272D; --red-2:#E0393F; --red-dark:#8E1B20; --red-soft:#FBE9EA;
+  --ink:#2B2B2F; --grey:#5B5B62; --muted:#8C8C94; --line:#E7E2E2;
+  --bg:#F6F4F4; --card:#FFFFFF;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --shadow:0 30px 60px -30px rgba(80,20,22,.25), 0 8px 24px -12px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#1b1b1d;overflow:hidden;font-family:Poppins,"Segoe UI",system-ui,sans-serif;color:var(--ink)}
+#viewport{position:fixed;inset:0;display:grid;place-items:center}
+#stage{position:relative;width:1920px;height:1080px;background:var(--bg);overflow:hidden;transform-origin:center center;flex:none}
+
+/* ---------- persistent background ---------- */
+#circuit{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#circuit .trace{fill:none;stroke:rgba(193,39,45,.10);stroke-width:2}
+#circuit .trace.g{stroke:rgba(90,90,98,.08)}
+#circuit .node{fill:#fff;stroke:rgba(193,39,45,.22);stroke-width:2}
+#circuit .pulse{fill:none;stroke:var(--red);stroke-width:3;stroke-linecap:round;stroke-dasharray:.04 .96;opacity:.55;animation:pulse 7s linear infinite}
+@keyframes pulse{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,rgba(246,244,244,0) 40%,rgba(246,244,244,.85) 100%)}
+
+/* ---------- chrome ---------- */
+#header{position:absolute;top:0;left:0;right:0;height:120px;display:flex;align-items:center;justify-content:space-between;padding:0 110px;z-index:5;transition:opacity .6s,transform .6s var(--ease)}
+#header.hide{opacity:0;transform:translateY(-30px)}
+#chapter{display:flex;align-items:center;gap:18px;font-size:18px;font-weight:600;letter-spacing:.22em;color:var(--grey);text-transform:uppercase}
+#chapter .num{color:#fff;background:var(--red);border-radius:999px;padding:6px 16px;letter-spacing:.1em}
+#chapter .txt{transition:opacity .4s}
+#footer{position:absolute;left:110px;right:110px;bottom:42px;display:flex;align-items:center;gap:36px;z-index:5;font-size:15px;letter-spacing:.2em;color:var(--muted);font-weight:500;transition:opacity .6s}
+#footer.hide{opacity:0}
+#footer b{color:var(--red);font-weight:600}
+#progress{flex:1;display:flex;gap:10px}
+#progress .seg{flex:1;height:5px;border-radius:9px;background:var(--line);overflow:hidden;position:relative}
+#progress .seg i{position:absolute;inset:0;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform .8s var(--ease)}
+#count{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;letter-spacing:.1em}
+
+/* ---------- slides & transitions ---------- */
+.slide{position:absolute;inset:0;padding:150px 110px 120px;opacity:0;visibility:hidden;transform:translateX(90px) scale(.985);filter:blur(10px);
+  transition:opacity .8s var(--ease),transform 1s var(--ease),filter .8s var(--ease),visibility 0s linear 1s;z-index:2}
+.slide.past{transform:translateX(-90px) scale(.985)}
+.slide.active{opacity:1;visibility:visible;transform:none;filter:none;transition:opacity .9s var(--ease) .15s,transform 1.1s var(--ease) .15s,filter .9s var(--ease) .15s,visibility 0s}
+
+.a{opacity:0;transform:var(--from,translateY(40px));transition:opacity .8s var(--ease),transform 1s var(--ease);transition-delay:0s}
+.slide.active .a{opacity:1;transform:none;transition-delay:calc(var(--d,0) * 1ms + 250ms)}
+.up{--from:translateY(46px)} .dn{--from:translateY(-40px)} .lf{--from:translateX(-60px)} .rt{--from:translateX(60px)}
+.sc{--from:scale(.82)} .fd{--from:none}
+.draw path,.draw line,.draw circle.d{stroke-dasharray:1;stroke-dashoffset:1}
+.slide.active .draw path,.slide.active .draw line,.slide.active .draw circle.d{stroke-dashoffset:0;transition:stroke-dashoffset 1.4s var(--ease);transition-delay:calc(var(--d,0) * 1ms + 250ms)}
+
+/* ---------- type ---------- */
+.kicker{display:inline-flex;align-items:center;gap:14px;font-size:20px;font-weight:600;letter-spacing:.24em;color:var(--red);text-transform:uppercase}
+.kicker::before{content:"";width:46px;height:3px;background:var(--red);border-radius:3px}
+h1.title{font-size:62px;line-height:1.1;font-weight:700;letter-spacing:-.02em;margin-top:16px;max-width:1700px}
+h1.title em{font-style:normal;color:var(--red)}
+.lead{font-size:27px;line-height:1.5;color:var(--grey);margin-top:22px;max-width:1150px;font-weight:400}
+.lead b{color:var(--ink);font-weight:600}
+
+/* ---------- components ---------- */
+.card{background:var(--card);border-radius:30px;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,.03);position:relative;overflow:hidden}
+.card.top::before{content:"";position:absolute;left:0;right:0;top:0;height:7px;background:linear-gradient(90deg,var(--red-dark),var(--red),var(--red-2))}
+.badge{display:inline-grid;place-items:center;width:58px;height:58px;border-radius:50%;background:var(--red-soft);color:var(--red);font-weight:700;font-size:24px;flex:none}
+.pill{display:inline-flex;align-items:center;gap:10px;padding:10px 22px;border-radius:999px;font-size:19px;font-weight:600;background:var(--red-soft);color:var(--red)}
+.pill.grey{background:#ECEAEA;color:var(--grey)}
+.pill.solid{background:var(--red);color:#fff}
+.ico{width:38px;height:38px;stroke:var(--red);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bridge{position:absolute;right:110px;bottom:92px;display:flex;align-items:center;gap:16px;font-size:20px;color:var(--grey);font-weight:500}
+.bridge b{color:var(--red);font-weight:600}
+.bridge .arr{width:46px;height:46px;border-radius:50%;background:var(--red);display:grid;place-items:center;animation:nudge 1.8s ease-in-out infinite}
+.bridge .arr svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.6}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(7px)}}
+.equip{position:absolute;pointer-events:none;animation:float 8s ease-in-out infinite}
+@keyframes float{0%,100%{translate:0 0}50%{translate:0 -14px}}
+
+/* ---------- logo ---------- */
+.logo{display:flex;flex-direction:column;align-items:center;line-height:1}
+.logo .wm{font-weight:700;color:#3C3C40;letter-spacing:-.01em}
+.logo .sub{font-weight:600;color:var(--red);letter-spacing:.12em}
+.logo-row{display:flex;align-items:center;gap:14px}
+
+/* ---------- S1 cover ---------- */
+#s1 .left{position:absolute;left:110px;top:90px;bottom:90px;width:820px;padding:56px 80px;display:flex;flex-direction:column}
+#s1 .hero{position:absolute;right:20px;top:60px;width:960px;-webkit-mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,#000 60%,transparent 100%);mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,#000 60%,transparent 100%)}
+#s1 h1{font-size:80px;line-height:1.02;font-weight:800;letter-spacing:-.03em;margin-top:18px}
+#s1 h1 span{color:var(--red)}
+#s1 .tag{font-size:18px;letter-spacing:.26em;color:var(--grey);font-weight:600;margin-top:30px}
+#s1 .sub{font-size:24px;color:var(--grey);margin-top:18px;line-height:1.5}
+#s1 .chips{display:flex;gap:14px;margin-top:auto;flex-wrap:wrap}
+#s1 .date{position:absolute;right:110px;bottom:110px;display:flex;align-items:center;gap:22px;background:var(--red);color:#fff;border-radius:24px;padding:22px 34px}
+#s1 .date small{display:block;font-size:15px;letter-spacing:.22em;opacity:.85}
+#s1 .date strong{font-size:38px;font-weight:700}
+
+/* ---------- S2 agenda ---------- */
+#s2 .track{position:absolute;left:110px;right:110px;top:470px;height:360px}
+#s2 .track svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible}
+#s2 .stop{position:absolute;top:0;width:260px;text-align:center;display:flex;flex-direction:column;align-items:center}
+#s2 .dot{width:92px;height:92px;border-radius:50%;background:#fff;border:3px solid var(--red);display:grid;place-items:center;font-size:28px;font-weight:700;color:var(--red);box-shadow:var(--shadow)}
+#s2 .stop.key .dot{background:var(--red);color:#fff}
+#s2 .stop h3{font-size:25px;margin-top:26px;font-weight:600}
+#s2 .stop p{font-size:18px;color:var(--grey);margin-top:8px;line-height:1.45}
+
+/* ---------- S3 context ---------- */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;margin-top:64px}
+.grid3 .card{padding:48px 44px 50px}
+.grid3 h3{font-size:30px;font-weight:600;margin-top:28px}
+.grid3 p{font-size:22px;line-height:1.55;color:var(--grey);margin-top:14px}
+.callout{margin-top:44px;display:flex;align-items:center;gap:22px;font-size:25px;color:var(--ink);font-weight:500}
+.callout::before{content:"";width:8px;height:60px;border-radius:6px;background:var(--red)}
+
+/* ---------- flows ---------- */
+.flow{position:relative;display:flex;justify-content:space-between;align-items:stretch;margin-top:60px;gap:0}
+.step{width:290px;padding:34px 28px 32px;position:relative;z-index:2}
+.step .n{font-size:16px;font-weight:700;letter-spacing:.2em;color:var(--muted)}
+.step h4{font-size:24px;font-weight:600;margin-top:14px;line-height:1.25}
+.step p{font-size:18px;color:var(--grey);margin-top:10px;line-height:1.5}
+.step .ico{margin-bottom:8px}
+.flowline{position:absolute;left:0;top:0;width:100%;height:100%;z-index:1;overflow:visible}
+.stat-row{display:flex;gap:26px;margin-top:26px}
+.stat{flex:1;padding:28px 34px;display:flex;align-items:center;gap:22px}
+.stat strong{font-size:46px;font-weight:700;color:var(--red);letter-spacing:-.02em;white-space:nowrap}
+.stat span{font-size:19px;color:var(--grey);line-height:1.4}
+
+/* antes = dessaturado */
+.old .step{background:#FBFAFA}
+.old .step .ico{stroke:#9A9AA0}
+.old .step.pain{background:#fff;border:2px solid var(--red)}
+.old .step.pain .ico{stroke:var(--red)}
+
+/* ---------- S5 cause/impact ---------- */
+#s5 .ci{display:grid;grid-template-columns:1fr 200px 1fr;margin-top:44px;align-items:start}
+#s5 .col h3{font-size:22px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;color:var(--grey);margin-bottom:22px;display:flex;align-items:center;gap:14px}
+#s5 .col.imp h3{color:var(--red)}
+#s5 .item{padding:20px 30px;margin-bottom:18px;display:flex;gap:20px;align-items:center;height:108px}
+#s5 .item h4{font-size:23px;font-weight:600}
+#s5 .item p{font-size:18px;color:var(--grey);margin-top:4px;line-height:1.4}
+#s5 .col.imp .item{border-left:6px solid var(--red)}
+#s5 svg.links{width:200px;height:500px;margin-top:55px;overflow:visible}
+
+/* ---------- S6 now ---------- */
+#s6 .wrap{display:grid;grid-template-columns:1fr 600px;gap:60px;margin-top:34px}
+.live{display:inline-flex;align-items:center;gap:12px;font-weight:600;font-size:19px;color:var(--red);letter-spacing:.14em}
+.live i{width:14px;height:14px;border-radius:50%;background:var(--red);box-shadow:0 0 0 0 rgba(193,39,45,.5);animation:live 1.6s infinite}
+@keyframes live{0%{box-shadow:0 0 0 0 rgba(193,39,45,.55)}100%{box-shadow:0 0 0 18px rgba(193,39,45,0)}}
+.vflow{position:relative;margin-top:30px}
+.vstep{display:flex;gap:26px;align-items:center;padding:18px 30px;margin-bottom:16px;position:relative;z-index:2}
+.vstep h4{font-size:24px;font-weight:600}
+.vstep p{font-size:18px;color:var(--grey);margin-top:3px}
+.vstep .badge{width:60px;height:60px}
+.vline{position:absolute;left:59px;top:40px;bottom:40px;width:3px;background:var(--line);z-index:1;overflow:hidden;border-radius:3px}
+.vline i{position:absolute;left:0;width:3px;height:120px;background:linear-gradient(transparent,var(--red),transparent);animation:down 2.6s linear infinite}
+@keyframes down{from{top:-120px}to{top:100%}}
+.mail{padding:0;overflow:hidden}
+.mail .bar{display:flex;align-items:center;gap:10px;padding:18px 26px;background:#F3F1F1;border-bottom:1px solid var(--line)}
+.mail .bar i{width:13px;height:13px;border-radius:50%;background:#DAD5D5}
+.mail .bar span{margin-left:12px;font-size:16px;color:var(--muted);letter-spacing:.06em}
+.mail .body{padding:26px 36px 30px}
+.mail .from{display:flex;gap:16px;align-items:center}
+.mail .av{width:54px;height:54px;border-radius:50%;background:var(--red);display:grid;place-items:center;color:#fff;font-weight:700}
+.mail .from b{display:block;font-size:20px}
+.mail .from small{font-size:16px;color:var(--muted)}
+.mail h5{font-size:24px;margin:20px 0 8px;font-weight:600}
+.mail table{width:100%;border-collapse:collapse;font-size:20px}
+.mail td{padding:11px 0;border-bottom:1px dashed var(--line)}
+.mail td:first-child{color:var(--muted);width:42%}
+.mail td:last-child{font-weight:600}
+.mail .btn{margin-top:22px;background:var(--red);color:#fff;border-radius:16px;padding:20px;text-align:center;font-weight:700;letter-spacing:.12em;font-size:18px}
+.notif{position:absolute;right:-24px;top:-30px;background:var(--ink);color:#fff;border-radius:18px;padding:14px 22px;font-size:17px;display:flex;gap:10px;align-items:center;box-shadow:var(--shadow);z-index:3}
+.notif i{width:10px;height:10px;border-radius:50%;background:var(--red-2)}
+
+/* ---------- S7 leader ---------- */
+#s7 .opts{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:40px}
+#s7 .opt{padding:46px 48px}
+#s7 .opt h3{font-size:36px;font-weight:700;display:flex;align-items:center;gap:18px}
+#s7 .opt p{font-size:22px;color:var(--grey);margin-top:16px;line-height:1.55}
+#s7 .opt.ok h3{color:var(--red)}
+#s7 .chips{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px}
+#s7 .steps4{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:44px}
+#s7 .s4{padding:28px 30px;display:flex;gap:18px;align-items:center}
+#s7 .s4 h4{font-size:21px;font-weight:600;line-height:1.3}
+
+/* ---------- S8 compare ---------- */
+#s8 .cmp{margin-top:46px;display:grid;grid-template-columns:330px 1fr 1fr;row-gap:14px;column-gap:24px}
+#s8 .hd{font-size:22px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;padding:0 30px 6px;display:flex;align-items:center;gap:14px}
+#s8 .hd.before{color:var(--muted)}
+#s8 .hd.after{color:var(--red)}
+#s8 .lbl{font-size:21px;font-weight:600;display:flex;align-items:center;padding-left:6px;color:var(--ink)}
+#s8 .c{padding:22px 30px;font-size:21px;line-height:1.4;border-radius:20px;display:flex;align-items:center;gap:16px;min-height:86px}
+#s8 .c.b{background:#EFEDED;color:var(--grey)}
+#s8 .c.n{background:#fff;box-shadow:var(--shadow);font-weight:500;border-left:6px solid var(--red)}
+#s8 .c.b::before{content:"✕";color:#B0ABAB;font-weight:700}
+#s8 .c.n::before{content:"✓";color:var(--red);font-weight:800}
+
+/* ---------- S9 impact ---------- */
+#s9 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:30px;margin-top:56px}
+#s9 .kpi{padding:40px 36px 34px;display:flex;flex-direction:column}
+#s9 .kpi .v{font-size:76px;font-weight:800;color:var(--red);letter-spacing:-.03em;line-height:1}
+#s9 .kpi .v small{font-size:34px;font-weight:700}
+#s9 .kpi h4{font-size:23px;font-weight:600;margin-top:18px}
+#s9 .kpi p{font-size:18px;color:var(--grey);margin:10px 0 18px;line-height:1.5}
+#s9 .kpi .was{font-size:17px;color:var(--muted);margin-top:auto;padding-top:14px;border-top:1px dashed var(--line)}
+#s9 .gains{display:flex;gap:22px;margin-top:40px}
+#s9 .gain{flex:1;padding:26px 30px;display:flex;align-items:center;gap:18px;font-size:21px;font-weight:600}
+
+/* ---------- S10 rules ---------- */
+#s10 .wrap{display:grid;grid-template-columns:560px 1fr;gap:60px;margin-top:50px;align-items:start}
+.ring{position:relative;width:480px;height:480px;display:grid;place-items:center}
+.ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring .big{font-size:150px;font-weight:800;color:var(--red);letter-spacing:-.04em;line-height:1}
+.ring .big small{font-size:70px}
+.ring .cap{font-size:20px;letter-spacing:.2em;color:var(--grey);font-weight:600;text-align:center;margin-top:6px}
+#s10 .rule{display:flex;gap:24px;padding:30px 36px;margin-bottom:22px;align-items:center}
+#s10 .rule h4{font-size:25px;font-weight:600}
+#s10 .rule p{font-size:19px;color:var(--grey);margin-top:6px;line-height:1.45}
+#s10 .rule.alert{background:var(--red);color:#fff}
+#s10 .rule.alert p{color:rgba(255,255,255,.85)}
+#s10 .rule.alert .badge{background:rgba(255,255,255,.18);color:#fff}
+
+/* ---------- S11 atestado ---------- */
+#s11 .tl{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:30px;margin-top:70px}
+#s11 .tl .ln{position:absolute;left:6%;right:6%;top:46px;height:4px;background:var(--line);border-radius:4px;overflow:hidden}
+#s11 .tl .ln i{position:absolute;inset:0;background:var(--red);transform:scaleX(0);transform-origin:left}
+#s11.active .tl .ln i{transform:scaleX(1);transition:transform 2.4s var(--ease) .6s}
+#s11 .ph{display:flex;flex-direction:column;align-items:center;text-align:center}
+#s11 .ph .dot{width:96px;height:96px;border-radius:50%;background:#fff;border:3px solid var(--red);display:grid;place-items:center;box-shadow:var(--shadow);position:relative;z-index:2}
+#s11 .ph.hot .dot{background:var(--red)}
+#s11 .ph.hot .dot .ico{stroke:#fff}
+#s11 .ph .when{margin-top:24px}
+#s11 .ph h4{font-size:24px;font-weight:600;margin-top:16px;line-height:1.3}
+#s11 .ph p{font-size:18px;color:var(--grey);margin-top:10px;line-height:1.5;max-width:330px}
+#s11 .must{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:56px}
+#s11 .must .card{padding:28px 32px;display:flex;gap:20px;align-items:center}
+#s11 .must h5{font-size:21px;font-weight:600;line-height:1.35}
+
+/* ---------- S12 veracity ---------- */
+#s12 .quote{margin-top:46px;padding:60px 80px;background:var(--red);color:#fff;border-radius:34px;position:relative;overflow:hidden}
+#s12 .quote::after{content:"”";position:absolute;right:50px;top:-70px;font-size:360px;opacity:.13;font-weight:800}
+#s12 .quote p{font-size:52px;line-height:1.2;font-weight:700;letter-spacing:-.01em;max-width:1400px}
+#s12 .quote small{display:block;margin-top:22px;font-size:20px;letter-spacing:.2em;opacity:.85}
+#s12 .checks{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:40px}
+#s12 .chk{padding:32px 30px}
+#s12 .chk h4{font-size:23px;font-weight:600;margin-top:18px}
+#s12 .chk p{font-size:18px;color:var(--grey);margin-top:8px;line-height:1.5}
+
+/* ---------- S13 next ---------- */
+#s13 .wrap{display:grid;grid-template-columns:1fr 560px;gap:60px;margin-top:46px}
+#s13 .ms{display:flex;gap:28px;padding:26px 34px;margin-bottom:20px;align-items:center}
+#s13 .ms .when{width:170px;flex:none;font-weight:700;color:var(--red);font-size:22px;line-height:1.2}
+#s13 .ms h4{font-size:24px;font-weight:600}
+#s13 .ms p{font-size:18px;color:var(--grey);margin-top:5px;line-height:1.45}
+#s13 .ms.go{border:2px solid var(--red)}
+#s13 .contact{padding:44px 44px}
+#s13 .contact h3{font-size:22px;letter-spacing:.2em;color:var(--red);font-weight:700}
+#s13 .contact .row{display:flex;gap:20px;align-items:center;margin-top:34px}
+#s13 .contact .row b{display:block;font-size:26px}
+#s13 .contact .row small{font-size:16px;color:var(--muted);letter-spacing:.14em}
+
+/* ---------- S14 handoff ---------- */
+#s14{display:flex;align-items:center;justify-content:center;text-align:center;flex-direction:column;padding-top:60px}
+#s14 .nit{width:600px}
+#s14 h2{font-size:64px;font-weight:700;letter-spacing:-.02em;margin-top:10px}
+#s14 h2 em{font-style:normal;color:var(--red)}
+#s14 p{font-size:26px;color:var(--grey);margin-top:16px}
+#s14 .thanks{margin-top:36px;display:flex;gap:16px;justify-content:center}
+
+/* ---------- notes & help ---------- */
+#notes{position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(140%);width:min(1100px,92vw);background:rgba(25,25,28,.94);color:#eee;border-radius:16px;padding:18px 24px;font-size:16px;line-height:1.55;z-index:50;transition:transform .4s var(--ease);font-family:Poppins,system-ui,sans-serif}
+#notes.on{transform:translateX(-50%) translateY(0)}
+#notes b{color:#ff8a8e;letter-spacing:.12em;font-size:12px;display:block;margin-bottom:6px}
+#hint{position:fixed;right:16px;top:14px;color:#aaa;font-size:12px;z-index:50;opacity:.0;transition:opacity .5s;font-family:system-ui}
+body:hover #hint{opacity:.6}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div id="hint">← → navegar · F tela cheia · N notas</div>
+<div id="viewport"><div id="stage">
+
+  <svg id="circuit" viewBox="0 0 1920 1080" preserveAspectRatio="none"></svg>
+  <div class="vignette"></div>
+
+  <header id="header">
+    <img src="assets/logo-nordeste.svg" alt="Nordeste Locações" style="height:64px;width:auto;display:block">
+    <div id="chapter"><span class="num">01</span><span class="txt">Contexto</span></div>
+  </header>
+
+  <!-- ================= 1 CAPA ================= -->
+  <section class="slide" id="s1" data-chapter="0" data-label="Abertura"
+    data-notes="Abertura. Hoje vamos alinhar o novo modelo de gestão de ponto. A partir de 23/11/2026, o ponto passa a ser acompanhado em tempo real dentro do Sistema de Gente e Gestão – NIT. Primeiro eu explico o porquê e as regras; depois o NIT faz o treinamento prático.">
+    <img class="hero a fd" style="--d:200" src="assets/hero.png" alt="">
+    <div class="left card top a lf" style="--d:0">
+      <img class="a up" style="--d:300;width:330px;max-width:100%;display:block" src="assets/logo-nordeste-completo.svg" alt="Nordeste Locações – Soluções em engenharia para sua obra">
+      <div class="tag a up" style="--d:450">ALINHAMENTO COM AS LIDERANÇAS</div>
+      <h1 class="a up" style="--d:550">Novo modelo de <span>gestão de ponto</span></h1>
+      <p class="sub a up" style="--d:700">Ocorrências acompanhadas em tempo real e justificadas pelo líder no <b style="color:var(--ink)">Sistema de Gente e Gestão – NIT</b>.</p>
+      <div class="chips">
+        <span class="pill a up" style="--d:900">Mais agilidade</span>
+        <span class="pill a up" style="--d:1000">Menos retrabalho</span>
+        <span class="pill a up" style="--d:1100">Informação confiável</span>
+      </div>
+    </div>
+    <div class="date a rt" style="--d:1200">
+      <svg class="ico" style="stroke:#fff;width:46px;height:46px" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+      <div><small>VIGENTE A PARTIR DE</small><strong>23/11/2026</strong></div>
+    </div>
+  </section>
+
+  <!-- ================= 2 ROTEIRO ================= -->
+  <section class="slide" id="s2" data-chapter="0" data-label="Roteiro"
+    data-notes="Este é o caminho de hoje: por que mudar, como era, o que muda, o impacto, as regras e os próximos passos. No final, eu passo a palavra ao NIT.">
+    <span class="kicker a up">Roteiro de hoje</span>
+    <h1 class="title a up" style="--d:100">Do <em>por quê</em> ao <em>como</em>: o caminho desta conversa</h1>
+    <div class="track">
+      <svg class="draw" viewBox="0 0 1700 360" preserveAspectRatio="none" style="--d:300">
+        <path d="M130 46 H1570" pathLength="1" stroke="#C1272D" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div class="stop a sc" style="left:0;--d:400"><div class="dot">01</div><h3>Contexto</h3><p>Por que estamos mudando</p></div>
+      <div class="stop a sc" style="left:288px;--d:550"><div class="dot">02</div><h3>Como era</h3><p>O ciclo semanal por e-mail, suas causas e seu impacto</p></div>
+      <div class="stop a sc key" style="left:576px;--d:700"><div class="dot">03</div><h3>O que muda</h3><p>Ponto em tempo real na plataforma</p></div>
+      <div class="stop a sc" style="left:864px;--d:850"><div class="dot">04</div><h3>Impacto</h3><p>O que ganhamos com a mudança</p></div>
+      <div class="stop a sc key" style="left:1152px;--d:1000"><div class="dot">05</div><h3>Regras</h3><p>Prazos, atestados e veracidade</p></div>
+      <div class="stop a sc" style="left:1440px;--d:1150"><div class="dot">06</div><h3>Próximos passos</h3><p>Início e treinamento NIT</p></div>
+    </div>
+    <div class="bridge a fd" style="--d:1500"><span>Começamos pelo <b>contexto</b></span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+  </section>
+
+  <!-- ================= 3 CONTEXTO ================= -->
+  <section class="slide" id="s3" data-chapter="1" data-label="Contexto"
+    data-notes="A empresa está em transição: jornadas mudando, incluindo a preparação para o fim da escala 6x1. Para acompanhar, as rotinas precisam ser mais ágeis. O ponto é um dos primeiros processos a evoluir.">
+    <img class="equip a fd" src="assets/eq-betoneira.png" style="right:130px;top:150px;width:190px;opacity:.4;--d:600" alt="">
+    <span class="kicker a up">01 · Contexto</span>
+    <h1 class="title a up" style="--d:100">Estamos em um <em>momento de transição</em></h1>
+    <p class="lead a up" style="--d:200">As rotinas internas precisam evoluir junto com a empresa, com mais agilidade e menos tarefas repetitivas.</p>
+    <div class="grid3">
+      <div class="card top a up" style="--d:350">
+        <span class="badge">1</span>
+        <h3>Mudanças na jornada</h3>
+        <p>Transições na organização das jornadas, incluindo a preparação para o fim da escala 6x1.</p>
+      </div>
+      <div class="card top a up" style="--d:500">
+        <span class="badge">2</span>
+        <h3>Processos mais ágeis</h3>
+        <p>Simplificar atividades operacionais e fazer a informação circular mais rápido entre líderes e Gente e Gestão.</p>
+      </div>
+      <div class="card top a up" style="--d:650">
+        <span class="badge">3</span>
+        <h3>Tempo bem aproveitado</h3>
+        <p>Reduzir o trabalho manual para que líderes e Gente e Gestão dediquem tempo ao que realmente é gestão.</p>
+      </div>
+    </div>
+    <div class="callout a lf" style="--d:850">A gestão de ponto é um dos primeiros processos a passar por essa otimização.</div>
+    <div class="bridge a fd" style="--d:1100"><span>Mas antes: <b>como fazíamos até hoje?</b></span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+  </section>
+
+  <!-- ================= 4 COMO ERA ================= -->
+  <section class="slide old" id="s4" data-chapter="2" data-label="Como era"
+    data-notes="Até agora, toda terça o Gente e Gestão montava um relatório por líder, cerca de 15 minutos cada, para aproximadamente 12 líderes: umas 3 horas só de montagem. O líder levava em média 48h para responder e depois ainda havia cerca de 2h por semana de conferência. Quando a resposta vinha divergente, era preciso reconferir.">
+    <span class="kicker a up">02 · Como era</span>
+    <h1 class="title a up" style="--d:100">Um ciclo <em>semanal, manual</em> e por e-mail</h1>
+    <p class="lead a up" style="--d:200">Toda <b>terça-feira</b>, o relatório de ponto da semana anterior era enviado aos líderes e gestores para análise e justificativa.</p>
+    <div class="flow" style="height:300px;margin-top:44px">
+      <svg class="flowline draw" viewBox="0 0 1700 330" preserveAspectRatio="none" style="--d:500">
+        <path d="M290 165 H1410" pathLength="1" stroke="#CFC9C9" stroke-width="3" stroke-dasharray="1" fill="none"/>
+      </svg>
+      <div class="step card a up" style="--d:350">
+        <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        <div class="n">SEGUNDA</div><h4>Semana fecha</h4><p>Ocorrências ficam paradas até o relatório sair.</p>
+      </div>
+      <div class="step card a up pain" style="--d:550">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h7M9 8h3"/></svg>
+        <div class="n">TERÇA</div><h4>G&amp;G monta 12 relatórios</h4><p>≈15 min por líder, um a um.</p>
+      </div>
+      <div class="step card a up" style="--d:750">
+        <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        <div class="n">TERÇA</div><h4>E-mail para cada líder</h4><p>Relatório da semana anterior.</p>
+      </div>
+      <div class="step card a up pain" style="--d:950">
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <div class="n">ATÉ ~48H</div><h4>Líder analisa e responde</h4><p>Justificativas voltam por e-mail, sem padrão.</p>
+      </div>
+      <div class="step card a up pain" style="--d:1150">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>
+        <div class="n">≈2H/SEMANA</div><h4>G&amp;G confere</h4><p>Divergências levam a uma nova conferência.</p>
+      </div>
+    </div>
+    <div class="a up" style="--d:1700;display:flex;justify-content:flex-end;margin-top:18px"><span class="pill solid">↺ Informação divergente = reconferência = retrabalho</span></div>
+    <div class="stat-row">
+      <div class="stat card a up" style="--d:1300"><strong>12</strong><span>líderes recebendo<br>e-mail toda terça</span></div>
+      <div class="stat card a up" style="--d:1400"><strong>~3h</strong><span>de montagem de<br>relatórios por semana</span></div>
+      <div class="stat card a up" style="--d:1500"><strong>~48h</strong><span>de espera pelo<br>retorno dos líderes</span></div>
+      <div class="stat card a up" style="--d:1600"><strong>~2h</strong><span>de conferência<br>semanal pelo G&amp;G</span></div>
+    </div>
+  </section>
+
+  <!-- ================= 5 CAUSA x IMPACTO ================= -->
+  <section class="slide" id="s5" data-chapter="2" data-label="Causa e impacto"
+    data-notes="O problema não era o empenho das pessoas, era o modelo. Cada causa gerava um efeito: informação atrasada gerava retorno lento, e-mail sem padrão gerava divergência, e a conferência manual gerava retrabalho e pendências acumuladas no fechamento.">
+    <span class="kicker a up">02 · Causa e impacto</span>
+    <h1 class="title a up" style="--d:100">O problema não eram as pessoas, <em>era o modelo</em></h1>
+    <div class="ci">
+      <div class="col">
+        <h3 class="a up" style="--d:250">Causa</h3>
+        <div class="item card a lf" style="--d:350"><span class="badge">1</span><div><h4>Relatório semanal e manual</h4><p>Montado um a um, toda terça.</p></div></div>
+        <div class="item card a lf" style="--d:500"><span class="badge">2</span><div><h4>Informação chega atrasada</h4><p>A ocorrência só era vista na semana seguinte.</p></div></div>
+        <div class="item card a lf" style="--d:650"><span class="badge">3</span><div><h4>Resposta por e-mail, sem padrão</h4><p>Cada líder justificava de um jeito.</p></div></div>
+        <div class="item card a lf" style="--d:800"><span class="badge">4</span><div><h4>Conferência 100% manual</h4><p>Tudo dependia de checagem humana.</p></div></div>
+      </div>
+      <svg class="links draw" viewBox="0 0 200 620" style="--d:1000">
+        <path d="M10 59 C100 59 100 59 190 59" pathLength="1" stroke="#C1272D" stroke-width="3" fill="none"/>
+        <path d="M10 197 C100 197 100 197 190 197" pathLength="1" stroke="#C1272D" stroke-width="3" fill="none"/>
+        <path d="M10 335 C100 335 100 335 190 335" pathLength="1" stroke="#C1272D" stroke-width="3" fill="none"/>
+        <path d="M10 473 C100 473 100 473 190 473" pathLength="1" stroke="#C1272D" stroke-width="3" fill="none"/>
+      </svg>
+      <div class="col imp">
+        <h3 class="a up" style="--d:250">Impacto</h3>
+        <div class="item card a rt" style="--d:1150"><div><h4>Tempo do G&amp;G em tarefa repetitiva</h4><p>~3h por semana só montando relatórios.</p></div></div>
+        <div class="item card a rt" style="--d:1300"><div><h4>Tratativa lenta</h4><p>Até ~10 dias entre a ocorrência e a justificativa.</p></div></div>
+        <div class="item card a rt" style="--d:1450"><div><h4>Informações divergentes</h4><p>Justificativas incompletas ou inconsistentes.</p></div></div>
+        <div class="item card a rt" style="--d:1600"><div><h4>Retrabalho e acúmulo</h4><p>Reconferência e pendências no fechamento.</p></div></div>
+      </div>
+    </div>
+    <div class="bridge a fd" style="--d:1900"><span>Para atacar a <b>causa</b>, mudamos o modelo</span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+  </section>
+
+  <!-- ================= 6 O QUE MUDA ================= -->
+  <section class="slide" id="s6" data-chapter="3" data-label="O que muda"
+    data-notes="A partir de 23/11/2026, acaba o e-mail de terça. A plataforma acompanha em tempo real as batidas de todos os colaboradores de todos os CNPJs. Ao detectar atraso, falta ou inconsistência, ela mesma envia um e-mail ao líder informando o colaborador, o dia e a ocorrência. O líder entra na plataforma e justifica.">
+    <img class="equip a fd" src="assets/eq-gerador.png" style="right:700px;bottom:110px;width:220px;opacity:.18;--d:1400" alt="">
+    <span class="kicker a up">03 · O que muda · a partir de 23/11/2026</span>
+    <h1 class="title a up" style="--d:100">O ponto passa a ser acompanhado <em>em tempo real</em></h1>
+    <div class="wrap">
+      <div>
+        <div class="live a up" style="--d:250"><i></i>SISTEMA DE GENTE E GESTÃO – NIT</div>
+        <div class="vflow">
+          <div class="vline"><i></i></div>
+          <div class="vstep card a lf" style="--d:350"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><h4>Colaborador bate o ponto</h4><p>Todos os colaboradores, de todos os CNPJs.</p></div></div>
+          <div class="vstep card a lf" style="--d:500"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span><div><h4>Plataforma monitora em tempo real</h4><p>Identifica atraso, falta ou inconsistência na hora.</p></div></div>
+          <div class="vstep card a lf" style="--d:650"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><div><h4>E-mail automático ao líder</h4><p>Informa o colaborador, o dia e a ocorrência.</p></div></div>
+          <div class="vstep card a lf" style="--d:800;border:2px solid var(--red)"><span class="badge" style="background:var(--red)"><svg class="ico" style="stroke:#fff" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></span><div><h4>Líder justifica na plataforma</h4><p>Em até 48h. O G&amp;G valida.</p></div></div>
+        </div>
+      </div>
+      <div style="position:relative;margin-top:60px">
+        <div class="notif a dn" style="--d:1300"><i></i>Nova ocorrência de ponto</div>
+        <div class="card mail a rt" style="--d:950">
+          <div class="bar"><i></i><i></i><i></i><span>Caixa de entrada · Líder</span></div>
+          <div class="body">
+            <div class="from"><span class="av">GG</span><div><b>Sistema de Gente e Gestão</b><small>envio automático</small></div></div>
+            <h5>Ocorrência de ponto identificada</h5>
+            <table>
+              <tr><td>Colaborador</td><td>Nome do colaborador</td></tr>
+              <tr><td>Dia</td><td>23/11/2026</td></tr>
+              <tr><td>Ocorrência</td><td style="color:var(--red)">Atraso na batida de entrada</td></tr>
+              <tr><td>Prazo</td><td>Justificar em até 48h</td></tr>
+            </table>
+            <div class="btn">JUSTIFICAR NA PLATAFORMA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 7 PAPEL DO LIDER ================= -->
+  <section class="slide" id="s7" data-chapter="3" data-label="O papel do líder"
+    data-notes="Quando o e-mail chega, o líder não responde o e-mail: ele entra na plataforma e diz se o aviso é procedente ou improcedente e qual foi o motivo. O passo a passo das telas o NIT mostra no treinamento.">
+    <span class="kicker a up">03 · O papel do líder</span>
+    <h1 class="title a up" style="--d:100">Recebeu o aviso? <em>Analise e justifique na plataforma.</em></h1>
+    <div class="steps4">
+      <div class="s4 card a up" style="--d:250"><span class="badge">1</span><h4>Recebe o e-mail automático</h4></div>
+      <div class="s4 card a up" style="--d:380"><span class="badge">2</span><h4>Acessa a plataforma</h4></div>
+      <div class="s4 card a up" style="--d:510"><span class="badge">3</span><h4>Confere o que aconteceu</h4></div>
+      <div class="s4 card a up" style="--d:640"><span class="badge" style="background:var(--red);color:#fff">4</span><h4>Registra a justificativa</h4></div>
+    </div>
+    <div class="opts">
+      <div class="opt card top ok a up" style="--d:800">
+        <h3><svg class="ico" style="width:44px;height:44px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Procedente</h3>
+        <p>A ocorrência aconteceu de fato. O líder informa o motivo:</p>
+        <div class="chips"><span class="pill">Esquecimento de batida</span><span class="pill">Atraso</span><span class="pill">Falta</span><span class="pill">Atestado</span></div>
+      </div>
+      <div class="opt card top a up" style="--d:950">
+        <h3><svg class="ico" style="width:44px;height:44px;stroke:var(--grey)" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg>Improcedente</h3>
+        <p>O aviso não corresponde à realidade. O líder explica o que de fato aconteceu para o G&amp;G tratar.</p>
+        <div class="chips"><span class="pill grey">Detalhes de cada tela: treinamento NIT</span></div>
+      </div>
+    </div>
+    <div class="bridge a fd" style="--d:1200"><span>Lado a lado: <b>antes x agora</b></span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+  </section>
+
+  <!-- ================= 8 ANTES x AGORA ================= -->
+  <section class="slide" id="s8" data-chapter="3" data-label="Antes x agora"
+    data-notes="Resumo da mudança, linha a linha. Observem que cada linha da coluna da direita resolve uma das causas que vimos no slide de causa e impacto.">
+    <span class="kicker a up">03 · Antes x agora</span>
+    <h1 class="title a up" style="--d:100">Cada mudança responde a <em>uma causa</em></h1>
+    <div class="cmp">
+      <div></div>
+      <div class="hd before a up" style="--d:200">Antes</div>
+      <div class="hd after a up" style="--d:250"><span class="live"><i></i></span>Agora</div>
+
+      <div class="lbl a lf" style="--d:300">Origem da informação</div>
+      <div class="c b a up" style="--d:330">Relatório semanal, montado manualmente</div>
+      <div class="c n a rt" style="--d:900">Plataforma em tempo real, todos os CNPJs</div>
+
+      <div class="lbl a lf" style="--d:380">Comunicação</div>
+      <div class="c b a up" style="--d:410">E-mail toda terça para ~12 líderes</div>
+      <div class="c n a rt" style="--d:1000">E-mail automático a cada ocorrência</div>
+
+      <div class="lbl a lf" style="--d:460">Quando o líder fica sabendo</div>
+      <div class="c b a up" style="--d:490">Na semana seguinte</div>
+      <div class="c n a rt" style="--d:1100">Logo após a ocorrência</div>
+
+      <div class="lbl a lf" style="--d:540">Justificativa</div>
+      <div class="c b a up" style="--d:570">Resposta por e-mail, sem padrão</div>
+      <div class="c n a rt" style="--d:1200">Registro direto na plataforma, em até 48h</div>
+
+      <div class="lbl a lf" style="--d:620">Conferência do G&amp;G</div>
+      <div class="c b a up" style="--d:650">Reconferência de divergências</div>
+      <div class="c n a rt" style="--d:1300">Validação de informação já estruturada</div>
+    </div>
+    <div class="bridge a fd" style="--d:1600"><span>E o que isso <b>gera na prática?</b></span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+  </section>
+
+  <!-- ================= 9 IMPACTO ================= -->
+  <section class="slide" id="s9" data-chapter="4" data-label="Impacto"
+    data-notes="Impacto. Saem as cerca de 3h semanais de montagem de relatórios, mais de 150 horas por ano. O ciclo de tratativa, que no pior caso chegava a uns 10 dias, cai para no máximo 48h. Zero e-mails manuais às terças. E a informação passa a ser tratada enquanto ainda está fresca, o que reduz divergências e retrabalho.">
+    <img class="equip a fd" src="assets/eq-plataforma.png" style="left:120px;bottom:70px;width:190px;opacity:.3;--d:1500" alt="">
+    <span class="kicker a up">04 · Impacto</span>
+    <h1 class="title a up" style="--d:100">Menos tempo com relatório. <em>Mais tempo para gerir.</em></h1>
+    <div class="kpis">
+      <div class="kpi card top a up" style="--d:300">
+        <div class="v"><span class="count" data-to="3">0</span><small>h/sem</small></div>
+        <h4>de montagem eliminadas</h4><p>12 relatórios × 15 min deixam de existir.</p>
+        <div class="was">≈ <span class="count" data-to="156">0</span> horas por ano liberadas</div>
+      </div>
+      <div class="kpi card top a up" style="--d:450">
+        <div class="v"><span class="count" data-to="48">0</span><small>h</small></div>
+        <h4>ciclo máximo de tratativa</h4><p>Da ocorrência à justificativa registrada.</p>
+        <div class="was">Antes: até ~10 dias no pior caso</div>
+      </div>
+      <div class="kpi card top a up" style="--d:600">
+        <div class="v"><span class="count" data-to="0">0</span><small> e-mails</small></div>
+        <h4>manuais às terças</h4><p>O aviso sai sozinho, por ocorrência.</p>
+        <div class="was">Antes: ~12 e-mails por semana</div>
+      </div>
+      <div class="kpi card top a up" style="--d:750">
+        <div class="v"><span class="count" data-to="100">0</span><small>%</small></div>
+        <h4>dos CNPJs monitorados</h4><p>Todos os colaboradores, em tempo real.</p>
+        <div class="was">Antes: visão semanal e fragmentada</div>
+      </div>
+    </div>
+    <div class="gains">
+      <div class="gain card a up" style="--d:1000"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg></span>Informação mais confiável</div>
+      <div class="gain card a up" style="--d:1100"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3M18 3v4h-4"/></svg></span>Menos retrabalho para o G&amp;G</div>
+      <div class="gain card a up" style="--d:1200"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><path d="M3 20h18M6 16V9M11 16V5M16 16v-4"/></svg></span>Fechamento sem acúmulo</div>
+    </div>
+    <div class="bridge a fd" style="--d:1500"><span>Para funcionar, precisamos de <b>regras claras</b></span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+  </section>
+
+  <!-- ================= 10 REGRAS ================= -->
+  <section class="slide" id="s10" data-chapter="5" data-label="Regras"
+    data-notes="Regra principal: toda ocorrência precisa ser justificada na plataforma em até 48 horas após o aviso. A justificativa é responsabilidade do líder. A não justificativa no prazo está sujeita a penalidades.">
+    <span class="kicker a up">05 · Regras</span>
+    <h1 class="title a up" style="--d:100">O prazo continua o mesmo. <em>O canal é que muda.</em></h1>
+    <div class="wrap">
+      <div class="ring a sc" style="--d:250">
+        <svg viewBox="0 0 500 500" class="draw" style="--d:500">
+          <circle cx="250" cy="250" r="225" stroke="#EDE7E7" stroke-width="22" fill="none"/>
+          <circle class="d" cx="250" cy="250" r="225" pathLength="1" stroke="#C1272D" stroke-width="22" stroke-linecap="round" fill="none"/>
+        </svg>
+        <div style="text-align:center"><div class="big"><span class="count" data-to="48">0</span><small>h</small></div><div class="cap">PRAZO PARA<br>JUSTIFICAR</div></div>
+      </div>
+      <div>
+        <div class="rule card a rt" style="--d:500"><span class="badge">1</span><div><h4>Toda ocorrência é justificada em até 48h</h4><p>Contadas a partir do e-mail automático: atraso, falta, esquecimento ou qualquer inconsistência.</p></div></div>
+        <div class="rule card a rt" style="--d:650"><span class="badge">2</span><div><h4>Somente pela plataforma</h4><p>Justificativas por e-mail, WhatsApp ou verbalmente deixam de ser aceitas.</p></div></div>
+        <div class="rule card a rt" style="--d:800"><span class="badge">3</span><div><h4>Responsabilidade do líder</h4><p>Quem recebe o aviso é quem analisa, classifica e justifica.</p></div></div>
+        <div class="rule card alert a rt" style="--d:950"><span class="badge">!</span><div><h4>Não justificar gera penalidade</h4><p>A ausência de justificativa no prazo está sujeita a penalidades.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 11 ATESTADOS ================= -->
+  <section class="slide" id="s11" data-chapter="5" data-label="Atestados"
+    data-notes="Atenção especial aos atestados. O líder justifica em até 48h na plataforma e anexa o atestado. O original físico também precisa ser entregue ao Gente e Gestão em até 48h. Com isso, nós validamos e lançamos no RH ID.">
+    <span class="kicker a up">05 · Regras · Atestados</span>
+    <h1 class="title a up" style="--d:100">Atestado: <em>justificar, anexar e entregar</em> em até 48h</h1>
+    <div class="tl">
+      <div class="ln"><i></i></div>
+      <div class="ph a up" style="--d:400"><div class="dot"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg></div><span class="pill grey when">Dia da ausência</span><h4>Colaborador apresenta o atestado</h4><p>A plataforma registra a ocorrência e avisa o líder.</p></div>
+      <div class="ph hot a up" style="--d:800"><div class="dot"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12.5 12.5 21a5 5 0 0 1-7-7l9-9a3.5 3.5 0 0 1 5 5l-9 9a2 2 0 0 1-3-3l8-8"/></svg></div><span class="pill solid when">Até 48h</span><h4>Líder justifica e anexa o atestado</h4><p>Registro na plataforma com o arquivo do atestado.</p></div>
+      <div class="ph hot a up" style="--d:1200"><div class="dot"><svg class="ico" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 13l2 2 4-4"/></svg></div><span class="pill solid when">Até 48h</span><h4>Original físico entregue ao G&amp;G</h4><p>O documento em papel continua obrigatório.</p></div>
+      <div class="ph a up" style="--d:1600"><div class="dot"><svg class="ico" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg></div><span class="pill grey when">Gente e Gestão</span><h4>Validação e lançamento no RH ID</h4><p>Gerenciamento e justificativa no sistema do RH.</p></div>
+    </div>
+    <div class="must">
+      <div class="card a up" style="--d:1900"><span class="badge">1</span><h5>Sem anexo, a justificativa de atestado fica incompleta</h5></div>
+      <div class="card a up" style="--d:2000"><span class="badge">2</span><h5>Oriente sua equipe: o prazo de 48h vale para o colaborador também</h5></div>
+      <div class="card a up" style="--d:2100"><span class="badge">3</span><h5>O original físico precisa corresponder ao arquivo anexado</h5></div>
+    </div>
+  </section>
+
+  <!-- ================= 12 VERACIDADE ================= -->
+  <section class="slide" id="s12" data-chapter="5" data-label="Veracidade"
+    data-notes="Agilidade só vale se a informação for verdadeira. Quando o líder valida, ele está dando uma informação oficial para o RH. Por isso: conferir antes de validar.">
+    <span class="kicker a up">05 · Regras · Veracidade</span>
+    <h1 class="title a up" style="--d:100">Agilidade só funciona com <em>informação verdadeira</em></h1>
+    <div class="quote a sc" style="--d:300">
+      <p>O líder é responsável pela veracidade da informação que valida.</p>
+      <small>GENTE E GESTÃO · NORDESTE LOCAÇÕES</small>
+    </div>
+    <div class="checks">
+      <div class="chk card top a up" style="--d:600"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></span><h4>Confira</h4><p>Verifique o que de fato aconteceu antes de justificar.</p></div>
+      <div class="chk card top a up" style="--d:750"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg></span><h4>Valide</h4><p>A justificativa deve corresponder à realidade.</p></div>
+      <div class="chk card top a up" style="--d:900"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span><h4>Seja claro</h4><p>Evite descrições genéricas ou incompletas.</p></div>
+      <div class="chk card top a up" style="--d:1050"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><h4>Em dia</h4><p>Trate as ocorrências sem deixar acumular.</p></div>
+    </div>
+    <div class="bridge a fd" style="--d:1300"><span>Agora, os <b>próximos passos</b></span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+  </section>
+
+  <!-- ================= 13 PROXIMOS PASSOS ================= -->
+  <section class="slide" id="s13" data-chapter="6" data-label="Próximos passos"
+    data-notes="Recapitulando: hoje o alinhamento; em seguida, o treinamento do NIT; a partir de 23/11/2026, o novo modelo está valendo e os e-mails de terça acabam. Dúvidas sobre regras e prazos: Gente e Gestão, pelo WhatsApp ou pelo e-mail dp@nordesteloc.com.br.">
+    <span class="kicker a up">06 · Próximos passos</span>
+    <h1 class="title a up" style="--d:100">Uma mudança que <em>depende de todos</em></h1>
+    <div class="wrap">
+      <div>
+        <div class="ms card a lf" style="--d:300"><div class="when">Hoje</div><div><h4>Alinhamento com as lideranças</h4><p>Novo modelo, regras e responsabilidades.</p></div></div>
+        <div class="ms card a lf" style="--d:450"><div class="when">Em seguida</div><div><h4>Treinamento prático com o NIT</h4><p>Acesso, telas e como registrar as justificativas.</p></div></div>
+        <div class="ms card go a lf" style="--d:600"><div class="when">23/11/2026</div><div><h4>Novo modelo em vigor</h4><p>Fim dos e-mails de terça. Ocorrências tratadas na plataforma.</p></div></div>
+        <div class="ms card a lf" style="--d:750"><div class="when">Todo dia</div><div><h4>Justificar em até 48h</h4><p>Com veracidade e, nos atestados, com anexo e original.</p></div></div>
+      </div>
+      <div class="contact card top a rt" style="--d:900">
+        <h3>DÚVIDAS · GENTE E GESTÃO</h3>
+        <div class="row"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-11.8 7L4 20l1.1-4A8 8 0 1 1 20 12z"/></svg></span><div><small>WHATSAPP</small><b>(85) 9 9131-9666</b></div></div>
+        <div class="row"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><div><small>E-MAIL</small><b>dp@nordesteloc.com.br</b></div></div>
+        <div class="row"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><small>USO DA PLATAFORMA</small><b>NIT · Treinamento</b></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 14 PASSAGEM NIT ================= -->
+  <section class="slide" id="s14" data-chapter="6" data-label="Treinamento NIT"
+    data-notes="Obrigada! Agora passo a palavra para o NIT, que vai mostrar a plataforma na prática.">
+    <img class="equip a fd" src="assets/eq-tesoura.png" style="left:150px;top:220px;width:200px;opacity:.35;--d:700" alt="">
+    <img class="equip a fd" src="assets/eq-rolo.png" style="left:230px;bottom:150px;width:250px;opacity:.3;--d:850;animation-delay:-3s" alt="">
+    <img class="equip a fd" src="assets/eq-gerador.png" style="right:150px;top:200px;width:270px;opacity:.3;--d:1000;animation-delay:-5s" alt="">
+    <img class="equip a fd" src="assets/eq-plataforma.png" style="right:200px;bottom:130px;width:260px;opacity:.3;--d:1150;animation-delay:-2s" alt="">
+    <img class="nit a sc" style="--d:200" src="assets/nit.png" alt="NIT – Núcleo de Inteligência e Tecnologia">
+    <h2 class="a up" style="--d:500">Agora, a plataforma <em>na prática</em></h2>
+    <p class="a up" style="--d:650">Treinamento conduzido pelo NIT: acesso, telas e registro das justificativas.</p>
+    <div class="thanks a up" style="--d:800"><span class="pill solid">Obrigado(a)!</span><span class="pill">Vigente a partir de 23/11/2026</span></div>
+  </section>
+
+  <footer id="footer">
+    <span>NORDESTE LOCAÇÕES &nbsp;|&nbsp; <b>GENTE E GESTÃO</b> + NIT</span>
+    <div id="progress"></div>
+    <span id="count">01 / 14</span>
+  </footer>
+</div></div>
+<div id="notes"><b>NOTAS DO APRESENTADOR</b><span></span></div>
+
+<script>
+(() => {
+  const stage = document.getElementById('stage');
+  const slides = [...document.querySelectorAll('.slide')];
+  const chapters = ['Abertura','Contexto','Como era','O que muda','Impacto','Regras','Próximos passos'];
+  const header = document.getElementById('header'), footer = document.getElementById('footer');
+  const chNum = document.querySelector('#chapter .num'), chTxt = document.querySelector('#chapter .txt');
+  const prog = document.getElementById('progress'), count = document.getElementById('count');
+  const notes = document.getElementById('notes'), notesTxt = notes.querySelector('span');
+  let cur = -1;
+
+  // scale stage to viewport
+  const fit = () => { const s = Math.min(innerWidth/1920, innerHeight/1080); stage.style.transform = `scale(${s})`; };
+  addEventListener('resize', fit); fit();
+
+  // progress segments = chapters 1..6
+  for (let i=1;i<=6;i++){ const d=document.createElement('div'); d.className='seg'; d.innerHTML='<i></i>'; prog.appendChild(d); }
+
+  // circuit background (deterministic)
+  (function circuit(){
+    const svg = document.getElementById('circuit'); let seed = 7;
+    const rnd = () => (seed = (seed*16807)%2147483647, (seed-1)/2147483646);
+    let html = '';
+    const lines = [];
+    const edges = [[0,1],[1,0],[0,-1],[-1,0]];
+    for (let i=0;i<34;i++){
+      const side = i%4; let x,y,dx,dy;
+      if (side===0){x=0;y=60+rnd()*960;dx=1;dy=0}
+      if (side===1){x=1920;y=60+rnd()*960;dx=-1;dy=0}
+      if (side===2){x=80+rnd()*1760;y=0;dx=0;dy=1}
+      if (side===3){x=80+rnd()*1760;y=1080;dx=0;dy=-1}
+      let d = `M${x|0} ${y|0}`; const segs = 2+ (rnd()*3|0);
+      for (let s=0;s<segs;s++){
+        const L = 60+rnd()*200; x+=dx*L; y+=dy*L; d+=` L${x|0} ${y|0}`;
+        const diag = 30+rnd()*40;
+        if (dx){ const sy = rnd()<.5?-1:1; x+=dx*diag; y+=sy*diag; } else { const sx = rnd()<.5?-1:1; x+=sx*diag; y+=dy*diag; }
+        d+=` L${x|0} ${y|0}`;
+      }
+      const g = i%3===0 ? ' g':'';
+      html += `<path class="trace${g}" d="${d}"/><circle class="node" cx="${x|0}" cy="${y|0}" r="6"/>`;
+      if (i%4===1) lines.push(d);
+    }
+    lines.forEach((d,k)=> html += `<path class="pulse" pathLength="1" d="${d}" style="animation-delay:${-k*1.3}s;animation-duration:${6+k%3*2}s"/>`);
+    svg.innerHTML = html;
+  })();
+
+  function countUp(slide){
+    slide.querySelectorAll('.count').forEach(el => {
+      const to = +el.dataset.to; const t0 = performance.now() + 500; const dur = 1600;
+      el.textContent = '0';
+      const tick = now => { const p = Math.min(1, Math.max(0,(now-t0)/dur)); const e = 1-Math.pow(1-p,3);
+        el.textContent = Math.round(to*e).toLocaleString('pt-BR'); if (p<1 && slide.classList.contains('active')) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+    });
+  }
+
+  function go(n){
+    n = Math.max(0, Math.min(slides.length-1, n)); if (n===cur) return;
+    slides.forEach((s,i)=>{ s.classList.toggle('active', i===n); s.classList.toggle('past', i<n); });
+    cur = n; const s = slides[n]; const ch = +s.dataset.chapter;
+    header.classList.toggle('hide', n===0); footer.classList.toggle('hide', n===0);
+    chNum.textContent = String(ch).padStart(2,'0'); chNum.style.display = ch ? '' : 'none'; chTxt.textContent = s.dataset.label;
+    [...prog.children].forEach((seg,i)=>{
+      const idx = i+1; const inCh = slides.filter(x=>+x.dataset.chapter===idx); const pos = inCh.indexOf(s);
+      seg.firstChild.style.transform = `scaleX(${idx<ch?1: idx===ch ? (pos+1)/inCh.length : 0})`;
+    });
+    count.textContent = `${String(n+1).padStart(2,'0')} / ${slides.length}`;
+    notesTxt.textContent = s.dataset.notes || '';
+    history.replaceState(null,'','#'+(n+1));
+    countUp(s);
+  }
+
+  addEventListener('keydown', e => {
+    if (['ArrowRight','PageDown',' ','Enter'].includes(e.key)) { e.preventDefault(); go(cur+1); }
+    else if (['ArrowLeft','PageUp','Backspace'].includes(e.key)) { e.preventDefault(); go(cur-1); }
+    else if (e.key==='Home') go(0); else if (e.key==='End') go(slides.length-1);
+    else if (e.key.toLowerCase()==='f') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+    else if (e.key.toLowerCase()==='n') notes.classList.toggle('on');
+  });
+  document.getElementById('viewport').addEventListener('click', e => go(cur + (e.clientX > innerWidth/3 ? 1 : -1)));
+  let tx=null; addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+  addEventListener('touchend',e=>{ if(tx===null)return; const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50) go(cur+(dx<0?1:-1)); tx=null; });
+
+  const start = parseInt(location.hash.slice(1)) - 1;
+  requestAnimationFrame(()=> go(isNaN(start)?0:start));
+})();
+</script>
+</body>
+</html>
