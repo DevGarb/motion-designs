@@ -15,6 +15,7 @@ Motions e apresentações em HTML do Setor de T.I do Grupo Ramos.
 | `aula-planilha-sistema` | Da planilha ao sistema: motion da aula com o Claude (sem e com skill) | `/aula-planilha-sistema/` |
 | `alinhamento-ti` | Alinhamento da equipe de TI: responsabilidade, compromisso e autonomia | `/alinhamento-ti/` |
 | `resultados-ti` | Resultados da T.I · Ago a Out 2026 (motion em slides) | `/resultados-ti/` |
+| `gestao-ponto` | Novo modelo de gestão de ponto · Nordeste Locações (Gente e Gestão + NIT) | `/gestao-ponto/` |
 
 Site: https://devgarb.github.io/motion-designs/
 
