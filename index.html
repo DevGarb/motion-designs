@@ -87,25 +87,17 @@ h1.title em{font-style:normal;color:var(--red)}
 .logo-row{display:flex;align-items:center;gap:14px}
 
 /* ---------- S1 cover ---------- */
-#s1 .left{position:absolute;left:110px;top:90px;bottom:90px;width:820px;padding:56px 80px;display:flex;flex-direction:column}
-#s1 .hero{position:absolute;right:20px;top:60px;width:960px;-webkit-mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,#000 60%,transparent 100%);mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,#000 60%,transparent 100%)}
-#s1 h1{font-size:80px;line-height:1.02;font-weight:800;letter-spacing:-.03em;margin-top:18px}
-#s1 h1 span{color:var(--red)}
-#s1 .tag{font-size:18px;letter-spacing:.26em;color:var(--grey);font-weight:600;margin-top:30px}
-#s1 .sub{font-size:24px;color:var(--grey);margin-top:18px;line-height:1.5}
-#s1 .chips{display:flex;gap:14px;margin-top:auto;flex-wrap:wrap}
-#s1 .date{position:absolute;right:110px;bottom:110px;display:flex;align-items:center;gap:22px;background:var(--red);color:#fff;border-radius:24px;padding:22px 34px}
-#s1 .date small{display:block;font-size:15px;letter-spacing:.22em;opacity:.85}
-#s1 .date strong{font-size:38px;font-weight:700}
-
-/* ---------- S2 agenda ---------- */
-#s2 .track{position:absolute;left:110px;right:110px;top:470px;height:360px}
-#s2 .track svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible}
-#s2 .stop{position:absolute;top:0;width:260px;text-align:center;display:flex;flex-direction:column;align-items:center}
-#s2 .dot{width:92px;height:92px;border-radius:50%;background:#fff;border:3px solid var(--red);display:grid;place-items:center;font-size:28px;font-weight:700;color:var(--red);box-shadow:var(--shadow)}
-#s2 .stop.key .dot{background:var(--red);color:#fff}
-#s2 .stop h3{font-size:25px;margin-top:26px;font-weight:600}
-#s2 .stop p{font-size:18px;color:var(--grey);margin-top:8px;line-height:1.45}
+.cover{padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px}
+.cover .left{position:relative;z-index:3;width:900px;padding:56px 90px;display:flex;flex-direction:column}
+.cover .wall{position:absolute;inset:0;z-index:1}
+.cover h1{font-size:80px;line-height:1.02;font-weight:800;letter-spacing:-.03em;margin-top:18px}
+.cover h1 span{color:var(--red)}
+.cover .tag{font-size:18px;letter-spacing:.26em;color:var(--grey);font-weight:600;margin-top:30px}
+.cover .sub{font-size:24px;color:var(--grey);margin-top:18px;line-height:1.5}
+.cover .chips{display:flex;gap:14px;margin-top:36px;flex-wrap:wrap}
+.cover .date{position:relative;z-index:3;display:flex;align-items:center;gap:22px;background:var(--red);color:#fff;border-radius:24px;padding:22px 34px}
+.cover .date small{display:block;font-size:15px;letter-spacing:.22em;opacity:.85}
+.cover .date strong{font-size:38px;font-weight:700}
 
 /* ---------- S3 context ---------- */
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;margin-top:64px}
@@ -150,7 +142,19 @@ h1.title em{font-style:normal;color:var(--red)}
 .live i{width:14px;height:14px;border-radius:50%;background:var(--red);box-shadow:0 0 0 0 rgba(193,39,45,.5);animation:live 1.6s infinite}
 @keyframes live{0%{box-shadow:0 0 0 0 rgba(193,39,45,.55)}100%{box-shadow:0 0 0 18px rgba(193,39,45,0)}}
 .vflow{position:relative;margin-top:30px}
-.vstep{display:flex;gap:26px;align-items:center;padding:18px 30px;margin-bottom:16px;position:relative;z-index:2}
+.vstep{display:flex;gap:26px;align-items:center;padding:14px 30px;margin-bottom:12px;position:relative;z-index:2}
+.vstep.big{flex-direction:column;align-items:stretch;gap:16px;padding:20px 30px 22px;margin-bottom:0}
+.vstep.big .hd{display:flex;gap:26px;align-items:center}
+.branches{display:grid;grid-template-columns:1.25fr 1fr;gap:22px;padding-top:16px;border-top:1px dashed var(--line)}
+.br{display:flex;flex-direction:column;gap:8px;min-width:0}
+.br h5{font-size:21px;font-weight:700;display:flex;align-items:center;gap:10px}
+.br h5 .ico{width:28px;height:28px}
+.br.ok h5{color:var(--red)}
+.br.no h5{color:var(--grey)}
+.br.no h5 .ico{stroke:var(--grey)}
+.br p{font-size:16px;color:var(--grey);line-height:1.4}
+.br .chips{display:flex;gap:8px;flex-wrap:wrap}
+.br .pill{font-size:15px;padding:6px 14px}
 .vstep h4{font-size:24px;font-weight:600}
 .vstep p{font-size:18px;color:var(--grey);margin-top:3px}
 .vstep .badge{width:60px;height:60px}
@@ -174,17 +178,6 @@ h1.title em{font-style:normal;color:var(--red)}
 .mail .btn{margin-top:22px;background:var(--red);color:#fff;border-radius:16px;padding:20px;text-align:center;font-weight:700;letter-spacing:.12em;font-size:18px}
 .notif{position:absolute;right:-24px;top:-30px;background:var(--ink);color:#fff;border-radius:18px;padding:14px 22px;font-size:17px;display:flex;gap:10px;align-items:center;box-shadow:var(--shadow);z-index:3}
 .notif i{width:10px;height:10px;border-radius:50%;background:var(--red-2)}
-
-/* ---------- S7 leader ---------- */
-#s7 .opts{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:40px}
-#s7 .opt{padding:46px 48px}
-#s7 .opt h3{font-size:36px;font-weight:700;display:flex;align-items:center;gap:18px}
-#s7 .opt p{font-size:22px;color:var(--grey);margin-top:16px;line-height:1.55}
-#s7 .opt.ok h3{color:var(--red)}
-#s7 .chips{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px}
-#s7 .steps4{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:44px}
-#s7 .s4{padding:28px 30px;display:flex;gap:18px;align-items:center}
-#s7 .s4 h4{font-size:21px;font-weight:600;line-height:1.3}
 
 /* ---------- S8 compare ---------- */
 #s8 .cmp{margin-top:46px;display:grid;grid-template-columns:330px 1fr 1fr;row-gap:14px;column-gap:24px}
@@ -210,7 +203,7 @@ h1.title em{font-style:normal;color:var(--red)}
 #s9 .gain{flex:1;padding:26px 30px;display:flex;align-items:center;gap:18px;font-size:21px;font-weight:600}
 
 /* ---------- S10 rules ---------- */
-#s10 .wrap{display:grid;grid-template-columns:560px 1fr;gap:60px;margin-top:50px;align-items:start}
+#s10 .wrap{display:grid;grid-template-columns:560px 1fr;gap:60px;margin-top:50px;align-items:center}
 .ring{position:relative;width:480px;height:480px;display:grid;place-items:center}
 .ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
 .ring .big{font-size:150px;font-weight:800;color:var(--red);letter-spacing:-.04em;line-height:1}
@@ -256,19 +249,11 @@ h1.title em{font-style:normal;color:var(--red)}
 #s13 .ms h4{font-size:24px;font-weight:600}
 #s13 .ms p{font-size:18px;color:var(--grey);margin-top:5px;line-height:1.45}
 #s13 .ms.go{border:2px solid var(--red)}
-#s13 .contact{padding:44px 44px}
+#s13 .contact{padding:44px 44px 48px;align-self:start}
 #s13 .contact h3{font-size:22px;letter-spacing:.2em;color:var(--red);font-weight:700}
 #s13 .contact .row{display:flex;gap:20px;align-items:center;margin-top:34px}
 #s13 .contact .row b{display:block;font-size:26px}
 #s13 .contact .row small{font-size:16px;color:var(--muted);letter-spacing:.14em}
-
-/* ---------- S14 handoff ---------- */
-#s14{display:flex;align-items:center;justify-content:center;text-align:center;flex-direction:column;padding-top:60px}
-#s14 .nit{width:600px}
-#s14 h2{font-size:64px;font-weight:700;letter-spacing:-.02em;margin-top:10px}
-#s14 h2 em{font-style:normal;color:var(--red)}
-#s14 p{font-size:26px;color:var(--grey);margin-top:16px}
-#s14 .thanks{margin-top:36px;display:flex;gap:16px;justify-content:center}
 
 /* ---------- notes & help ---------- */
 #notes{position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(140%);width:min(1100px,92vw);background:rgba(25,25,28,.94);color:#eee;border-radius:16px;padding:18px 24px;font-size:16px;line-height:1.55;z-index:50;transition:transform .4s var(--ease);font-family:Poppins,system-ui,sans-serif}
@@ -292,14 +277,21 @@ body:hover #hint{opacity:.6}
   </header>
 
   <!-- ================= 1 CAPA ================= -->
-  <section class="slide" id="s1" data-chapter="0" data-label="Abertura"
+  <section class="slide cover" id="s1" data-chapter="0" data-label="Abertura"
     data-notes="Abertura. Hoje vamos alinhar o novo modelo de gestão de ponto. A partir de 23/11/2026, o ponto passa a ser acompanhado em tempo real dentro do Sistema de Gente e Gestão – NIT. Primeiro eu explico o porquê e as regras; depois o NIT faz o treinamento prático.">
-    <img class="hero a fd" style="--d:200" src="assets/hero.png" alt="">
+    <div class="wall" aria-hidden="true">
+      <img class="equip a fd" src="assets/eq-tesoura.png"     style="left:90px;top:40px;width:230px;--d:200" alt="">
+      <img class="equip a fd" src="assets/eq-betoneira.png"   style="left:130px;top:395px;width:250px;--d:350;animation-delay:-2s" alt="">
+      <img class="equip a fd" src="assets/eq-rolo.png"        style="left:70px;bottom:50px;width:330px;--d:500;animation-delay:-4s" alt="">
+      <img class="equip a fd" src="assets/eq-gerador.png"     style="right:80px;top:70px;width:360px;--d:250;animation-delay:-1s" alt="">
+      <img class="equip a fd" src="assets/eq-compactador.png" style="right:190px;top:320px;width:180px;--d:400;animation-delay:-3s" alt="">
+      <img class="equip a fd" src="assets/eq-plataforma.png"  style="right:60px;bottom:-24px;width:380px;--d:550;animation-delay:-5s" alt="">
+    </div>
     <div class="left card top a lf" style="--d:0">
       <img class="a up" style="--d:300;width:330px;max-width:100%;display:block" src="assets/logo-nordeste-completo.svg" alt="Nordeste Locações – Soluções em engenharia para sua obra">
       <div class="tag a up" style="--d:450">ALINHAMENTO COM AS LIDERANÇAS</div>
       <h1 class="a up" style="--d:550">Novo modelo de <span>gestão de ponto</span></h1>
-      <p class="sub a up" style="--d:700">Ocorrências acompanhadas em tempo real e justificadas pelo líder no <b style="color:var(--ink)">Sistema de Gente e Gestão – NIT</b>.</p>
+      <p class="sub a up" style="--d:700">Ocorrências acompanhadas em tempo real e justificadas pelo líder no <b style="color:var(--ink)">Sistema de Gente e Gestão</b>.</p>
       <div class="chips">
         <span class="pill a up" style="--d:900">Mais agilidade</span>
         <span class="pill a up" style="--d:1000">Menos retrabalho</span>
@@ -310,25 +302,6 @@ body:hover #hint{opacity:.6}
       <svg class="ico" style="stroke:#fff;width:46px;height:46px" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
       <div><small>VIGENTE A PARTIR DE</small><strong>23/11/2026</strong></div>
     </div>
-  </section>
-
-  <!-- ================= 2 ROTEIRO ================= -->
-  <section class="slide" id="s2" data-chapter="0" data-label="Roteiro"
-    data-notes="Este é o caminho de hoje: por que mudar, como era, o que muda, o impacto, as regras e os próximos passos. No final, eu passo a palavra ao NIT.">
-    <span class="kicker a up">Roteiro de hoje</span>
-    <h1 class="title a up" style="--d:100">Do <em>por quê</em> ao <em>como</em>: o caminho desta conversa</h1>
-    <div class="track">
-      <svg class="draw" viewBox="0 0 1700 360" preserveAspectRatio="none" style="--d:300">
-        <path d="M130 46 H1570" pathLength="1" stroke="#C1272D" stroke-width="4" fill="none" stroke-linecap="round"/>
-      </svg>
-      <div class="stop a sc" style="left:0;--d:400"><div class="dot">01</div><h3>Contexto</h3><p>Por que estamos mudando</p></div>
-      <div class="stop a sc" style="left:288px;--d:550"><div class="dot">02</div><h3>Como era</h3><p>O ciclo semanal por e-mail, suas causas e seu impacto</p></div>
-      <div class="stop a sc key" style="left:576px;--d:700"><div class="dot">03</div><h3>O que muda</h3><p>Ponto em tempo real na plataforma</p></div>
-      <div class="stop a sc" style="left:864px;--d:850"><div class="dot">04</div><h3>Impacto</h3><p>O que ganhamos com a mudança</p></div>
-      <div class="stop a sc key" style="left:1152px;--d:1000"><div class="dot">05</div><h3>Regras</h3><p>Prazos, atestados e veracidade</p></div>
-      <div class="stop a sc" style="left:1440px;--d:1150"><div class="dot">06</div><h3>Próximos passos</h3><p>Início e treinamento NIT</p></div>
-    </div>
-    <div class="bridge a fd" style="--d:1500"><span>Começamos pelo <b>contexto</b></span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
   </section>
 
   <!-- ================= 3 CONTEXTO ================= -->
@@ -356,12 +329,12 @@ body:hover #hint{opacity:.6}
       </div>
     </div>
     <div class="callout a lf" style="--d:850">A gestão de ponto é um dos primeiros processos a passar por essa otimização.</div>
-    <div class="bridge a fd" style="--d:1100"><span>Mas antes: <b>como fazíamos até hoje?</b></span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+    <div class="bridge a fd" style="--d:1100"><span>Primeiro, <b>o antes</b>: como o ponto era tratado até a semana passada</span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
   </section>
 
   <!-- ================= 4 COMO ERA ================= -->
   <section class="slide old" id="s4" data-chapter="2" data-label="Como era"
-    data-notes="Até agora, toda terça o Gente e Gestão montava um relatório por líder, cerca de 15 minutos cada, para aproximadamente 12 líderes: umas 3 horas só de montagem. O líder levava em média 48h para responder e depois ainda havia cerca de 2h por semana de conferência. Quando a resposta vinha divergente, era preciso reconferir.">
+    data-notes="Até agora, toda terça o Gente e Gestão montava um relatório por líder, cerca de 15 minutos cada, para 13 líderes: umas 3 horas só de montagem. O líder levava em média 48h para responder e depois ainda havia cerca de 2h por semana de conferência. Quando a resposta vinha divergente, era preciso reconferir.">
     <span class="kicker a up">02 · Como era</span>
     <h1 class="title a up" style="--d:100">Um ciclo <em>semanal, manual</em> e por e-mail</h1>
     <p class="lead a up" style="--d:200">Toda <b>terça-feira</b>, o relatório de ponto da semana anterior era enviado aos líderes e gestores para análise e justificativa.</p>
@@ -375,7 +348,7 @@ body:hover #hint{opacity:.6}
       </div>
       <div class="step card a up pain" style="--d:550">
         <svg class="ico" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h7M9 8h3"/></svg>
-        <div class="n">TERÇA</div><h4>G&amp;G monta 12 relatórios</h4><p>≈15 min por líder, um a um.</p>
+        <div class="n">TERÇA</div><h4>G&amp;G monta 13 relatórios</h4><p>≈15 min por líder, um a um.</p>
       </div>
       <div class="step card a up" style="--d:750">
         <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
@@ -392,7 +365,7 @@ body:hover #hint{opacity:.6}
     </div>
     <div class="a up" style="--d:1700;display:flex;justify-content:flex-end;margin-top:18px"><span class="pill solid">↺ Informação divergente = reconferência = retrabalho</span></div>
     <div class="stat-row">
-      <div class="stat card a up" style="--d:1300"><strong>12</strong><span>líderes recebendo<br>e-mail toda terça</span></div>
+      <div class="stat card a up" style="--d:1300"><strong>13</strong><span>líderes recebendo<br>e-mail toda terça</span></div>
       <div class="stat card a up" style="--d:1400"><strong>~3h</strong><span>de montagem de<br>relatórios por semana</span></div>
       <div class="stat card a up" style="--d:1500"><strong>~48h</strong><span>de espera pelo<br>retorno dos líderes</span></div>
       <div class="stat card a up" style="--d:1600"><strong>~2h</strong><span>de conferência<br>semanal pelo G&amp;G</span></div>
@@ -431,19 +404,25 @@ body:hover #hint{opacity:.6}
 
   <!-- ================= 6 O QUE MUDA ================= -->
   <section class="slide" id="s6" data-chapter="3" data-label="O que muda"
-    data-notes="A partir de 23/11/2026, acaba o e-mail de terça. A plataforma acompanha em tempo real as batidas de todos os colaboradores de todos os CNPJs. Ao detectar atraso, falta ou inconsistência, ela mesma envia um e-mail ao líder informando o colaborador, o dia e a ocorrência. O líder entra na plataforma e justifica.">
+    data-notes="A partir de 23/11/2026, acaba o e-mail de terça. A plataforma acompanha em tempo real as batidas de todos os colaboradores de todos os CNPJs. Ao detectar atraso, falta ou inconsistência, ela mesma envia um e-mail ao líder informando o colaborador, o dia e a ocorrência. O líder entra na plataforma e diz se o aviso é procedente ou improcedente e qual foi o motivo. O passo a passo das telas o NIT mostra no treinamento.">
     <img class="equip a fd" src="assets/eq-gerador.png" style="right:700px;bottom:110px;width:220px;opacity:.18;--d:1400" alt="">
     <span class="kicker a up">03 · O que muda · a partir de 23/11/2026</span>
     <h1 class="title a up" style="--d:100">O ponto passa a ser acompanhado <em>em tempo real</em></h1>
     <div class="wrap">
       <div>
-        <div class="live a up" style="--d:250"><i></i>SISTEMA DE GENTE E GESTÃO – NIT</div>
+        <div class="live a up" style="--d:250"><i></i>SISTEMA DE GENTE E GESTÃO</div>
         <div class="vflow">
           <div class="vline"><i></i></div>
           <div class="vstep card a lf" style="--d:350"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><h4>Colaborador bate o ponto</h4><p>Todos os colaboradores, de todos os CNPJs.</p></div></div>
           <div class="vstep card a lf" style="--d:500"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span><div><h4>Plataforma monitora em tempo real</h4><p>Identifica atraso, falta ou inconsistência na hora.</p></div></div>
           <div class="vstep card a lf" style="--d:650"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><div><h4>E-mail automático ao líder</h4><p>Informa o colaborador, o dia e a ocorrência.</p></div></div>
-          <div class="vstep card a lf" style="--d:800;border:2px solid var(--red)"><span class="badge" style="background:var(--red)"><svg class="ico" style="stroke:#fff" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></span><div><h4>Líder justifica na plataforma</h4><p>Em até 48h. O G&amp;G valida.</p></div></div>
+          <div class="vstep big card a lf" style="--d:800;border:2px solid var(--red)">
+            <div class="hd"><span class="badge" style="background:var(--red)"><svg class="ico" style="stroke:#fff" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></span><div><h4>Líder justifica na plataforma</h4><p>Em até 24h. O G&amp;G valida.</p></div></div>
+            <div class="branches">
+              <div class="br ok"><h5><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Procedente</h5><p>Aconteceu de fato. O líder informa o motivo:</p><div class="chips"><span class="pill">Esquecimento de batida</span><span class="pill">Atraso</span><span class="pill">Falta</span><span class="pill">Atestado</span></div></div>
+              <div class="br no"><h5><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg>Improcedente</h5><p>O aviso não condiz com a realidade. O líder explica o que de fato aconteceu para o G&amp;G tratar.</p></div>
+            </div>
+          </div>
         </div>
       </div>
       <div style="position:relative;margin-top:60px">
@@ -457,39 +436,13 @@ body:hover #hint{opacity:.6}
               <tr><td>Colaborador</td><td>Nome do colaborador</td></tr>
               <tr><td>Dia</td><td>23/11/2026</td></tr>
               <tr><td>Ocorrência</td><td style="color:var(--red)">Atraso na batida de entrada</td></tr>
-              <tr><td>Prazo</td><td>Justificar em até 48h</td></tr>
+              <tr><td>Prazo</td><td>Justificar em até 24h</td></tr>
             </table>
             <div class="btn">JUSTIFICAR NA PLATAFORMA</div>
           </div>
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- ================= 7 PAPEL DO LIDER ================= -->
-  <section class="slide" id="s7" data-chapter="3" data-label="O papel do líder"
-    data-notes="Quando o e-mail chega, o líder não responde o e-mail: ele entra na plataforma e diz se o aviso é procedente ou improcedente e qual foi o motivo. O passo a passo das telas o NIT mostra no treinamento.">
-    <span class="kicker a up">03 · O papel do líder</span>
-    <h1 class="title a up" style="--d:100">Recebeu o aviso? <em>Analise e justifique na plataforma.</em></h1>
-    <div class="steps4">
-      <div class="s4 card a up" style="--d:250"><span class="badge">1</span><h4>Recebe o e-mail automático</h4></div>
-      <div class="s4 card a up" style="--d:380"><span class="badge">2</span><h4>Acessa a plataforma</h4></div>
-      <div class="s4 card a up" style="--d:510"><span class="badge">3</span><h4>Confere o que aconteceu</h4></div>
-      <div class="s4 card a up" style="--d:640"><span class="badge" style="background:var(--red);color:#fff">4</span><h4>Registra a justificativa</h4></div>
-    </div>
-    <div class="opts">
-      <div class="opt card top ok a up" style="--d:800">
-        <h3><svg class="ico" style="width:44px;height:44px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Procedente</h3>
-        <p>A ocorrência aconteceu de fato. O líder informa o motivo:</p>
-        <div class="chips"><span class="pill">Esquecimento de batida</span><span class="pill">Atraso</span><span class="pill">Falta</span><span class="pill">Atestado</span></div>
-      </div>
-      <div class="opt card top a up" style="--d:950">
-        <h3><svg class="ico" style="width:44px;height:44px;stroke:var(--grey)" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/></svg>Improcedente</h3>
-        <p>O aviso não corresponde à realidade. O líder explica o que de fato aconteceu para o G&amp;G tratar.</p>
-        <div class="chips"><span class="pill grey">Detalhes de cada tela: treinamento NIT</span></div>
-      </div>
-    </div>
-    <div class="bridge a fd" style="--d:1200"><span>Lado a lado: <b>antes x agora</b></span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
   </section>
 
   <!-- ================= 8 ANTES x AGORA ================= -->
@@ -507,7 +460,7 @@ body:hover #hint{opacity:.6}
       <div class="c n a rt" style="--d:900">Plataforma em tempo real, todos os CNPJs</div>
 
       <div class="lbl a lf" style="--d:380">Comunicação</div>
-      <div class="c b a up" style="--d:410">E-mail toda terça para ~12 líderes</div>
+      <div class="c b a up" style="--d:410">E-mail toda terça para 13 líderes</div>
       <div class="c n a rt" style="--d:1000">E-mail automático a cada ocorrência</div>
 
       <div class="lbl a lf" style="--d:460">Quando o líder fica sabendo</div>
@@ -516,7 +469,7 @@ body:hover #hint{opacity:.6}
 
       <div class="lbl a lf" style="--d:540">Justificativa</div>
       <div class="c b a up" style="--d:570">Resposta por e-mail, sem padrão</div>
-      <div class="c n a rt" style="--d:1200">Registro direto na plataforma, em até 48h</div>
+      <div class="c n a rt" style="--d:1200">Registro direto na plataforma, em até 24h</div>
 
       <div class="lbl a lf" style="--d:620">Conferência do G&amp;G</div>
       <div class="c b a up" style="--d:650">Reconferência de divergências</div>
@@ -527,25 +480,25 @@ body:hover #hint{opacity:.6}
 
   <!-- ================= 9 IMPACTO ================= -->
   <section class="slide" id="s9" data-chapter="4" data-label="Impacto"
-    data-notes="Impacto. Saem as cerca de 3h semanais de montagem de relatórios, mais de 150 horas por ano. O ciclo de tratativa, que no pior caso chegava a uns 10 dias, cai para no máximo 48h. Zero e-mails manuais às terças. E a informação passa a ser tratada enquanto ainda está fresca, o que reduz divergências e retrabalho.">
+    data-notes="Impacto. Saem as cerca de 3h semanais de montagem de relatórios, mais de 150 horas por ano. O ciclo de tratativa, que no pior caso chegava a uns 10 dias, cai para no máximo 24h. Zero e-mails manuais às terças. E a informação passa a ser tratada enquanto ainda está fresca, o que reduz divergências e retrabalho.">
     <img class="equip a fd" src="assets/eq-plataforma.png" style="left:120px;bottom:70px;width:190px;opacity:.3;--d:1500" alt="">
     <span class="kicker a up">04 · Impacto</span>
     <h1 class="title a up" style="--d:100">Menos tempo com relatório. <em>Mais tempo para gerir.</em></h1>
     <div class="kpis">
       <div class="kpi card top a up" style="--d:300">
         <div class="v"><span class="count" data-to="3">0</span><small>h/sem</small></div>
-        <h4>de montagem eliminadas</h4><p>12 relatórios × 15 min deixam de existir.</p>
+        <h4>de montagem eliminadas</h4><p>13 relatórios × 15 min deixam de existir.</p>
         <div class="was">≈ <span class="count" data-to="156">0</span> horas por ano liberadas</div>
       </div>
       <div class="kpi card top a up" style="--d:450">
-        <div class="v"><span class="count" data-to="48">0</span><small>h</small></div>
+        <div class="v"><span class="count" data-to="24">0</span><small>h</small></div>
         <h4>ciclo máximo de tratativa</h4><p>Da ocorrência à justificativa registrada.</p>
         <div class="was">Antes: até ~10 dias no pior caso</div>
       </div>
       <div class="kpi card top a up" style="--d:600">
         <div class="v"><span class="count" data-to="0">0</span><small> e-mails</small></div>
         <h4>manuais às terças</h4><p>O aviso sai sozinho, por ocorrência.</p>
-        <div class="was">Antes: ~12 e-mails por semana</div>
+        <div class="was">Antes: 13 e-mails por semana</div>
       </div>
       <div class="kpi card top a up" style="--d:750">
         <div class="v"><span class="count" data-to="100">0</span><small>%</small></div>
@@ -563,41 +516,40 @@ body:hover #hint{opacity:.6}
 
   <!-- ================= 10 REGRAS ================= -->
   <section class="slide" id="s10" data-chapter="5" data-label="Regras"
-    data-notes="Regra principal: toda ocorrência precisa ser justificada na plataforma em até 48 horas após o aviso. A justificativa é responsabilidade do líder. A não justificativa no prazo está sujeita a penalidades.">
+    data-notes="Regra principal: toda ocorrência precisa ser justificada na plataforma em até 24 horas após o aviso. A justificativa é responsabilidade do líder.">
     <span class="kicker a up">05 · Regras</span>
-    <h1 class="title a up" style="--d:100">O prazo continua o mesmo. <em>O canal é que muda.</em></h1>
+    <h1 class="title a up" style="--d:100">Novo canal, novo prazo: <em>24 horas para justificar</em></h1>
     <div class="wrap">
       <div class="ring a sc" style="--d:250">
         <svg viewBox="0 0 500 500" class="draw" style="--d:500">
           <circle cx="250" cy="250" r="225" stroke="#EDE7E7" stroke-width="22" fill="none"/>
           <circle class="d" cx="250" cy="250" r="225" pathLength="1" stroke="#C1272D" stroke-width="22" stroke-linecap="round" fill="none"/>
         </svg>
-        <div style="text-align:center"><div class="big"><span class="count" data-to="48">0</span><small>h</small></div><div class="cap">PRAZO PARA<br>JUSTIFICAR</div></div>
+        <div style="text-align:center"><div class="big"><span class="count" data-to="24">0</span><small>h</small></div><div class="cap">PRAZO PARA<br>JUSTIFICAR</div></div>
       </div>
       <div>
-        <div class="rule card a rt" style="--d:500"><span class="badge">1</span><div><h4>Toda ocorrência é justificada em até 48h</h4><p>Contadas a partir do e-mail automático: atraso, falta, esquecimento ou qualquer inconsistência.</p></div></div>
+        <div class="rule card a rt" style="--d:500"><span class="badge">1</span><div><h4>Toda ocorrência é justificada em até 24h</h4><p>Contadas a partir do e-mail automático: atraso, falta, esquecimento ou qualquer inconsistência.</p></div></div>
         <div class="rule card a rt" style="--d:650"><span class="badge">2</span><div><h4>Somente pela plataforma</h4><p>Justificativas por e-mail, WhatsApp ou verbalmente deixam de ser aceitas.</p></div></div>
         <div class="rule card a rt" style="--d:800"><span class="badge">3</span><div><h4>Responsabilidade do líder</h4><p>Quem recebe o aviso é quem analisa, classifica e justifica.</p></div></div>
-        <div class="rule card alert a rt" style="--d:950"><span class="badge">!</span><div><h4>Não justificar gera penalidade</h4><p>A ausência de justificativa no prazo está sujeita a penalidades.</p></div></div>
       </div>
     </div>
   </section>
 
   <!-- ================= 11 ATESTADOS ================= -->
   <section class="slide" id="s11" data-chapter="5" data-label="Atestados"
-    data-notes="Atenção especial aos atestados. O líder justifica em até 48h na plataforma e anexa o atestado. O original físico também precisa ser entregue ao Gente e Gestão em até 48h. Com isso, nós validamos e lançamos no RH ID.">
+    data-notes="Atenção especial aos atestados. O líder justifica em até 24h na plataforma e anexa o atestado. O original físico precisa ser entregue ao Gente e Gestão em até 48h. Com isso, nós validamos e lançamos no RH ID.">
     <span class="kicker a up">05 · Regras · Atestados</span>
-    <h1 class="title a up" style="--d:100">Atestado: <em>justificar, anexar e entregar</em> em até 48h</h1>
+    <h1 class="title a up" style="--d:100">Atestado: <em>24h</em> para justificar, <em>48h</em> para o original</h1>
     <div class="tl">
       <div class="ln"><i></i></div>
       <div class="ph a up" style="--d:400"><div class="dot"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg></div><span class="pill grey when">Dia da ausência</span><h4>Colaborador apresenta o atestado</h4><p>A plataforma registra a ocorrência e avisa o líder.</p></div>
-      <div class="ph hot a up" style="--d:800"><div class="dot"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12.5 12.5 21a5 5 0 0 1-7-7l9-9a3.5 3.5 0 0 1 5 5l-9 9a2 2 0 0 1-3-3l8-8"/></svg></div><span class="pill solid when">Até 48h</span><h4>Líder justifica e anexa o atestado</h4><p>Registro na plataforma com o arquivo do atestado.</p></div>
+      <div class="ph hot a up" style="--d:800"><div class="dot"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12.5 12.5 21a5 5 0 0 1-7-7l9-9a3.5 3.5 0 0 1 5 5l-9 9a2 2 0 0 1-3-3l8-8"/></svg></div><span class="pill solid when">Até 24h</span><h4>Líder justifica e anexa o atestado</h4><p>Registro na plataforma com o arquivo do atestado.</p></div>
       <div class="ph hot a up" style="--d:1200"><div class="dot"><svg class="ico" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 13l2 2 4-4"/></svg></div><span class="pill solid when">Até 48h</span><h4>Original físico entregue ao G&amp;G</h4><p>O documento em papel continua obrigatório.</p></div>
       <div class="ph a up" style="--d:1600"><div class="dot"><svg class="ico" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></svg></div><span class="pill grey when">Gente e Gestão</span><h4>Validação e lançamento no RH ID</h4><p>Gerenciamento e justificativa no sistema do RH.</p></div>
     </div>
     <div class="must">
       <div class="card a up" style="--d:1900"><span class="badge">1</span><h5>Sem anexo, a justificativa de atestado fica incompleta</h5></div>
-      <div class="card a up" style="--d:2000"><span class="badge">2</span><h5>Oriente sua equipe: o prazo de 48h vale para o colaborador também</h5></div>
+      <div class="card a up" style="--d:2000"><span class="badge">2</span><h5>Oriente sua equipe: o original do atestado deve chegar em até 48h</h5></div>
       <div class="card a up" style="--d:2100"><span class="badge">3</span><h5>O original físico precisa corresponder ao arquivo anexado</h5></div>
     </div>
   </section>
@@ -630,28 +582,42 @@ body:hover #hint{opacity:.6}
         <div class="ms card a lf" style="--d:300"><div class="when">Hoje</div><div><h4>Alinhamento com as lideranças</h4><p>Novo modelo, regras e responsabilidades.</p></div></div>
         <div class="ms card a lf" style="--d:450"><div class="when">Em seguida</div><div><h4>Treinamento prático com o NIT</h4><p>Acesso, telas e como registrar as justificativas.</p></div></div>
         <div class="ms card go a lf" style="--d:600"><div class="when">23/11/2026</div><div><h4>Novo modelo em vigor</h4><p>Fim dos e-mails de terça. Ocorrências tratadas na plataforma.</p></div></div>
-        <div class="ms card a lf" style="--d:750"><div class="when">Todo dia</div><div><h4>Justificar em até 48h</h4><p>Com veracidade e, nos atestados, com anexo e original.</p></div></div>
+        <div class="ms card a lf" style="--d:750"><div class="when">Todo dia</div><div><h4>Justificar em até 24h</h4><p>Com veracidade e, nos atestados, com anexo e original.</p></div></div>
       </div>
       <div class="contact card top a rt" style="--d:900">
         <h3>DÚVIDAS · GENTE E GESTÃO</h3>
         <div class="row"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-11.8 7L4 20l1.1-4A8 8 0 1 1 20 12z"/></svg></span><div><small>WHATSAPP</small><b>(85) 9 9131-9666</b></div></div>
         <div class="row"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><div><small>E-MAIL</small><b>dp@nordesteloc.com.br</b></div></div>
-        <div class="row"><span class="badge"><svg class="ico" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><div><small>USO DA PLATAFORMA</small><b>NIT · Treinamento</b></div></div>
       </div>
     </div>
   </section>
 
-  <!-- ================= 14 PASSAGEM NIT ================= -->
-  <section class="slide" id="s14" data-chapter="6" data-label="Treinamento NIT"
-    data-notes="Obrigada! Agora passo a palavra para o NIT, que vai mostrar a plataforma na prática.">
-    <img class="equip a fd" src="assets/eq-tesoura.png" style="left:150px;top:220px;width:200px;opacity:.35;--d:700" alt="">
-    <img class="equip a fd" src="assets/eq-rolo.png" style="left:230px;bottom:150px;width:250px;opacity:.3;--d:850;animation-delay:-3s" alt="">
-    <img class="equip a fd" src="assets/eq-gerador.png" style="right:150px;top:200px;width:270px;opacity:.3;--d:1000;animation-delay:-5s" alt="">
-    <img class="equip a fd" src="assets/eq-plataforma.png" style="right:200px;bottom:130px;width:260px;opacity:.3;--d:1150;animation-delay:-2s" alt="">
-    <img class="nit a sc" style="--d:200" src="assets/nit.png" alt="NIT – Núcleo de Inteligência e Tecnologia">
-    <h2 class="a up" style="--d:500">Agora, a plataforma <em>na prática</em></h2>
-    <p class="a up" style="--d:650">Treinamento conduzido pelo NIT: acesso, telas e registro das justificativas.</p>
-    <div class="thanks a up" style="--d:800"><span class="pill solid">Obrigado(a)!</span><span class="pill">Vigente a partir de 23/11/2026</span></div>
+  <!-- ================= 12 ENCERRAMENTO ================= -->
+  <section class="slide cover" id="s14" data-chapter="6" data-label="Encerramento"
+    data-notes="Para fechar: a plataforma já está ativa. Agora o NIT conduz o treinamento prático, com o acesso, as telas, o registro das justificativas e o manual de uso da ferramenta. Dúvidas sobre regras e prazos, falem com o Gente e Gestão. Agradeço a atenção de todos.">
+    <div class="wall" aria-hidden="true">
+      <img class="equip a fd" src="assets/eq-tesoura.png"     style="left:90px;top:40px;width:230px;--d:200" alt="">
+      <img class="equip a fd" src="assets/eq-betoneira.png"   style="left:130px;top:395px;width:250px;--d:350;animation-delay:-2s" alt="">
+      <img class="equip a fd" src="assets/eq-rolo.png"        style="left:70px;bottom:50px;width:330px;--d:500;animation-delay:-4s" alt="">
+      <img class="equip a fd" src="assets/eq-gerador.png"     style="right:80px;top:70px;width:360px;--d:250;animation-delay:-1s" alt="">
+      <img class="equip a fd" src="assets/eq-compactador.png" style="right:190px;top:320px;width:180px;--d:400;animation-delay:-3s" alt="">
+      <img class="equip a fd" src="assets/eq-plataforma.png"  style="right:60px;bottom:-24px;width:380px;--d:550;animation-delay:-5s" alt="">
+    </div>
+    <div class="left card top a lf" style="--d:0">
+      <img class="a up" style="--d:300;width:330px;max-width:100%;display:block" src="assets/logo-nordeste-completo.svg" alt="Nordeste Locações – Soluções inteligentes para sua obra">
+      <div class="tag a up" style="--d:450">A PLATAFORMA JÁ ESTÁ ATIVA</div>
+      <h1 class="a up" style="--d:550;font-size:70px">Agora, a plataforma <span>na prática</span></h1>
+      <p class="sub a up" style="--d:700">O treinamento será conduzido pelo <b style="color:var(--ink)">NIT</b>, com o passo a passo da ferramenta.</p>
+      <div class="chips">
+        <span class="pill a up" style="--d:900">Acesso e telas</span>
+        <span class="pill a up" style="--d:1000">Registro das justificativas</span>
+        <span class="pill a up" style="--d:1100">Manual de uso</span>
+      </div>
+    </div>
+    <div class="date a rt" style="--d:1200">
+      <svg class="ico" style="stroke:#fff;width:46px;height:46px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>
+      <div><small>PLATAFORMA ATIVA</small><strong>Agradecemos a atenção de todos!</strong></div>
+    </div>
   </section>
 
   <footer id="footer">
@@ -722,7 +688,7 @@ body:hover #hint{opacity:.6}
     n = Math.max(0, Math.min(slides.length-1, n)); if (n===cur) return;
     slides.forEach((s,i)=>{ s.classList.toggle('active', i===n); s.classList.toggle('past', i<n); });
     cur = n; const s = slides[n]; const ch = +s.dataset.chapter;
-    header.classList.toggle('hide', n===0); footer.classList.toggle('hide', n===0);
+    const edge = n===0 || n===slides.length-1; header.classList.toggle('hide', edge); footer.classList.toggle('hide', edge);
     chNum.textContent = String(ch).padStart(2,'0'); chNum.style.display = ch ? '' : 'none'; chTxt.textContent = s.dataset.label;
     [...prog.children].forEach((seg,i)=>{
       const idx = i+1; const inCh = slides.filter(x=>+x.dataset.chapter===idx); const pos = inCh.indexOf(s);
