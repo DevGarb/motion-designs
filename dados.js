@@ -134,11 +134,11 @@ window.FEEDBACKS = {
       ],
       evoluir: [
         {
-          t: "Engajamento e dedicação",
-          d: "Retomar o envolvimento e o compromisso que você já mostrou.",
-          ludico: "Celular em 15%: não adianta só usar menos, é preciso recarregar. Desafio novo é carregador; a tomada é o compromisso de todo dia.",
-          dia: "Pegar a demanda que ninguém quer e resolver por completo, do início ao fim.",
-          treino: "Uma entrega “assinada” por semana: feita de ponta a ponta, com capricho."
+          t: "Foco: celular no mínimo",
+          d: "A regra da empresa é não usar celular. O pouco que eu flexibilizo é confiança, e eu respondo por ela: não pode atrapalhar as demandas.",
+          ludico: "Como a chave do carro emprestada: quem empresta confia, mas é quem empresta que responde se bater. Cuidar bem é o que garante o próximo empréstimo.",
+          dia: "Celular guardado durante o trabalho. Olhar rápido só em pausas, nunca no meio de um atendimento ou com alguém esperando.",
+          treino: "Demanda em andamento, celular guardado."
         },
         {
           t: "Consistência nas entregas",
@@ -156,7 +156,7 @@ window.FEEDBACKS = {
         }
       ],
       plano: [
-        { m: "Jan", t: "Reconexão", a: "Conversa individual para mapear o que motiva e o que trava. Combinar a meta de entrega da semana.", s: "Metas semanais combinadas" },
+        { m: "Jan", t: "Reconexão", a: "Conversa individual para mapear o que motiva e o que trava. Combinar a meta da semana e o uso mínimo do celular.", s: "Metas e combinado do celular firmados" },
         { m: "Fev", t: "Ritmo", a: "Entregas semanais acompanhadas por Victor e Gabriel.", s: "4 semanas seguidas de metas cumpridas" },
         { m: "Mar", t: "Primeiro desafio", a: "Assumir um desafio novo definido com o gestor: projeto ou melhoria.", s: "Escopo e prazo do desafio definidos" },
         { m: "Abr", t: "Dono do desafio", a: "Conduzir o desafio, com status a cada 15 dias.", s: "Entregas parciais no prazo" },
