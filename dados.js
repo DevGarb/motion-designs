@@ -15,45 +15,53 @@ window.FEEDBACKS = {
   pessoas: [
     {
       id: "danilo", nome: "Danilo", cor: "#60a5fa",
-      resumo: "Seu desenvolvimento nas atividades e o crescimento nas entregas vêm sendo reconhecidos. Conversamos sobre sua postura no setor, a relação com as demais áreas, a qualidade das demandas e o compromisso com a empresa.",
-      meta: "Ser a voz do setor: comunicar com segurança e clareza",
+      resumo: "Seu desenvolvimento nas atividades e o crescimento nas entregas vêm sendo reconhecidos. Conversamos sobre sua postura no setor, a relação com as demais áreas, a qualidade das demandas e o compromisso com a empresa. O próximo passo vai além da comunicação: liderar projetos do setor.",
+      frase: "Quem lidera não faz tudo sozinho: garante que tudo chegue.",
+      meta: "Liderar projetos de ponta a ponta, com prazo e status sob controle",
       manter: [
         {
           t: "Desenvolvimento e entregas",
           d: "Evolução nas atividades e crescimento reconhecido no setor.",
           ex: "Como o goleiro que fecha o gol jogo após jogo: ninguém comenta a defesa fácil, mas o time inteiro joga tranquilo. Suas entregas viraram o “pode deixar com o Danilo”.",
-          mult: "Registrar o “como fiz” das entregas que deram certo, para virar referência do setor."
+          mult: "Transformar o “como fiz” das suas entregas no padrão que você vai conduzir com a equipe."
         },
         {
           t: "Compromisso e relacionamento",
           d: "Atuação no setor e relação com as demais áreas.",
           ex: "Outra área chama com urgência, você responde, explica o prazo e cumpre. Nesse momento a T.I vira ponte, não muro.",
-          mult: "Dar o retorno antes de ser cobrado: quem avisa primeiro ganha confiança."
+          mult: "Dar o retorno antes de ser cobrado: é a semente do status report que as áreas vão esperar de você."
         }
       ],
       evoluir: [
         {
-          t: "Comunicação clara",
-          d: "Transformar o que você sabe em algo que o outro entende de primeira.",
-          ludico: "O guia de trilha conhece o caminho, mas o grupo só confia quando ele explica aonde vai dar. Saber muito sem explicar é mapa guardado na mochila.",
-          dia: "Explicar a um colaborador novo como pedir ajuda à T.I em 2 minutos, sem nenhum termo técnico.",
-          treino: "Regra 3-2-1: 3 pontos, 2 minutos, 1 exemplo."
+          t: "Liderar do início à entrega",
+          d: "Encabeçar a demanda como dono: escopo, etapas, responsáveis, acompanhamento e entrega.",
+          ludico: "Como o motorista da excursão: não troca o pneu sozinho, mas sabe onde cada um está, quanto falta para chegar e quem resolve cada parada.",
+          dia: "Chegou demanda nova: quebrar em etapas com responsável e data, e ser o ponto único de contato até a entrega.",
+          treino: "Toda demanda abre com objetivo, etapas, responsáveis e data."
         },
         {
-          t: "Segurança para apresentar",
-          d: "Apresentar o setor para novos colaboradores nas integrações.",
-          ludico: "Como andar de bicicleta: o frio na barriga passa na terceira volta, não na primeira. Segurança vem da repetição.",
-          dia: "Abrir a integração contando quem é a T.I, o que faz e como chamar, olhando para as pessoas e não para a tela.",
-          treino: "Ensaiar com 1 colega antes de cada integração."
+          t: "Status report claro",
+          d: "Informar o andamento ao gestor e às áreas com clareza, sem precisar ser cobrado.",
+          ludico: "Igual ao app de delivery: ninguém liga para o restaurante porque a tela mostra “saiu para entrega”. Status bem dado acaba com o “e aí, como está?”.",
+          dia: "Toda sexta, mensagem curta: o que foi entregue, o que está andando, o que travou e o próximo passo.",
+          treino: "Formato fixo: Feito · Fazendo · Travado · Próximo."
+        },
+        {
+          t: "Prazo e travamentos",
+          d: "Controlar o prazo toda semana e alinhar com o gestor assim que a equipe travar.",
+          ludico: "Como o GPS que recalcula no primeiro desvio, não quando você já está perdido. Travamento avisado na segunda vira ajuste; na sexta, vira atraso.",
+          dia: "Demanda parada há 2 dias? Levar ao gestor o problema, o impacto no prazo e uma proposta de saída.",
+          treino: "Regra das 48h: travou 2 dias, alinha com o gestor."
         }
       ],
       plano: [
-        { m: "Jan", t: "Roteiro", a: "Montar o roteiro da apresentação do setor: quem somos, o que fazemos e como pedir ajuda.", s: "Roteiro validado com o gestor" },
-        { m: "Fev", t: "Ensaio", a: "Ensaiar com o gestor e com 1 colega. Gravar uma vez e assistir.", s: "Apresentação em até 10 minutos" },
-        { m: "Mar", t: "Primeira integração", a: "Apresentar o setor na próxima integração de novos colaboradores.", s: "Retorno de 3 participantes" },
-        { m: "Abr", t: "Ajuste fino", a: "Revisar o material com o retorno recebido e incluir um caso real do dia a dia.", s: "Versão 2 do material" },
-        { m: "Mai", t: "Multiplicar", a: "Conduzir 15 minutos de troca de conhecimento com o próprio time.", s: "Tema apresentado ao time" },
-        { m: "Jun", t: "Referência", a: "Apresentação vira padrão nas integrações. Balanço do semestre com o gestor.", s: "Avaliação do ciclo" }
+        { m: "Jan", t: "Método", a: "Definir com o gestor o quadro de demandas: etapas, responsáveis, datas e o modelo de status report.", s: "Quadro ativo com as demandas do setor" },
+        { m: "Fev", t: "Primeira demanda", a: "Assumir 1 demanda de ponta a ponta, do levantamento à entrega, com status report toda sexta.", s: "4 status reports enviados no prazo" },
+        { m: "Mar", t: "Ritual de prazo", a: "Toda segunda, 15 minutos com a equipe: o que vence na semana e o que está travado.", s: "Nenhum atraso sem aviso prévio" },
+        { m: "Abr", t: "Escalar cedo", a: "Aplicar a regra das 48h: travamento vai ao gestor com impacto no prazo e proposta de saída.", s: "Travamentos resolvidos em até 1 semana" },
+        { m: "Mai", t: "Mais frentes", a: "Conduzir 2 demandas em paralelo e apresentar o andamento às áreas envolvidas.", s: "Áreas informadas sem precisar cobrar" },
+        { m: "Jun", t: "Líder de projetos", a: "Apresentar ao gestor o balanço do semestre: entregas, prazos cumpridos e aprendizados.", s: "% de entregas no prazo" }
       ]
     },
     {
