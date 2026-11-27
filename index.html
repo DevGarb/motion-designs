@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Trilhas de Carreira 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css">
+<style>
+html,body{overflow-x:hidden}
+body{min-height:100%}
+.page{position:relative;z-index:1;width:min(1360px,100%);margin:0 auto;padding:110px 40px 56px}
+.hero h1{font-size:clamp(48px,6.2vw,104px);font-weight:800;line-height:.9;letter-spacing:-.05em;margin:20px 0 24px}
+.hero .lead{font-size:clamp(17px,1.5vw,23px);color:var(--muted);line-height:1.45;max-width:58ch}
+.hero .lead b{color:var(--text);font-weight:600}
+.sign{display:flex;align-items:center;gap:12px;margin-top:18px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.sign b{color:var(--gold);font-weight:600}
+
+/* cards das pessoas */
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:clamp(28px,5vh,52px)}
+.card{--c:#60a5fa;position:relative;display:flex;flex-direction:column;padding:22px 22px 20px;border-radius:22px;text-decoration:none;color:inherit;overflow:hidden;
+  border:1px solid var(--line2);background:linear-gradient(180deg,var(--panel2),var(--panel));
+  transition:border-color .3s,transform .4s var(--ease),box-shadow .4s}
+.card::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .4s;
+  background:radial-gradient(80% 60% at 70% 0%,color-mix(in oklab,var(--c) 22%,transparent),transparent 70%)}
+.card:hover,.card:focus-visible{border-color:var(--c);transform:translateY(-4px);box-shadow:0 24px 60px -30px color-mix(in oklab,var(--c) 70%,transparent);outline:none}
+.card:hover::before,.card:focus-visible::before{opacity:1}
+.card .num{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--dim)}
+.card .nm{display:flex;align-items:center;gap:12px;margin-top:8px;font-size:clamp(30px,2.6vw,42px);font-weight:800;letter-spacing:-.04em;line-height:1}
+.card .nm i{width:11px;height:11px;border-radius:50%;background:var(--c);box-shadow:0 0 14px var(--c);flex:none}
+.card .meta{margin-top:12px;min-height:3.9em;font-size:clamp(14px,1.05vw,16px);line-height:1.3;color:var(--muted)}
+.card .meta b{display:block;font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--c);margin-bottom:5px}
+.mini{display:block;width:100%;height:auto;margin:14px 0 6px;overflow:visible}
+.mini .base{fill:none;stroke:var(--line2);stroke-width:2;stroke-dasharray:2 7;stroke-linecap:round}
+.mini .pg{fill:none;stroke:var(--c);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .3s}
+.on .mini .pg{stroke-dashoffset:0;transition:stroke-dashoffset calc(1.6s * var(--sp)) var(--ease) calc((var(--d,0ms) * var(--sp)) + calc(500ms * var(--sp)))}
+.card:hover .mini .pg{filter:drop-shadow(0 0 6px var(--c))}
+.mini .dt{fill:var(--bg);stroke:var(--c);stroke-width:2.5;transform-box:fill-box;transform-origin:center;transform:scale(0);transition:transform .3s}
+.on .mini .dt{transform:none;transition:transform calc(.6s * var(--sp)) cubic-bezier(.3,1.6,.5,1) calc((var(--d,0ms) * var(--sp)) + calc(500ms * var(--sp)))}
+.mini text{font-family:var(--mono);font-size:10px;fill:var(--dim);text-anchor:middle}
+.mini .fl{fill:var(--c)}
+.stats{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:12px}
+.stats span{padding:4px 10px;border-radius:999px;border:1px solid var(--line2);font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--muted)}
+.cta{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:15px;font-weight:600}
+.cta svg{width:18px;height:18px;transition:transform .3s var(--ease)}
+.card:hover .cta svg{transform:translateX(5px)}
+.cta small{font-family:var(--mono);font-size:11px;font-weight:400;letter-spacing:.08em;color:var(--dim)}
+
+/* como vamos caminhar */
+.walk{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:16px;margin-top:16px}
+.box{padding:20px 22px;border-radius:20px;border:1px solid var(--line2);background:linear-gradient(180deg,var(--panel2),var(--panel))}
+.box h3{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.box p{font-size:clamp(14px,1.1vw,17px);line-height:1.45;color:var(--text)}
+.box.gold{border-color:color-mix(in oklab,var(--gold) 40%,transparent);background:color-mix(in oklab,var(--gold) 6%,transparent)}
+.box.gold h3{color:var(--gold)}
+.months{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:4px}
+.months div{text-align:center}
+.months b{display:block;height:6px;border-radius:3px;background:var(--line2);margin-bottom:8px;position:relative;overflow:hidden}
+.months b::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#60a5fa,#2dd4bf,#a78bfa,#fbbf24);background-size:600% 100%;transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.on .months b::after{transform:none;transition:transform calc(.6s * var(--sp)) var(--ease) calc((var(--d,0ms) * var(--sp)) + calc(500ms * var(--sp)))}
+.months span{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted)}
+.months em{display:block;font-style:normal;font-size:12px;color:var(--dim);margin-top:4px;line-height:1.25}
+.foot{margin-top:28px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+
+@media (max-width:1180px){ .cards{grid-template-columns:repeat(2,minmax(0,1fr))} .walk{grid-template-columns:1fr 1fr} .walk .box:first-child{grid-column:1/-1} }
+@media (max-width:640px){
+  .page{padding:92px 16px 40px}
+  .cards,.walk{grid-template-columns:1fr}
+  .top .where{display:none}
+}
+</style>
+</head>
+<body>
+<div class="bg"><div class="glow"></div><div class="grid"></div><svg class="topo" id="topo" viewBox="-500 -500 1000 1000" aria-hidden="true"></svg></div>
+
+<header class="top">
+  <div class="brand"><span class="pulse-dot"></span><b id="brandTxt"></b></div>
+  <div class="where" id="whereTxt"></div>
+</header>
+
+<main class="page">
+  <section class="hero">
+    <div class="kicker a" style="--d:0ms"><i></i><span id="kick"></span></div>
+    <h1>
+      <span class="line"><span style="--d:120ms">Quatro trilhas,</span></span>
+      <span class="line"><span class="outline" style="--d:260ms">um só time.</span></span>
+    </h1>
+    <p class="lead a" style="--d:420ms">Cada card abre <b>4 slides</b>: onde você está, o que manter, o que evoluir e o <b>plano de 6 meses</b>. Eu direciono, a gente chega junto. <b id="lema"></b></p>
+    <div class="sign a" style="--d:520ms"><span>Gestão do setor</span><b id="gestor"></b></div>
+  </section>
+
+  <section class="cards" id="cards" aria-label="Pessoas"></section>
+
+  <section class="walk">
+    <div class="box a" style="--d:900ms">
+      <h3>O semestre</h3>
+      <div class="months" id="months"></div>
+    </div>
+    <div class="box a" style="--d:1000ms"><h3>Seu compromisso</h3><p id="cVoce"></p></div>
+    <div class="box gold a" style="--d:1100ms"><h3>Meu compromisso como gestor</h3><p id="cGestor"></p></div>
+  </section>
+
+  <div class="foot a" style="--d:1200ms">Clique num card para abrir · No deck: setas para navegar, Esc volta para cá</div>
+</main>
+
+<script src="base.js"></script>
+<script src="dados.js"></script>
+<script>
+(() => {
+  const D = window.FEEDBACKS, { esc, pad } = window.MD;
+  MD.topo(document.getElementById("topo"));
+  document.getElementById("brandTxt").textContent = `${D.equipe} · ${D.empresa}`;
+  document.getElementById("whereTxt").textContent = `Trilhas de carreira · ${D.ciclo}`;
+  document.getElementById("kick").textContent = `Feedbacks individuais · ciclo ${D.ciclo}`;
+  document.getElementById("lema").textContent = D.lema;
+  document.getElementById("gestor").textContent = D.gestor;
+  document.getElementById("cVoce").textContent = D.compromisso.voce;
+  document.getElementById("cGestor").textContent = D.compromisso.gestor;
+
+  // linha do semestre: foco geral de cada mês
+  const focos = ["Começar", "Criar ritmo", "Checkpoint", "Aprofundar", "Multiplicar", "Balanço"];
+  document.getElementById("months").innerHTML = D.meses.map((m, i) =>
+    `<div style="--d:${1000 + i * 120}ms"><b style="--d:${1000 + i * 120}ms"></b><span>${m}</span><em>${focos[i]}</em></div>`).join("");
+
+  // mini trilha de cada card: 6 meses subindo até a meta
+  const W = 300, H = 96;
+  const P = [[4, H - 22]].concat(D.meses.map((m, i) => [24 + i * 50, H - 30 - i * 11 + (i % 2 && i < 5 ? -5 : 4)]));
+  const c = MD.curve(P, 12);
+  const mini = (d) => `<svg class="mini" viewBox="0 0 ${W} ${H + 8}" aria-hidden="true">
+      <path class="base" d="${c.d}"/><path class="pg" pathLength="1" d="${c.d}" style="--d:${d}ms"/>
+      ${P.slice(1).map((q, i) => `<circle class="dt" cx="${q[0]}" cy="${q[1]}" r="5" style="--d:${d + 200 + i * 170}ms"/><text x="${q[0]}" y="${H + 6}">${D.meses[i]}</text>`).join("")}
+      <path class="fl" d="M${P[6][0]} ${P[6][1] - 7} V${P[6][1] - 34} L${P[6][0] + 18} ${P[6][1] - 28} L${P[6][0]} ${P[6][1] - 22}" style="stroke:var(--c);stroke-width:2"/></svg>`;
+
+  document.getElementById("cards").innerHTML = D.pessoas.map((p, i) => {
+    const d = 560 + i * 120;
+    return `<a class="card a" href="deck.html?p=${p.id}" style="--d:${d}ms;--c:${p.cor}" aria-label="Abrir os slides de ${esc(p.nome)}">
+      <span class="num">${pad(i + 1)} / ${pad(D.pessoas.length)}</span>
+      <span class="nm"><i></i>${esc(p.nome)}</span>
+      <span class="meta"><b>Meta até junho</b>${esc(p.meta)}</span>
+      ${mini(d)}
+      <span class="stats"><span>${p.manter.length} pontos fortes</span><span>${p.evoluir.length} a evoluir</span><span>6 meses</span></span>
+      <span class="cta">Abrir trilha <small>4 slides</small><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>`;
+  }).join("");
+
+  setTimeout(() => document.body.classList.add("on"), 60);
+})();
+</script>
+</body>
+</html>
