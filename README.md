@@ -16,6 +16,7 @@ Motions e apresentações em HTML do Setor de T.I do Grupo Ramos.
 | `alinhamento-ti` | Alinhamento da equipe de TI: responsabilidade, compromisso e autonomia | `/alinhamento-ti/` |
 | `resultados-ti` | Resultados da T.I · Ago a Out 2026 (motion em slides) | `/resultados-ti/` |
 | `gestao-ponto` | Novo modelo de gestão de ponto · Nordeste Locações (Gente e Gestão + NIT) | `/gestao-ponto/` |
+| `feedbacks-carreira` | Trilhas de Carreira 2027: feedbacks individuais da T.I com PDI de Jan a Jun e estrela de carreira | `/feedbacks-carreira/` |
 
 Site: https://devgarb.github.io/motion-designs/
 
