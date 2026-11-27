@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="base.css?v=2">
 <style>
 html,body{overflow-x:hidden}
 body{min-height:100%}
@@ -63,12 +63,44 @@ body{min-height:100%}
 .on .months b::after{transform:none;transition:transform calc(.6s * var(--sp)) var(--ease) calc((var(--d,0ms) * var(--sp)) + calc(500ms * var(--sp)))}
 .months span{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted)}
 .months em{display:block;font-style:normal;font-size:12px;color:var(--dim);margin-top:4px;line-height:1.25}
+.stats span.st{display:inline-flex;align-items:center;gap:5px;color:var(--gold);border-color:color-mix(in oklab,var(--gold) 45%,transparent)}
+.stats span.st svg{width:11px;height:11px;fill:var(--gold)}
+
+/* estrela de carreira */
+.estrela{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:16px;margin-top:16px;padding:24px;border-radius:22px;position:relative;overflow:hidden;
+  border:1px solid color-mix(in oklab,var(--gold) 40%,transparent);background:linear-gradient(135deg,color-mix(in oklab,var(--gold) 10%,transparent),color-mix(in oklab,var(--gold) 3%,transparent))}
+.estrela h3{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.estrela h3 svg{width:14px;height:14px;fill:var(--gold)}
+.estrela h2{font-size:clamp(24px,2.2vw,34px);font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.estrela p{margin-top:10px;font-size:clamp(14px,1.05vw,16px);line-height:1.45;color:var(--muted)}
+.estrela .col+.col{padding-left:16px;border-left:1px solid color-mix(in oklab,var(--gold) 22%,transparent)}
+.week{display:flex;align-items:center;gap:8px;margin-top:4px}
+.day{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--muted)}
+.day i{width:30px;height:30px;border-radius:50%;border:2px solid var(--line2);display:grid;place-items:center;transition:background .3s,border-color .3s}
+.day i svg{width:14px;height:14px;fill:none;stroke:#0a0c11;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .3s}
+.on .day i{background:var(--gold);border-color:var(--gold);transition:background calc(.35s * var(--sp)) var(--ease) calc((var(--d,0ms) * var(--sp)) + calc(250ms * var(--sp))),border-color calc(.35s * var(--sp)) var(--ease) calc((var(--d,0ms) * var(--sp)) + calc(250ms * var(--sp)))}
+.on .day i svg{opacity:1;transition:opacity calc(.3s * var(--sp)) calc((var(--d,0ms) * var(--sp)) + calc(350ms * var(--sp)))}
+.week .eq{font-family:var(--mono);font-size:16px;color:var(--gold);margin:0 2px 16px}
+.big{width:46px;height:46px;margin-bottom:16px;fill:var(--gold);transform:scale(0) rotate(-40deg);transition:transform .3s;filter:drop-shadow(0 0 12px color-mix(in oklab,var(--gold) 70%,transparent))}
+.on .big{transform:none;transition:transform calc(.8s * var(--sp)) cubic-bezier(.3,1.6,.5,1) calc((var(--d,0ms) * var(--sp)) + calc(250ms * var(--sp)))}
+.big svg{width:100%;height:100%;display:block;animation:glow 2.6s ease-in-out infinite alternate}
+@keyframes glow{to{filter:drop-shadow(0 0 4px var(--gold)) brightness(1.15)}}
+.semana{margin-top:2px!important;font-weight:600;color:var(--text)!important}
+.ways{list-style:none;display:grid;gap:9px}
+.ways li{display:grid;grid-template-columns:16px 1fr;gap:10px;align-items:start;font-size:clamp(13px,1vw,15px);line-height:1.35;color:var(--muted)}
+.ways li svg{width:15px;height:15px;fill:var(--gold);margin-top:2px}
+.ways li b{color:var(--text);font-weight:700}
 .foot{margin-top:28px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
 
-@media (max-width:1180px){ .cards{grid-template-columns:repeat(2,minmax(0,1fr))} .walk{grid-template-columns:1fr 1fr} .walk .box:first-child{grid-column:1/-1} }
+@media (max-width:1180px){ .cards{grid-template-columns:repeat(2,minmax(0,1fr))} .walk{grid-template-columns:1fr 1fr} .walk .box:first-child{grid-column:1/-1}
+  .estrela{grid-template-columns:1fr 1fr} .estrela .col:first-child{grid-column:1/-1} .estrela .col:nth-child(2){padding-left:0;border-left:0} }
 @media (max-width:640px){
   .page{padding:92px 16px 40px}
-  .cards,.walk{grid-template-columns:1fr}
+  .cards,.walk,.estrela{grid-template-columns:1fr}
+  .estrela{padding:20px 18px}
+  .estrela .col+.col{padding-left:0;border-left:0;padding-top:16px;border-top:1px solid color-mix(in oklab,var(--gold) 22%,transparent)}
+  .day i{width:26px;height:26px}
+  .months{gap:3px} .months em{font-size:9px;overflow-wrap:anywhere}
   .top .where{display:none}
 }
 </style>
@@ -88,11 +120,13 @@ body{min-height:100%}
       <span class="line"><span style="--d:120ms">Quatro trilhas,</span></span>
       <span class="line"><span class="outline" style="--d:260ms">um só time.</span></span>
     </h1>
-    <p class="lead a" style="--d:420ms">Cada card abre <b>4 slides</b>: onde você está, o que manter, o que evoluir e o <b>plano de 6 meses</b>. Eu direciono, a gente chega junto. <b id="lema"></b></p>
+    <p class="lead a" style="--d:420ms">Cada card abre <b>4 slides</b>: onde você está, o que manter, o que evoluir e o <b>plano de 6 meses</b>. Eu direciono, a gente chega junto, e cada conquista vira <b>estrela</b>. <b id="lema"></b></p>
     <div class="sign a" style="--d:520ms"><span>Gestão do setor</span><b id="gestor"></b></div>
   </section>
 
   <section class="cards" id="cards" aria-label="Pessoas"></section>
+
+  <section class="estrela a" id="estrela" style="--d:900ms" aria-label="Estrela de carreira"></section>
 
   <section class="walk">
     <div class="box a" style="--d:900ms">
@@ -106,11 +140,11 @@ body{min-height:100%}
   <div class="foot a" style="--d:1200ms">Clique num card para abrir · No deck: setas para navegar, Esc volta para cá</div>
 </main>
 
-<script src="base.js"></script>
-<script src="dados.js"></script>
+<script src="base.js?v=2"></script>
+<script src="dados.js?v=2"></script>
 <script>
 (() => {
-  const D = window.FEEDBACKS, { esc, pad } = window.MD;
+  const D = window.FEEDBACKS, E = D.estrelas, { esc, pad } = window.MD;
   MD.topo(document.getElementById("topo"));
   document.getElementById("brandTxt").textContent = `${D.equipe} · ${D.empresa}`;
   document.getElementById("whereTxt").textContent = `Trilhas de carreira · ${D.ciclo}`;
@@ -141,10 +175,30 @@ body{min-height:100%}
       <span class="nm"><i></i>${esc(p.nome)}</span>
       <span class="meta"><b>Meta até junho</b>${esc(p.meta)}</span>
       ${mini(d)}
-      <span class="stats"><span>${p.manter.length} pontos fortes</span><span>${p.evoluir.length} a evoluir</span><span>6 meses</span></span>
+      <span class="stats"><span>${p.manter.length} pontos fortes</span><span>${p.evoluir.length} a evoluir</span><span class="st">${MD.STAR}${MD.estrelas(p, E).total} estrela${MD.estrelas(p, E).total === 1 ? "" : "s"}</span></span>
       <span class="cta">Abrir trilha <small>4 slides</small><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
     </a>`;
   }).join("");
+
+  // estrela de carreira: regra geral, check-in da semana e outras formas de ganhar
+  const dias = ["Seg", "Ter", "Qua", "Qui", "Sex"], OK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  document.getElementById("estrela").innerHTML = `
+    <div class="col">
+      <h3>${MD.STAR}${esc(E.titulo)} · vale para todos</h3>
+      <h2>${esc(E.chamada)}</h2>
+      <p>${esc(E.texto)}</p>
+    </div>
+    <div class="col">
+      <h3>Check-in diário</h3>
+      <div class="week">${dias.map((d, i) => `<span class="day" style="--d:${1100 + i * 220}ms"><i>${OK}</i>${d}</span>`).join("")}
+        <span class="eq">=</span><span class="big" style="--d:${1100 + 5 * 220 + 150}ms">${MD.STAR}</span></div>
+      <p class="semana">${esc(E.semana)}</p>
+      <p>${esc(E.checkin)}</p>
+    </div>
+    <div class="col">
+      <h3>Também vale estrela</h3>
+      <ul class="ways">${E.fontes.filter(f => f.id !== "checkin").map(f => `<li>${MD.STAR}<span><b>${esc(f.t)}.</b> ${esc(f.d)}</span></li>`).join("")}</ul>
+    </div>`;
 
   setTimeout(() => document.body.classList.add("on"), 60);
 })();

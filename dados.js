@@ -9,12 +9,31 @@ window.FEEDBACKS = {
   lema: "Cresce quem escolhe crescer.",
   meses: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
   compromisso: {
-    voce: "Escolher crescer, cumprir o plano e trazer as dificuldades cedo, antes que virem problema.",
-    gestor: "Direcionar, cobrar com clareza, apoiar quando travar e reconhecer cada avanço. Conversa individual todo mês."
+    voce: "Escolher crescer, fazer o check-in todo dia, cumprir o plano e trazer as dificuldades cedo, antes que virem problema.",
+    gestor: "Direcionar, cobrar com clareza, apoiar quando travar e dar uma estrela a cada conquista. Conversa individual todo mês."
+  },
+  // Estrela de carreira: vale para todos.
+  // Para dar uma estrela, adicionar no "estrelas" da pessoa: { m: "Jan", tipo: "checkin", nota: "opcional" }
+  // Tipos válidos: os ids de "fontes" abaixo.
+  estrelas: {
+    titulo: "Estrela de carreira",
+    chamada: "Mais que um símbolo: reconhecimento.",
+    texto: "Cada estrela registra uma conquista real. Somadas, mostram seu crescimento profissional e contam a favor do seu prestígio e da sua carreira.",
+    checkin: "Todo dia, de segunda a sexta: 5 minutos com o gestor sobre o que foi feito, o que vem agora e o que travou.",
+    semana: "Semana completa de check-in vale 1 estrela.",
+    vazio: "A primeira estrela começa no check-in de janeiro.",
+    fontes: [
+      { id: "checkin", t: "Semana de check-in", d: "Check-in feito de segunda a sexta." },
+      { id: "processo", t: "Processo certo", d: "Seguiu o processo do início ao fim, sem retrabalho." },
+      { id: "reconhecimento", t: "Reconhecimento", d: "Elogiado por outra área, usuário ou pela gestão." },
+      { id: "meta", t: "Meta batida", d: "Cumpriu a meta do mês no seu plano." },
+      { id: "ideia", t: "Ideia nova", d: "Trouxe uma ideia que melhorou o setor." }
+    ]
   },
   pessoas: [
     {
       id: "danilo", nome: "Danilo", cor: "#60a5fa",
+      estrelas: [],
       resumo: "Seu desenvolvimento nas atividades e o crescimento nas entregas vêm sendo reconhecidos. Conversamos sobre sua postura no setor, a relação com as demais áreas, a qualidade das demandas e o compromisso com a empresa. O próximo passo vai além da comunicação: liderar projetos do setor.",
       frase: "Quem lidera não faz tudo sozinho: garante que tudo chegue.",
       meta: "Liderar projetos de ponta a ponta, com prazo e status sob controle",
@@ -66,6 +85,7 @@ window.FEEDBACKS = {
     },
     {
       id: "felipe", nome: "Felipe", cor: "#2dd4bf",
+      estrelas: [],
       resumo: "Reconheci seus pontos fortes e reforcei a importância de mantê-los. Destaquei oportunidades em organização, agilidade na resolução de problemas e acompanhamento das demandas. A evolução nesses pontos é o que abre as portas para o seu crescimento.",
       meta: "Organização que abre as portas para crescer",
       manter: [
@@ -116,6 +136,7 @@ window.FEEDBACKS = {
     },
     {
       id: "victor", nome: "Victor", cor: "#a78bfa",
+      estrelas: [],
       resumo: "Falamos do seu desempenho no início do ano e da queda que veio depois. Relembrei o período em que você foi destaque e referência no setor. Você contou que busca se encontrar e sente falta de novos desafios, e se propôs a melhorar.",
       meta: "Voltar a ser referência no setor",
       manter: [
@@ -166,6 +187,7 @@ window.FEEDBACKS = {
     },
     {
       id: "izabele", nome: "Izabele", cor: "#fbbf24",
+      estrelas: [],
       resumo: "Você ganhou confiança no trabalho e domínio dos processos. Tem perfil executor, disposição para resolver problemas e está alinhada ao setor e à cultura da empresa. O próximo passo é fortalecer organização, planejamento e capacidade analítica.",
       frase: "O desenvolvimento é construído pela constância.",
       meta: "Análise, planejamento e segurança técnica",
@@ -214,7 +236,7 @@ window.FEEDBACKS = {
       ],
       plano: [
         { m: "Jan", t: "Caderno de bordo", a: "Registro diário e semanal das demandas, com prioridade e prazo.", s: "Registro revisado todo dia" },
-        { m: "Fev", t: "Check-in diário", a: "5 minutos com o gestor para conferir o que está registrado e acompanhado.", s: "Nenhuma demanda esquecida no mês" },
+        { m: "Fev", t: "Registro em dia", a: "Usar o check-in diário para conferir com o gestor o que está registrado e acompanhado.", s: "Nenhuma demanda esquecida no mês" },
         { m: "Mar", t: "Glossário vivo", a: "Rotina de estudo: um termo ou conceito de TI por dia, aplicado no trabalho.", s: "Glossário com 20 termos ou mais" },
         { m: "Abr", t: "3 perguntas", a: "Antes de executar: urgência, etapas e riscos. Apoio da liderança quando precisar.", s: "Plano das demandas maiores apresentado" },
         { m: "Mai", t: "Explicar para aprender", a: "Explicar um conceito técnico ao time ou a um usuário.", s: "Explicação feita com segurança" },

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="base.css?v=2">
 <style>
 html,body{overflow:hidden}
 .where{display:flex;gap:14px;align-items:center}
@@ -66,6 +66,23 @@ html,body{overflow:hidden}
 .goal .mo i::after{content:"";position:absolute;inset:0;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
 .on .goal .mo i::after{transform:none;transition:transform calc(.5s * var(--sp)) var(--ease) calc((var(--d,0ms) * var(--sp)) + calc(400ms * var(--sp)))}
 .goal .mo em{font-style:normal;font-family:var(--mono);font-size:10px;color:var(--dim);display:block;margin-top:14px;text-align:center}
+.rt{display:grid;gap:12px}
+.stars{padding:14px 18px 15px;border-radius:16px;border:1px solid color-mix(in oklab,var(--gold) 45%,transparent);background:color-mix(in oklab,var(--gold) 7%,transparent)}
+.stars svg{fill:var(--gold)}
+.stars .sh{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.stars .sh b{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.stars .sh b svg{width:14px;height:14px}
+.stars .sh strong{display:flex;align-items:baseline;gap:6px;font-size:26px;font-weight:800;letter-spacing:-.03em;color:var(--gold);line-height:1}
+.stars .sh small{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.stars .row{display:flex;flex-wrap:wrap;align-items:center;gap:3px;margin-top:8px;min-height:18px}
+.stars .sx{display:block;width:16px;height:16px;transform:scale(0);transition:transform .2s}
+.stars .sx svg{width:100%;height:100%;display:block;filter:drop-shadow(0 0 4px color-mix(in oklab,var(--gold) 60%,transparent))}
+.on .stars .sx{transform:none;transition:transform calc(.5s * var(--sp)) cubic-bezier(.3,1.6,.5,1) calc((var(--d,0ms) * var(--sp)) + calc(250ms * var(--sp)))}
+.stars .mais{font-family:var(--mono);font-size:11px;color:var(--gold);margin-left:4px}
+.stars .vazio{font-size:13.5px;color:var(--muted)}
+.stars .ways{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.stars .ways span{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;border:1px solid var(--line2);font-family:var(--mono);font-size:10.5px;letter-spacing:.02em;color:var(--muted)}
+.stars .ways i{font-style:normal;font-weight:600;color:var(--gold)}
 
 /* 2 e 3 · cartões de exemplos */
 .ex{display:grid;gap:16px;margin-top:clamp(18px,3.4vh,34px)}
@@ -163,8 +180,8 @@ html,body{overflow:hidden}
   </div>
 </footer>
 
-<script src="base.js"></script>
-<script src="dados.js"></script>
+<script src="base.js?v=2"></script>
+<script src="dados.js?v=2"></script>
 <script>
 (() => {
   const D = window.FEEDBACKS, { esc, pad } = window.MD;
@@ -198,6 +215,7 @@ html,body{overflow:hidden}
           ${p.frase ? `<div class="frase a" style="--d:440ms">${esc(p.frase)}</div>` : ""}
           <div class="lema a" style="--d:560ms">${esc(D.lema)} Eu direciono, a gente chega junto.</div>
         </div>
+        <div class="rt">
         <div class="hoje a" style="--d:300ms">
           <h3 class="m">${IC.ok.replace("<svg", '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4"')}Manter</h3>
           <ul>${li(p.manter, IC.ok, 420)}</ul>
@@ -207,7 +225,22 @@ html,body{overflow:hidden}
             <div class="mo">${D.meses.map((m, i) => `<div><i style="--d:${900 + i * 140}ms"></i><em>${m}</em></div>`).join("")}</div>
           </div>
         </div>
+        ${painelEstrelas()}
+        </div>
       </div>`);
+  }
+
+  /* estrela de carreira: total, estrelas acumuladas e contagem por tipo */
+  function painelEstrelas() {
+    const E = D.estrelas, st = MD.estrelas(p, E), MAX = 48;
+    const row = st.total
+      ? st.lista.slice(0, MAX).map((e, i) => `<span class="sx" style="--d:${1300 + i * 60}ms" title="${esc((E.fontes.find(f => f.id === e.tipo) || {}).t)} · ${esc(e.m || "")}">${MD.STAR}</span>`).join("") + (st.total > MAX ? `<span class="mais">+${st.total - MAX}</span>` : "")
+      : `<span class="vazio">${esc(E.vazio)}</span>`;
+    return `<div class="stars a" style="--d:1150ms">
+      <div class="sh"><b>${MD.STAR}${esc(E.titulo)}</b><strong>${st.total}<small>estrela${st.total === 1 ? "" : "s"}</small></strong></div>
+      <div class="row">${row}</div>
+      <div class="ways">${E.fontes.map(f => `<span>${esc(f.t)}<i>${st.por[f.id] || 0}</i></span>`).join("")}</div>
+    </div>`;
   }
 
   /* ---------- 2 · o que manter e multiplicar ---------- */

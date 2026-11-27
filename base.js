@@ -2,6 +2,14 @@
 window.MD = {
   esc: s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])),
   pad: n => String(n).padStart(2, "0"),
+  STAR: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6.2 6.8.7-5.1 4.6 1.5 6.7L12 17.3l-6.1 3.4 1.5-6.7-5.1-4.6 6.8-.7z"/></svg>',
+  // Estrelas da pessoa: total e contagem por tipo (só tipos cadastrados em fontes)
+  estrelas(p, E) {
+    const ids = new Set(E.fontes.map(f => f.id)), por = {};
+    const lista = (p.estrelas || []).filter(e => e && ids.has(e.tipo));
+    lista.forEach(e => { por[e.tipo] = (por[e.tipo] || 0) + 1; });
+    return { total: lista.length, por, lista };
+  },
   topo(svg) {
     let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
     const ph = Array.from({ length: 7 }, () => rnd() * 6.28), am = Array.from({ length: 7 }, () => 0.05 + rnd() * 0.07);
