@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css?v=2">
+<link rel="stylesheet" href="base.css?v=3">
 <style>
 html,body{overflow-x:hidden}
 body{min-height:100%}
@@ -90,6 +90,18 @@ body{min-height:100%}
 .ways li{display:grid;grid-template-columns:16px 1fr;gap:10px;align-items:start;font-size:clamp(13px,1vw,15px);line-height:1.35;color:var(--muted)}
 .ways li svg{width:15px;height:15px;fill:var(--gold);margin-top:2px}
 .ways li b{color:var(--text);font-weight:700}
+.crit{list-style:none;display:grid;gap:7px;margin-top:12px}
+.crit li{display:flex;align-items:center;gap:9px;font-size:clamp(13px,1vw,15px);line-height:1.3;color:var(--text)}
+.crit li svg{width:16px;height:16px;flex:none;padding:2px;border-radius:50%;background:var(--gold);fill:none;stroke:#0a0c11;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+.month{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:4px}
+.ms{width:28px;height:28px;fill:var(--gold);transform:scale(0) rotate(-40deg);transition:transform .3s;filter:drop-shadow(0 0 8px color-mix(in oklab,var(--gold) 60%,transparent))}
+.ms svg,.passo svg{width:100%;height:100%;display:block}
+.on .ms,.on .passo{transform:none;transition:transform calc(.7s * var(--sp)) cubic-bezier(.3,1.6,.5,1) calc((var(--d,0ms) * var(--sp)) + calc(250ms * var(--sp)))}
+.month .eq{margin:0 4px}
+.passo{display:inline-flex;flex-direction:column;padding:7px 13px;border-radius:12px;background:var(--gold);color:#0a0c11;font-weight:800;font-size:16px;letter-spacing:-.01em;line-height:1.05;transform:scale(0);transition:transform .3s;box-shadow:0 0 22px color-mix(in oklab,var(--gold) 45%,transparent)}
+.passo small{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.estrela h3.dq{margin:18px 0 10px}
+.estrela p.nota{font-size:12.5px;color:var(--dim)}
 .foot{margin-top:28px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
 
 @media (max-width:1180px){ .cards{grid-template-columns:repeat(2,minmax(0,1fr))} .walk{grid-template-columns:1fr 1fr} .walk .box:first-child{grid-column:1/-1}
@@ -140,8 +152,8 @@ body{min-height:100%}
   <div class="foot a" style="--d:1200ms">Clique num card para abrir · No deck: setas para navegar, Esc volta para cá</div>
 </main>
 
-<script src="base.js?v=2"></script>
-<script src="dados.js?v=2"></script>
+<script src="base.js?v=3"></script>
+<script src="dados.js?v=3"></script>
 <script>
 (() => {
   const D = window.FEEDBACKS, E = D.estrelas, { esc, pad } = window.MD;
@@ -169,35 +181,42 @@ body{min-height:100%}
       <path class="fl" d="M${P[6][0]} ${P[6][1] - 7} V${P[6][1] - 34} L${P[6][0] + 18} ${P[6][1] - 28} L${P[6][0]} ${P[6][1] - 22}" style="stroke:var(--c);stroke-width:2"/></svg>`;
 
   document.getElementById("cards").innerHTML = D.pessoas.map((p, i) => {
-    const d = 560 + i * 120;
+    const d = 560 + i * 120, st = MD.estrelas(p, E, D.meses);
     return `<a class="card a" href="deck.html?p=${p.id}" style="--d:${d}ms;--c:${p.cor}" aria-label="Abrir os slides de ${esc(p.nome)}">
       <span class="num">${pad(i + 1)} / ${pad(D.pessoas.length)}</span>
       <span class="nm"><i></i>${esc(p.nome)}</span>
       <span class="meta"><b>Meta até junho</b>${esc(p.meta)}</span>
       ${mini(d)}
-      <span class="stats"><span>${p.manter.length} pontos fortes</span><span>${p.evoluir.length} a evoluir</span><span class="st">${MD.STAR}${MD.estrelas(p, E).total} estrela${MD.estrelas(p, E).total === 1 ? "" : "s"}</span></span>
+      <span class="stats"><span>${p.manter.length} pontos fortes</span><span>${p.evoluir.length} a evoluir</span><span class="st">${MD.STAR}${st.total} estrela${st.total === 1 ? "" : "s"}</span><span class="st">${st.passos}/${D.meses.length} passos</span></span>
       <span class="cta">Abrir trilha <small>4 slides</small><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
     </a>`;
   }).join("");
 
-  // estrela de carreira: regra geral, check-in da semana e outras formas de ganhar
+  // estrela de carreira: semana cumprida vira estrela, 4 no mês viram 1 passo do PDI
   const dias = ["Seg", "Ter", "Qua", "Qui", "Sex"], OK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  const t0 = 1100 + 5 * 220 + 150, t1 = t0 + 450;
   document.getElementById("estrela").innerHTML = `
     <div class="col">
       <h3>${MD.STAR}${esc(E.titulo)} · vale para todos</h3>
       <h2>${esc(E.chamada)}</h2>
       <p>${esc(E.texto)}</p>
-    </div>
-    <div class="col">
-      <h3>Check-in diário</h3>
-      <div class="week">${dias.map((d, i) => `<span class="day" style="--d:${1100 + i * 220}ms"><i>${OK}</i>${d}</span>`).join("")}
-        <span class="eq">=</span><span class="big" style="--d:${1100 + 5 * 220 + 150}ms">${MD.STAR}</span></div>
-      <p class="semana">${esc(E.semana)}</p>
       <p>${esc(E.checkin)}</p>
     </div>
     <div class="col">
-      <h3>Também vale estrela</h3>
-      <ul class="ways">${E.fontes.filter(f => f.id !== "checkin").map(f => `<li>${MD.STAR}<span><b>${esc(f.t)}.</b> ${esc(f.d)}</span></li>`).join("")}</ul>
+      <h3>Toda semana</h3>
+      <div class="week">${dias.map((d, i) => `<span class="day" style="--d:${1100 + i * 220}ms"><i>${OK}</i>${d}</span>`).join("")}
+        <span class="eq">=</span><span class="big" style="--d:${t0}ms">${MD.STAR}</span></div>
+      <p class="semana">${esc(E.semana)}</p>
+      <ul class="crit">${E.criterios.map(c => `<li>${OK}${esc(c)}</li>`).join("")}</ul>
+    </div>
+    <div class="col">
+      <h3>Fim do mês</h3>
+      <div class="month">${Array.from({ length: E.porPasso }, (_, i) => `<span class="ms" style="--d:${t1 + i * 200}ms">${MD.STAR}</span>`).join("")}
+        <span class="eq">=</span><span class="passo" style="--d:${t1 + E.porPasso * 200 + 150}ms">+1 passo<small>do PDI</small></span></div>
+      <p>${esc(E.mes)}</p>
+      <h3 class="dq">Estrela de destaque</h3>
+      <ul class="ways">${E.fontes.filter(f => !f.semanal).map(f => `<li>${MD.STAR}<span><b>${esc(f.t)}.</b> ${esc(f.d)}</span></li>`).join("")}</ul>
+      <p class="nota">${esc(E.destaque)}</p>
     </div>`;
 
   setTimeout(() => document.body.classList.add("on"), 60);

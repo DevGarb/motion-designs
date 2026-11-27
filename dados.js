@@ -10,21 +10,26 @@ window.FEEDBACKS = {
   meses: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
   compromisso: {
     voce: "Escolher crescer, fazer o check-in todo dia, cumprir o plano e trazer as dificuldades cedo, antes que virem problema.",
-    gestor: "Direcionar, cobrar com clareza, apoiar quando travar e dar uma estrela a cada conquista. Conversa individual todo mês."
+    gestor: "Direcionar, cobrar com clareza, apoiar quando travar, dar a estrela de cada semana cumprida e fechar as estrelas no fim do mês. Conversa individual todo mês."
   },
   // Estrela de carreira: vale para todos.
-  // Para dar uma estrela, adicionar no "estrelas" da pessoa: { m: "Jan", tipo: "checkin", nota: "opcional" }
+  // Fim de cada semana: se cumpriu os critérios, adicionar no "estrelas" da pessoa: { m: "Jan", tipo: "semana" }
+  // Destaque (quando acontecer): { m: "Jan", tipo: "ideia", nota: "opcional" }
+  // Fim do mês: 4 estrelas "semana" no mês = avança 1 passo do PDI (contado sozinho).
   // Tipos válidos: os ids de "fontes" abaixo.
   estrelas: {
     titulo: "Estrela de carreira",
     chamada: "Mais que um símbolo: reconhecimento.",
-    texto: "Cada estrela registra uma conquista real. Somadas, mostram seu crescimento profissional e contam a favor do seu prestígio e da sua carreira.",
-    checkin: "Todo dia, de segunda a sexta: 5 minutos com o gestor sobre o que foi feito, o que vem agora e o que travou.",
-    semana: "Semana completa de check-in vale 1 estrela.",
-    vazio: "A primeira estrela começa no check-in de janeiro.",
+    texto: "Cada estrela registra uma semana cumprida. Somadas, mostram seu crescimento profissional e contam a favor do seu prestígio e da sua carreira.",
+    checkin: "Check-in todo dia, de segunda a sexta: 5 minutos com o gestor sobre o que foi feito, o que vem agora e o que travou.",
+    criterios: ["Check-in feito de segunda a sexta", "Demandas da semana cumpridas", "Processos seguidos, sem retrabalho"],
+    semana: "Cumpriu os critérios da semana: 1 estrela.",
+    mes: "As estrelas fecham no fim do mês. 4 estrelas no mês, uma por semana, avançam 1 passo do PDI. Sem as 4, o passo continua no mês seguinte.",
+    porPasso: 4,
+    destaque: "Somam no seu total de reconhecimento, mas não substituem a estrela da semana.",
+    vazio: "A primeira estrela vem na primeira semana de janeiro.",
     fontes: [
-      { id: "checkin", t: "Semana de check-in", d: "Check-in feito de segunda a sexta." },
-      { id: "processo", t: "Processo certo", d: "Seguiu o processo do início ao fim, sem retrabalho." },
+      { id: "semana", t: "Semana cumprida", d: "Check-in de segunda a sexta, demandas cumpridas e processos seguidos.", semanal: true },
       { id: "reconhecimento", t: "Reconhecimento", d: "Elogiado por outra área, usuário ou pela gestão." },
       { id: "meta", t: "Meta batida", d: "Cumpriu a meta do mês no seu plano." },
       { id: "ideia", t: "Ideia nova", d: "Trouxe uma ideia que melhorou o setor." }

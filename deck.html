@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css?v=2">
+<link rel="stylesheet" href="base.css?v=3">
 <style>
 html,body{overflow:hidden}
 .where{display:flex;gap:14px;align-items:center}
@@ -74,15 +74,20 @@ html,body{overflow:hidden}
 .stars .sh b svg{width:14px;height:14px}
 .stars .sh strong{display:flex;align-items:baseline;gap:6px;font-size:26px;font-weight:800;letter-spacing:-.03em;color:var(--gold);line-height:1}
 .stars .sh small{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.stars .row{display:flex;flex-wrap:wrap;align-items:center;gap:3px;margin-top:8px;min-height:18px}
-.stars .sx{display:block;width:16px;height:16px;transform:scale(0);transition:transform .2s}
-.stars .sx svg{width:100%;height:100%;display:block;filter:drop-shadow(0 0 4px color-mix(in oklab,var(--gold) 60%,transparent))}
+.stars .mg{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-top:10px}
+.stars .mm{padding:7px 3px 8px;border-radius:10px;border:1px solid var(--line2);text-align:center;transition:border-color .3s,background .3s}
+.stars .mm em{display:block;font-style:normal;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;color:var(--muted);margin-bottom:5px}
+.stars .mm div{display:flex;justify-content:center;gap:2px}
+.stars .mm.ok{border-color:color-mix(in oklab,var(--gold) 70%,transparent);background:color-mix(in oklab,var(--gold) 14%,transparent)}
+.stars .mm.ok em{color:var(--gold)}
+.stars .sx,.stars .sv{display:block;width:12px;height:12px;flex:none}
+.stars .sx svg,.stars .sv svg{width:100%;height:100%;display:block}
+.stars .sv svg{fill:none;stroke:var(--dim);stroke-width:1.8}
+.stars .sx{transform:scale(0);transition:transform .2s}
+.stars .sx svg{filter:drop-shadow(0 0 4px color-mix(in oklab,var(--gold) 60%,transparent))}
 .on .stars .sx{transform:none;transition:transform calc(.5s * var(--sp)) cubic-bezier(.3,1.6,.5,1) calc((var(--d,0ms) * var(--sp)) + calc(250ms * var(--sp)))}
-.stars .mais{font-family:var(--mono);font-size:11px;color:var(--gold);margin-left:4px}
-.stars .vazio{font-size:13.5px;color:var(--muted)}
-.stars .ways{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.stars .ways span{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;border:1px solid var(--line2);font-family:var(--mono);font-size:10.5px;letter-spacing:.02em;color:var(--muted)}
-.stars .ways i{font-style:normal;font-weight:600;color:var(--gold)}
+.stars .ft{display:flex;justify-content:space-between;gap:6px 12px;flex-wrap:wrap;margin-top:10px;font-family:var(--mono);font-size:10.5px;letter-spacing:.02em;color:var(--muted)}
+.stars .ft b{color:var(--gold);font-weight:600}
 
 /* 2 e 3 · cartões de exemplos */
 .ex{display:grid;gap:16px;margin-top:clamp(18px,3.4vh,34px)}
@@ -132,6 +137,12 @@ html,body{overflow:hidden}
 .stepc .sg span{display:block;padding:6px 9px;border-radius:10px;border:1px solid color-mix(in oklab,var(--accent) 45%,transparent);font-size:clamp(11px,.85vw,12.5px);line-height:1.3;color:var(--text)}
 .stepc .sg em{display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
 .stepc.last{border-color:color-mix(in oklab,var(--accent) 60%,transparent);background:color-mix(in oklab,var(--accent) 10%,transparent)}
+.stepc .sn{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.stepc .sn i{display:block;width:14px;height:14px;flex:none}
+.stepc .sn i svg{width:100%;height:100%;display:block;fill:var(--gold);filter:drop-shadow(0 0 4px color-mix(in oklab,var(--gold) 70%,transparent))}
+.stepc .sn i.at{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:ping 2.2s infinite}
+.stepc.ok{border-color:color-mix(in oklab,var(--gold) 60%,transparent)}
+.stepc.ok .sn{color:var(--gold)}
 .pact{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
 .pact div{display:flex;gap:14px;align-items:baseline;padding:12px 16px;border-radius:14px;border:1px solid var(--line2);background:var(--panel)}
 .pact b{flex:none;font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
@@ -180,8 +191,8 @@ html,body{overflow:hidden}
   </div>
 </footer>
 
-<script src="base.js?v=2"></script>
-<script src="dados.js?v=2"></script>
+<script src="base.js?v=3"></script>
+<script src="dados.js?v=3"></script>
 <script>
 (() => {
   const D = window.FEEDBACKS, { esc, pad } = window.MD;
@@ -230,16 +241,22 @@ html,body{overflow:hidden}
       </div>`);
   }
 
-  /* estrela de carreira: total, estrelas acumuladas e contagem por tipo */
+  /* estrela de carreira: estrelas semanais por mês (4 = mês fechado, +1 passo) e destaques */
   function painelEstrelas() {
-    const E = D.estrelas, st = MD.estrelas(p, E), MAX = 48;
-    const row = st.total
-      ? st.lista.slice(0, MAX).map((e, i) => `<span class="sx" style="--d:${1300 + i * 60}ms" title="${esc((E.fontes.find(f => f.id === e.tipo) || {}).t)} · ${esc(e.m || "")}">${MD.STAR}</span>`).join("") + (st.total > MAX ? `<span class="mais">+${st.total - MAX}</span>` : "")
-      : `<span class="vazio">${esc(E.vazio)}</span>`;
+    const E = D.estrelas, st = MD.estrelas(p, E, D.meses), N = E.porPasso;
+    const destaques = st.lista.filter(e => !(E.fontes.find(f => f.id === e.tipo) || {}).semanal).length;
+    let k = 0;
+    const meses = D.meses.map(m => {
+      const c = st.mes[m] || { semana: 0, extra: 0 }, ok = c.semana >= N;
+      const slots = Array.from({ length: Math.max(N, c.semana) }, (_, j) => j < c.semana
+        ? `<span class="sx" style="--d:${1300 + (k++) * 70}ms">${MD.STAR}</span>`
+        : `<span class="sv">${MD.STAR}</span>`).join("");
+      return `<div class="mm ${ok ? "ok" : ""}" title="${m}: ${c.semana} de ${N} estrelas da semana${ok ? " · passo liberado" : ""}"><em>${m}</em><div>${slots}</div></div>`;
+    }).join("");
     return `<div class="stars a" style="--d:1150ms">
       <div class="sh"><b>${MD.STAR}${esc(E.titulo)}</b><strong>${st.total}<small>estrela${st.total === 1 ? "" : "s"}</small></strong></div>
-      <div class="row">${row}</div>
-      <div class="ways">${E.fontes.map(f => `<span>${esc(f.t)}<i>${st.por[f.id] || 0}</i></span>`).join("")}</div>
+      <div class="mg">${meses}</div>
+      <div class="ft"><span><b>${st.passos} de ${D.meses.length}</b> passos do PDI · ${N} no mês = +1 passo</span><span>Destaques <b>${destaques}</b></span></div>
     </div>`;
   }
 
@@ -284,12 +301,16 @@ html,body{overflow:hidden}
 
   /* ---------- 4 · plano de 6 meses ---------- */
   function s4() {
-    const cards = p.plano.map((s, i) => `
-      <div class="stepc a ${i === p.plano.length - 1 ? "last" : ""}"><div class="sn">${esc(s.m)} · 2027</div><h4>${esc(s.t)}</h4><p>${esc(s.a)}</p>
-        <div class="sg"><span><em>Sinal de avanço</em>${esc(s.s)}</span></div></div>`).join("");
+    const E = D.estrelas, st = MD.estrelas(p, E, D.meses);
+    const cards = p.plano.map((s, i) => {
+      const ok = i < st.passos, atual = i === st.passos;
+      return `
+      <div class="stepc a ${i === p.plano.length - 1 ? "last" : ""} ${ok ? "ok" : ""}"><div class="sn">Passo ${i + 1} · ${esc(s.m)}${ok ? `<i title="Passo liberado">${MD.STAR}</i>` : atual ? `<i class="at" title="Passo atual"></i>` : ""}</div><h4>${esc(s.t)}</h4><p>${esc(s.a)}</p>
+        <div class="sg"><span><em>Sinal de avanço</em>${esc(s.s)}</span></div></div>`;
+    }).join("");
     return sl("Plano Jan a Jun", `
       <div class="hd">
-        <div>${kick("Plano de ação · 6 meses")}
+        <div>${kick(`Plano de ação · ${E.porPasso} estrelas no mês = +1 passo`)}
           <h2 class="a" style="--d:120ms">Jan a Jun 2027, um passo por mês</h2></div>
         <div class="pill a" style="--d:240ms"><b>Meta até junho</b><span>${esc(p.meta)}</span></div>
       </div>

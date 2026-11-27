@@ -3,12 +3,18 @@ window.MD = {
   esc: s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])),
   pad: n => String(n).padStart(2, "0"),
   STAR: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6.2 6.8.7-5.1 4.6 1.5 6.7L12 17.3l-6.1 3.4 1.5-6.7-5.1-4.6 6.8-.7z"/></svg>',
-  // Estrelas da pessoa: total e contagem por tipo (só tipos cadastrados em fontes)
-  estrelas(p, E) {
-    const ids = new Set(E.fontes.map(f => f.id)), por = {};
-    const lista = (p.estrelas || []).filter(e => e && ids.has(e.tipo));
-    lista.forEach(e => { por[e.tipo] = (por[e.tipo] || 0) + 1; });
-    return { total: lista.length, por, lista };
+  // Estrelas da pessoa: total, contagem por tipo e por mês, e passos do PDI liberados
+  // (mês com E.porPasso estrelas semanais = 1 passo; só tipos cadastrados em fontes contam)
+  estrelas(p, E, meses = []) {
+    const fontes = new Map(E.fontes.map(f => [f.id, f])), por = {}, mes = {};
+    const lista = (p.estrelas || []).filter(e => e && fontes.has(e.tipo));
+    lista.forEach(e => {
+      por[e.tipo] = (por[e.tipo] || 0) + 1;
+      const k = mes[e.m] || (mes[e.m] = { semana: 0, extra: 0 });
+      if (fontes.get(e.tipo).semanal) k.semana++; else k.extra++;
+    });
+    const passos = meses.filter(m => (mes[m] ? mes[m].semana : 0) >= E.porPasso).length;
+    return { total: lista.length, por, lista, mes, passos };
   },
   topo(svg) {
     let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
